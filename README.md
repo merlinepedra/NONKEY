@@ -7,11 +7,11 @@ from https://interpreterbook.com/
 
 ## TODO
 
-support unicode(utf-8)
+support unicode(utf-8) (may already supported?)
 
-replace ';' with '\n' or 'r'
+replace ';' with '\n' or '\r'
 
 more typed const using genenum
 
-replace case with map to faster interpreting
+replace "switch case" with map[] to faster interpreting
 
