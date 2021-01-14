@@ -1,0 +1,16 @@
+LOWEST
+COND         OR or AND
+ASSIGN       =
+TERNARY      ? :
+EQUALS       == or !=
+REGEXP_MATCH !~ ~=
+LESSGREATER  > or <
+SUM          + or -
+PRODUCT      * or /
+POWER        **
+MOD          %
+PREFIX       -X or !X
+CALL         myFunction(X)
+DOTDOT       ..
+INDEX        array[index], map[key]
+HIGHEST
