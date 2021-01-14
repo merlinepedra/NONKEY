@@ -11,8 +11,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/skx/monkey/ast"
-	"github.com/skx/monkey/object"
+	"github.com/kasworld/nonkey/ast"
+	"github.com/kasworld/nonkey/object"
+	"github.com/kasworld/nonkey/objecttype"
 )
 
 // pre-defined object including Null, True and False
@@ -179,7 +180,7 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 		result = Eval(statement, env)
 		if result != nil {
 			rt := result.Type()
-			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ {
+			if rt == objecttype.RETURN_VALUE || rt == objecttype.ERROR {
 				return result
 			}
 		}
@@ -269,15 +270,15 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 
 func evalInfixExpression(operator string, left, right object.Object, env *object.Environment) object.Object {
 	switch {
-	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
+	case left.Type() == objecttype.INTEGER && right.Type() == objecttype.INTEGER:
 		return evalIntegerInfixExpression(operator, left, right)
-	case left.Type() == object.FLOAT_OBJ && right.Type() == object.FLOAT_OBJ:
+	case left.Type() == objecttype.FLOAT && right.Type() == objecttype.FLOAT:
 		return evalFloatInfixExpression(operator, left, right)
-	case left.Type() == object.FLOAT_OBJ && right.Type() == object.INTEGER_OBJ:
+	case left.Type() == objecttype.FLOAT && right.Type() == objecttype.INTEGER:
 		return evalFloatIntegerInfixExpression(operator, left, right)
-	case left.Type() == object.INTEGER_OBJ && right.Type() == object.FLOAT_OBJ:
+	case left.Type() == objecttype.INTEGER && right.Type() == objecttype.FLOAT:
 		return evalIntegerFloatInfixExpression(operator, left, right)
-	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
+	case left.Type() == objecttype.STRING && right.Type() == objecttype.STRING:
 		return evalStringInfixExpression(operator, left, right)
 	case operator == "&&":
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) && objectToNativeBoolean(right))
@@ -293,7 +294,7 @@ func evalInfixExpression(operator string, left, right object.Object, env *object
 
 	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
-	case left.Type() == object.BOOLEAN_OBJ && right.Type() == object.BOOLEAN_OBJ:
+	case left.Type() == objecttype.BOOLEAN && right.Type() == objecttype.BOOLEAN:
 		return evalBooleanInfixExpression(operator, left, right)
 	case left.Type() != right.Type():
 		return newError("type mismatch: %s %s %s",
@@ -308,7 +309,7 @@ func matches(left, right object.Object, env *object.Environment) object.Object {
 
 	str := left.Inspect()
 
-	if right.Type() != object.REGEXP_OBJ {
+	if right.Type() != objecttype.REGEXP {
 		return newError("regexp required for regexp-match, given %s", right.Type())
 	}
 
@@ -345,7 +346,7 @@ func matches(left, right object.Object, env *object.Environment) object.Object {
 func notMatches(left, right object.Object) object.Object {
 	str := left.Inspect()
 
-	if right.Type() != object.REGEXP_OBJ {
+	if right.Type() != objecttype.REGEXP {
 		return newError("regexp required for regexp-match, given %s", right.Type())
 	}
 
@@ -763,7 +764,7 @@ func evalSwitchStatement(se *ast.SwitchExpression, env *object.Environment) obje
 			}
 
 			// Is it a regexp-match?
-			if out.Type() == object.REGEXP_OBJ {
+			if out.Type() == objecttype.REGEXP {
 
 				m := matches(obj, out, env)
 				if m == TRUE {
@@ -800,7 +801,7 @@ func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) 
 		}
 		if isTruthy(condition) {
 			rt := Eval(fle.Consequence, env)
-			if !isError(rt) && (rt.Type() == object.RETURN_VALUE_OBJ || rt.Type() == object.ERROR_OBJ) {
+			if !isError(rt) && (rt.Type() == objecttype.RETURN_VALUE || rt.Type() == objecttype.ERROR) {
 				return rt
 			}
 		} else {
@@ -856,7 +857,7 @@ func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) o
 		//
 		// If we got an error/return then we handle it.
 		//
-		if !isError(rt) && (rt.Type() == object.RETURN_VALUE_OBJ || rt.Type() == object.ERROR_OBJ) {
+		if !isError(rt) && (rt.Type() == objecttype.RETURN_VALUE || rt.Type() == objecttype.ERROR) {
 			return rt
 		}
 
@@ -900,7 +901,7 @@ func newError(format string, a ...interface{}) *object.Error {
 
 func isError(obj object.Object) bool {
 	if obj != nil {
-		return obj.Type() == object.ERROR_OBJ
+		return obj.Type() == objecttype.ERROR
 	}
 	return false
 }
@@ -1017,11 +1018,11 @@ func backTickOperation(command string) object.Object {
 
 func evalIndexExpression(left, index object.Object) object.Object {
 	switch {
-	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
+	case left.Type() == objecttype.ARRAY && index.Type() == objecttype.INTEGER:
 		return evalArrayIndexExpression(left, index)
-	case left.Type() == object.HASH_OBJ:
+	case left.Type() == objecttype.HASH:
 		return evalHashIndexExpression(left, index)
-	case left.Type() == object.STRING_OBJ:
+	case left.Type() == objecttype.STRING:
 		return evalStringIndexExpression(left, index)
 	default:
 		return newError("index operator not support:%s", left.Type())

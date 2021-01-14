@@ -22,7 +22,7 @@ func (f *Float) Inspect() string {
 
 // Type returns the type of this object.
 func (f *Float) Type() objecttype.ObjectType {
-	return objecttype.FLOAT_OBJ
+	return objecttype.FLOAT
 }
 
 // HashKey returns a hash key for the given object.

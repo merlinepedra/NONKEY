@@ -5,8 +5,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/kasworld/nonkey/ast"
 	"github.com/kasworld/nonkey/objecttype"
-	"github.com/skx/monkey/ast"
 )
 
 // Function wraps ast.Identifier array, ast.BlockStatement and Environment and implements Object interface.
@@ -19,7 +19,7 @@ type Function struct {
 
 // Type returns the type of this object.
 func (f *Function) Type() objecttype.ObjectType {
-	return objecttype.FUNCTION_OBJ
+	return objecttype.FUNCTION
 }
 
 // Inspect returns a string-representation of the given object.

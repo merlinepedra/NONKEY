@@ -15,7 +15,7 @@ type Regexp struct {
 
 // Type returns the type of this object.
 func (r *Regexp) Type() objecttype.ObjectType {
-	return objecttype.REGEXP_OBJ
+	return objecttype.REGEXP
 }
 
 // Inspect returns a string-representation of the given object.

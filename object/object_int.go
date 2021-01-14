@@ -21,7 +21,7 @@ func (i *Integer) Inspect() string {
 
 // Type returns the type of this object.
 func (i *Integer) Type() objecttype.ObjectType {
-	return objecttype.INTEGER_OBJ
+	return objecttype.INTEGER
 }
 
 // HashKey returns a hash key for the given object.

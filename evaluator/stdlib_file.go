@@ -3,7 +3,7 @@ package evaluator
 import (
 	"path/filepath"
 
-	"github.com/skx/monkey/object"
+	"github.com/kasworld/nonkey/object"
 )
 
 // array = directory.glob( "/etc/*.conf" )

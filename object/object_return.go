@@ -10,7 +10,7 @@ type ReturnValue struct {
 
 // Type returns the type of this object.
 func (rv *ReturnValue) Type() objecttype.ObjectType {
-	return objecttype.RETURN_VALUE_OBJ
+	return objecttype.RETURN_VALUE
 }
 
 // Inspect returns a string-representation of the given object.

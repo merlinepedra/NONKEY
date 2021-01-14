@@ -7,7 +7,7 @@ type Null struct{}
 
 // Type returns the type of this object.
 func (n *Null) Type() objecttype.ObjectType {
-	return objecttype.NULL_OBJ
+	return objecttype.NULL
 }
 
 // Inspect returns a string-representation of the given object.

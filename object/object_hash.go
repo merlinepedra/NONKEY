@@ -38,7 +38,7 @@ type Hash struct {
 
 // Type returns the type of this object.
 func (h *Hash) Type() objecttype.ObjectType {
-	return objecttype.HASH_OBJ
+	return objecttype.HASH
 }
 
 // Inspect returns a string-representation of the given object.

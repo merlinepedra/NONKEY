@@ -3,7 +3,8 @@ package evaluator
 import (
 	"os"
 
-	"github.com/skx/monkey/object"
+	"github.com/kasworld/nonkey/object"
+	"github.com/kasworld/nonkey/objecttype"
 )
 
 // os.getenv() -> ( Hash )
@@ -36,7 +37,7 @@ func getEnvFun(args ...object.Object) object.Object {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
-	if args[0].Type() != object.STRING_OBJ {
+	if args[0].Type() != objecttype.STRING {
 		return newError("argument must be a string, got=%s",
 			args[0].Type())
 	}
@@ -51,11 +52,11 @@ func setEnvFun(args ...object.Object) object.Object {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
-	if args[0].Type() != object.STRING_OBJ {
+	if args[0].Type() != objecttype.STRING {
 		return newError("argument must be a string, got=%s",
 			args[0].Type())
 	}
-	if args[1].Type() != object.STRING_OBJ {
+	if args[1].Type() != objecttype.STRING {
 		return newError("argument must be a string, got=%s",
 			args[1].Type())
 	}

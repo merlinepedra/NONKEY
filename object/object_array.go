@@ -19,7 +19,7 @@ type Array struct {
 
 // Type returns the type of this object.
 func (ao *Array) Type() objecttype.ObjectType {
-	return objecttype.ARRAY_OBJ
+	return objecttype.ARRAY
 }
 
 // Inspect returns a string-representation of the given object.

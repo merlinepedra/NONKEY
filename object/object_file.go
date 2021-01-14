@@ -27,7 +27,7 @@ type File struct {
 
 // Type returns the type of this object.
 func (f *File) Type() objecttype.ObjectType {
-	return objecttype.FILE_OBJ
+	return objecttype.FILE
 }
 
 // Inspect returns a string-representation of the given object.

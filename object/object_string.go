@@ -23,7 +23,7 @@ type String struct {
 
 // Type returns the type of this object.
 func (s *String) Type() objecttype.ObjectType {
-	return objecttype.STRING_OBJ
+	return objecttype.STRING
 }
 
 // Inspect returns a string-representation of the given object.

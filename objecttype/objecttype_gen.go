@@ -7,38 +7,38 @@ import "fmt"
 type ObjectType uint8
 
 const (
-	NULL_OBJ         ObjectType = iota // NULL
-	INTEGER_OBJ                        // INTEGER
-	FLOAT_OBJ                          // FLOAT
-	BOOLEAN_OBJ                        // BOOLEAN
-	RETURN_VALUE_OBJ                   // RETURN_VALUE
-	ERROR_OBJ                          // ERROR
-	FUNCTION_OBJ                       // FUNCTION
-	STRING_OBJ                         // STRING
-	BUILTIN_OBJ                        // BUILTIN
-	ARRAY_OBJ                          // ARRAY
-	HASH_OBJ                           // HASH
-	FILE_OBJ                           // FILE
-	REGEXP_OBJ                         // REGEXP
+	NULL         ObjectType = iota // NULL
+	INTEGER                        // INTEGER
+	FLOAT                          // FLOAT
+	BOOLEAN                        // BOOLEAN
+	RETURN_VALUE                   // RETURN_VALUE
+	ERROR                          // ERROR
+	FUNCTION                       // FUNCTION
+	STRING                         // STRING
+	BUILTIN                        // BUILTIN
+	ARRAY                          // ARRAY
+	HASH                           // HASH
+	FILE                           // FILE
+	REGEXP                         // REGEXP
 	//
 
 	ObjectType_Count int = iota
 )
 
 var _ObjectType2string = [ObjectType_Count][2]string{
-	NULL_OBJ:         {"NULL_OBJ", "NULL"},
-	INTEGER_OBJ:      {"INTEGER_OBJ", "INTEGER"},
-	FLOAT_OBJ:        {"FLOAT_OBJ", "FLOAT"},
-	BOOLEAN_OBJ:      {"BOOLEAN_OBJ", "BOOLEAN"},
-	RETURN_VALUE_OBJ: {"RETURN_VALUE_OBJ", "RETURN_VALUE"},
-	ERROR_OBJ:        {"ERROR_OBJ", "ERROR"},
-	FUNCTION_OBJ:     {"FUNCTION_OBJ", "FUNCTION"},
-	STRING_OBJ:       {"STRING_OBJ", "STRING"},
-	BUILTIN_OBJ:      {"BUILTIN_OBJ", "BUILTIN"},
-	ARRAY_OBJ:        {"ARRAY_OBJ", "ARRAY"},
-	HASH_OBJ:         {"HASH_OBJ", "HASH"},
-	FILE_OBJ:         {"FILE_OBJ", "FILE"},
-	REGEXP_OBJ:       {"REGEXP_OBJ", "REGEXP"},
+	NULL:         {"NULL", "NULL"},
+	INTEGER:      {"INTEGER", "INTEGER"},
+	FLOAT:        {"FLOAT", "FLOAT"},
+	BOOLEAN:      {"BOOLEAN", "BOOLEAN"},
+	RETURN_VALUE: {"RETURN_VALUE", "RETURN_VALUE"},
+	ERROR:        {"ERROR", "ERROR"},
+	FUNCTION:     {"FUNCTION", "FUNCTION"},
+	STRING:       {"STRING", "STRING"},
+	BUILTIN:      {"BUILTIN", "BUILTIN"},
+	ARRAY:        {"ARRAY", "ARRAY"},
+	HASH:         {"HASH", "HASH"},
+	FILE:         {"FILE", "FILE"},
+	REGEXP:       {"REGEXP", "REGEXP"},
 }
 
 func (e ObjectType) String() string {
@@ -56,19 +56,19 @@ func (e ObjectType) CommentString() string {
 }
 
 var _string2ObjectType = map[string]ObjectType{
-	"NULL_OBJ":         NULL_OBJ,
-	"INTEGER_OBJ":      INTEGER_OBJ,
-	"FLOAT_OBJ":        FLOAT_OBJ,
-	"BOOLEAN_OBJ":      BOOLEAN_OBJ,
-	"RETURN_VALUE_OBJ": RETURN_VALUE_OBJ,
-	"ERROR_OBJ":        ERROR_OBJ,
-	"FUNCTION_OBJ":     FUNCTION_OBJ,
-	"STRING_OBJ":       STRING_OBJ,
-	"BUILTIN_OBJ":      BUILTIN_OBJ,
-	"ARRAY_OBJ":        ARRAY_OBJ,
-	"HASH_OBJ":         HASH_OBJ,
-	"FILE_OBJ":         FILE_OBJ,
-	"REGEXP_OBJ":       REGEXP_OBJ,
+	"NULL":         NULL,
+	"INTEGER":      INTEGER,
+	"FLOAT":        FLOAT,
+	"BOOLEAN":      BOOLEAN,
+	"RETURN_VALUE": RETURN_VALUE,
+	"ERROR":        ERROR,
+	"FUNCTION":     FUNCTION,
+	"STRING":       STRING,
+	"BUILTIN":      BUILTIN,
+	"ARRAY":        ARRAY,
+	"HASH":         HASH,
+	"FILE":         FILE,
+	"REGEXP":       REGEXP,
 }
 
 func String2ObjectType(s string) (ObjectType, bool) {

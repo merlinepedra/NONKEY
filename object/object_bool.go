@@ -16,7 +16,7 @@ type Boolean struct {
 
 // Type returns the type of this object.
 func (b *Boolean) Type() objecttype.ObjectType {
-	return objecttype.BOOLEAN_OBJ
+	return objecttype.BOOLEAN
 }
 
 // Inspect returns a string-representation of the given object.

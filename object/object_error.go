@@ -10,7 +10,7 @@ type Error struct {
 
 // Type returns the type of this object.
 func (e *Error) Type() objecttype.ObjectType {
-	return objecttype.ERROR_OBJ
+	return objecttype.ERROR
 }
 
 // Inspect returns a string-representation of the given object.

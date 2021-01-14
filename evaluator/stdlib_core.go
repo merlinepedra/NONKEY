@@ -8,9 +8,10 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/skx/monkey/lexer"
-	"github.com/skx/monkey/object"
-	"github.com/skx/monkey/parser"
+	"github.com/kasworld/nonkey/lexer"
+	"github.com/kasworld/nonkey/object"
+	"github.com/kasworld/nonkey/objecttype"
+	"github.com/kasworld/nonkey/parser"
 )
 
 // Change a mode of a file - note the second argument is a string
@@ -159,11 +160,11 @@ func matchFun(args ...object.Object) object.Object {
 			len(args))
 	}
 
-	if args[0].Type() != object.STRING_OBJ {
+	if args[0].Type() != objecttype.STRING {
 		return newError("argument to `match` must be STRING, got %s",
 			args[0].Type())
 	}
-	if args[1].Type() != object.STRING_OBJ {
+	if args[1].Type() != objecttype.STRING {
 		return newError("argument to `match` must be STRING, got %s",
 			args[1].Type())
 	}
@@ -210,7 +211,7 @@ func mkdirFun(args ...object.Object) object.Object {
 			len(args))
 	}
 
-	if args[0].Type() != object.STRING_OBJ {
+	if args[0].Type() != objecttype.STRING {
 		return newError("argument to `mkdir` must be STRING, got %s",
 			args[0].Type())
 	}
@@ -320,7 +321,7 @@ func pushFun(args ...object.Object) object.Object {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
-	if args[0].Type() != object.ARRAY_OBJ {
+	if args[0].Type() != objecttype.ARRAY {
 		return newError("argument to `push` must be ARRAY, got=%s",
 			args[0].Type())
 	}
@@ -348,7 +349,7 @@ func printfFun(args ...object.Object) object.Object {
 	out := sprintfFun(args...)
 
 	// If that returned a string then we can print it
-	if out.Type() == object.STRING_OBJ {
+	if out.Type() == objecttype.STRING {
 		fmt.Print(out.(*object.String).Value)
 
 	}
@@ -365,7 +366,7 @@ func sprintfFun(args ...object.Object) object.Object {
 	}
 
 	// Type-check
-	if args[0].Type() != object.STRING_OBJ {
+	if args[0].Type() != objecttype.STRING {
 		return &object.Null{}
 	}
 
@@ -458,7 +459,7 @@ func hashKeys(args ...object.Object) object.Object {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
-	if args[0].Type() != object.HASH_OBJ {
+	if args[0].Type() != objecttype.HASH {
 		return newError("argument to `keys` must be HASH, got=%s",
 			args[0].Type())
 	}
@@ -487,7 +488,7 @@ func hashDelete(args ...object.Object) object.Object {
 		return newError("wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
-	if args[0].Type() != object.HASH_OBJ {
+	if args[0].Type() != objecttype.HASH {
 		return newError("argument to `delete` must be HASH, got=%s",
 			args[0].Type())
 	}
@@ -520,7 +521,7 @@ func setFun(args ...object.Object) object.Object {
 		return newError("wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
-	if args[0].Type() != object.HASH_OBJ {
+	if args[0].Type() != objecttype.HASH {
 		return newError("argument to `set` must be HASH, got=%s",
 			args[0].Type())
 	}
