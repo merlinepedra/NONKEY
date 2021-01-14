@@ -73,6 +73,7 @@ if(5<10){
 for
 2 >= 1
 1 <= 3
+empty?
 `
 	tests := []struct {
 		expectedType    tokentype.TokenType
@@ -174,6 +175,7 @@ for
 		{tokentype.INT, "1"},
 		{tokentype.LT_EQUALS, "<="},
 		{tokentype.INT, "3"},
+		{tokentype.IDENT, "empty?"},
 		{tokentype.EOF, ""},
 	}
 	l := New(input)
