@@ -5,7 +5,7 @@
 ################################################################################
 # generate enum
 Write-Output "generate enums"
-genenum -typename=TokenType -packagename=tokentype -basedir="." -vectortype=int
+genenum -typename=TokenType -packagename=tokentype -basedir="." 
 
 goimports -w tokentype
 
