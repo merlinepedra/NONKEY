@@ -26,8 +26,33 @@ change parse function init
 
 add repl from waig_code
 
+move static.go to package to exec "go run nonkey.go"  
+
 ## TODO
 
 replace ';' with '\n' or '\r'
 
 
+## bug to fix 
+
+load data/stdlib.mon make error 
+
+    //
+    // Is the given array empty?
+    //
+    function array.empty?() {
+    if ( len(self) == 0 ) {
+        return true;
+    }
+    return false;
+    }
+
+    assert( "[].empty?()" );
+    assert( "![1,2].empty?()" );
+    assert( "![\"steve\",3].empty?()" );
+
+    produce 
+    
+    Error calling object-method ERROR: Failed to invoke method: empty?
+    Error calling `eval` : ERROR: Failed to invoke method: empty?
+    Error calling `assert` : ERROR: Failed to invoke method: empty?
