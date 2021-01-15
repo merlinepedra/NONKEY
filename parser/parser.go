@@ -99,81 +99,68 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 
 	// Register prefix-functions
-	p.prefixParseFns = make(map[tokentype.TokenType]prefixParseFn)
-	p.registerPrefix(tokentype.BACKTICK, p.parseBacktickLiteral)
-	p.registerPrefix(tokentype.BANG, p.parsePrefixExpression)
-	p.registerPrefix(tokentype.DEFINE_FUNCTION, p.parseFunctionDefinition)
-	p.registerPrefix(tokentype.EOF, p.parsingBroken)
-	p.registerPrefix(tokentype.FALSE, p.parseBoolean)
-	p.registerPrefix(tokentype.FLOAT, p.parseFloatLiteral)
-	p.registerPrefix(tokentype.FOR, p.parseForLoopExpression)
-	p.registerPrefix(tokentype.FOREACH, p.parseForEach)
-	p.registerPrefix(tokentype.FUNCTION, p.parseFunctionLiteral)
-	p.registerPrefix(tokentype.IDENT, p.parseIdentifier)
-	p.registerPrefix(tokentype.IF, p.parseIfExpression)
-	p.registerPrefix(tokentype.ILLEGAL, p.parsingBroken)
-	p.registerPrefix(tokentype.INT, p.parseIntegerLiteral)
-	p.registerPrefix(tokentype.LBRACE, p.parseHashLiteral)
-	p.registerPrefix(tokentype.LBRACKET, p.parseArrayLiteral)
-	p.registerPrefix(tokentype.LPAREN, p.parseGroupedExpression)
-	p.registerPrefix(tokentype.MINUS, p.parsePrefixExpression)
-	p.registerPrefix(tokentype.REGEXP, p.parseRegexpLiteral)
-	p.registerPrefix(tokentype.REGEXP, p.parseRegexpLiteral)
-	p.registerPrefix(tokentype.STRING, p.parseStringLiteral)
-	p.registerPrefix(tokentype.SWITCH, p.parseSwitchStatement)
-	p.registerPrefix(tokentype.TRUE, p.parseBoolean)
+	p.prefixParseFns = map[tokentype.TokenType]prefixParseFn{
+		tokentype.BACKTICK:        p.parseBacktickLiteral,
+		tokentype.BANG:            p.parsePrefixExpression,
+		tokentype.DEFINE_FUNCTION: p.parseFunctionDefinition,
+		tokentype.EOF:             p.parsingBroken,
+		tokentype.FALSE:           p.parseBoolean,
+		tokentype.FLOAT:           p.parseFloatLiteral,
+		tokentype.FOR:             p.parseForLoopExpression,
+		tokentype.FOREACH:         p.parseForEach,
+		tokentype.FUNCTION:        p.parseFunctionLiteral,
+		tokentype.IDENT:           p.parseIdentifier,
+		tokentype.IF:              p.parseIfExpression,
+		tokentype.ILLEGAL:         p.parsingBroken,
+		tokentype.INT:             p.parseIntegerLiteral,
+		tokentype.LBRACE:          p.parseHashLiteral,
+		tokentype.LBRACKET:        p.parseArrayLiteral,
+		tokentype.LPAREN:          p.parseGroupedExpression,
+		tokentype.MINUS:           p.parsePrefixExpression,
+		tokentype.REGEXP:          p.parseRegexpLiteral,
+		tokentype.STRING:          p.parseStringLiteral,
+		tokentype.SWITCH:          p.parseSwitchStatement,
+		tokentype.TRUE:            p.parseBoolean,
+	}
 
 	// Register infix functions
-	p.infixParseFns = make(map[tokentype.TokenType]infixParseFn)
-	p.registerInfix(tokentype.AND, p.parseInfixExpression)
-	p.registerInfix(tokentype.ASSIGN, p.parseAssignExpression)
-	p.registerInfix(tokentype.ASTERISK, p.parseInfixExpression)
-	p.registerInfix(tokentype.ASTERISK_EQUALS, p.parseAssignExpression)
-	p.registerInfix(tokentype.CONTAINS, p.parseInfixExpression)
-	p.registerInfix(tokentype.DOTDOT, p.parseInfixExpression)
-	p.registerInfix(tokentype.EQ, p.parseInfixExpression)
-	p.registerInfix(tokentype.GT, p.parseInfixExpression)
-	p.registerInfix(tokentype.GT_EQUALS, p.parseInfixExpression)
-	p.registerInfix(tokentype.LBRACKET, p.parseIndexExpression)
-	p.registerInfix(tokentype.LPAREN, p.parseCallExpression)
-	p.registerInfix(tokentype.LT, p.parseInfixExpression)
-	p.registerInfix(tokentype.LT_EQUALS, p.parseInfixExpression)
-	p.registerInfix(tokentype.MINUS, p.parseInfixExpression)
-	p.registerInfix(tokentype.MINUS_EQUALS, p.parseAssignExpression)
-	p.registerInfix(tokentype.MOD, p.parseInfixExpression)
-	p.registerInfix(tokentype.NOT_CONTAINS, p.parseInfixExpression)
-	p.registerInfix(tokentype.NOT_EQ, p.parseInfixExpression)
-	p.registerInfix(tokentype.OR, p.parseInfixExpression)
-	p.registerInfix(tokentype.PERIOD, p.parseMethodCallExpression)
-	p.registerInfix(tokentype.PLUS, p.parseInfixExpression)
-	p.registerInfix(tokentype.PLUS_EQUALS, p.parseAssignExpression)
-	p.registerInfix(tokentype.POW, p.parseInfixExpression)
-	p.registerInfix(tokentype.QUESTION, p.parseTernaryExpression)
-	p.registerInfix(tokentype.SLASH, p.parseInfixExpression)
-	p.registerInfix(tokentype.SLASH_EQUALS, p.parseAssignExpression)
+	p.infixParseFns = map[tokentype.TokenType]infixParseFn{
+		tokentype.AND:             p.parseInfixExpression,
+		tokentype.ASSIGN:          p.parseAssignExpression,
+		tokentype.ASTERISK:        p.parseInfixExpression,
+		tokentype.ASTERISK_EQUALS: p.parseAssignExpression,
+		tokentype.CONTAINS:        p.parseInfixExpression,
+		tokentype.DOTDOT:          p.parseInfixExpression,
+		tokentype.EQ:              p.parseInfixExpression,
+		tokentype.GT:              p.parseInfixExpression,
+		tokentype.GT_EQUALS:       p.parseInfixExpression,
+		tokentype.LBRACKET:        p.parseIndexExpression,
+		tokentype.LPAREN:          p.parseCallExpression,
+		tokentype.LT:              p.parseInfixExpression,
+		tokentype.LT_EQUALS:       p.parseInfixExpression,
+		tokentype.MINUS:           p.parseInfixExpression,
+		tokentype.MINUS_EQUALS:    p.parseAssignExpression,
+		tokentype.MOD:             p.parseInfixExpression,
+		tokentype.NOT_CONTAINS:    p.parseInfixExpression,
+		tokentype.NOT_EQ:          p.parseInfixExpression,
+		tokentype.OR:              p.parseInfixExpression,
+		tokentype.PERIOD:          p.parseMethodCallExpression,
+		tokentype.PLUS:            p.parseInfixExpression,
+		tokentype.PLUS_EQUALS:     p.parseAssignExpression,
+		tokentype.POW:             p.parseInfixExpression,
+		tokentype.QUESTION:        p.parseTernaryExpression,
+		tokentype.SLASH:           p.parseInfixExpression,
+		tokentype.SLASH_EQUALS:    p.parseAssignExpression,
+	}
 
 	// Register postfix functions.
-	p.postfixParseFns = make(map[tokentype.TokenType]postfixParseFn)
-	p.registerPostfix(tokentype.MINUS_MINUS, p.parsePostfixExpression)
-	p.registerPostfix(tokentype.PLUS_PLUS, p.parsePostfixExpression)
+	p.postfixParseFns = map[tokentype.TokenType]postfixParseFn{
+		tokentype.MINUS_MINUS: p.parsePostfixExpression,
+		tokentype.PLUS_PLUS:   p.parsePostfixExpression,
+	}
 
 	// All done
 	return p
-}
-
-// registerPrefix registers a function for handling a prefix-based statement
-func (p *Parser) registerPrefix(tokenType tokentype.TokenType, fn prefixParseFn) {
-	p.prefixParseFns[tokenType] = fn
-}
-
-// registerInfix registers a function for handling a infix-based statement
-func (p *Parser) registerInfix(tokenType tokentype.TokenType, fn infixParseFn) {
-	p.infixParseFns[tokenType] = fn
-}
-
-// registerPostfix registers a function for handling a postfix-based statement
-func (p *Parser) registerPostfix(tokenType tokentype.TokenType, fn postfixParseFn) {
-	p.postfixParseFns[tokenType] = fn
 }
 
 // Errors return stored errors
