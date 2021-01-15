@@ -16,7 +16,7 @@ import (
 
 // Change a mode of a file - note the second argument is a string
 // to emphasise octal.
-func chmodFun(args ...object.Object) object.Object {
+func builtinChmod(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 2 {
 		return newError("wrong number of arguments. got=%d, want=2",
 			len(args))
@@ -46,8 +46,41 @@ func chmodFun(args ...object.Object) object.Object {
 	return &object.Boolean{Value: true}
 }
 
+// Delete a given hash-key
+func builtinDelete(env *object.Environment, args ...object.Object) object.Object {
+	if len(args) != 2 {
+		return newError("wrong number of arguments. got=%d, want=2",
+			len(args))
+	}
+	if args[0].Type() != objecttype.HASH {
+		return newError("argument to `delete` must be HASH, got=%s",
+			args[0].Type())
+	}
+
+	// The object we're working with
+	hash := args[0].(*object.Hash)
+
+	// The key we're going to delete
+	key, ok := args[1].(object.Hashable)
+	if !ok {
+		return newError("key `delete` into HASH must be Hashable, got=%s",
+			args[1].Type())
+	}
+
+	// Make a new hash
+	newHash := make(map[object.HashKey]object.HashPair)
+
+	// Copy the values EXCEPT the one we have.
+	for k, v := range hash.Pairs {
+		if k != key.HashKey() {
+			newHash[k] = v
+		}
+	}
+	return &object.Hash{Pairs: newHash}
+}
+
 // evaluate a string containing monkey-code
-func evalFun(env *object.Environment, args ...object.Object) object.Object {
+func builtinEval(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -82,7 +115,7 @@ func evalFun(env *object.Environment, args ...object.Object) object.Object {
 }
 
 // exit a program.
-func exitFun(args ...object.Object) object.Object {
+func builtinExit(env *object.Environment, args ...object.Object) object.Object {
 
 	code := 0
 
@@ -101,7 +134,7 @@ func exitFun(args ...object.Object) object.Object {
 }
 
 // convert a double/string to an int
-func intFun(args ...object.Object) object.Object {
+func builtinInt(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -134,8 +167,37 @@ func intFun(args ...object.Object) object.Object {
 	}
 }
 
+// Get hash keys
+func builtinKeys(env *object.Environment, args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1",
+			len(args))
+	}
+	if args[0].Type() != objecttype.HASH {
+		return newError("argument to `keys` must be HASH, got=%s",
+			args[0].Type())
+	}
+
+	// The object we're working with
+	hash := args[0].(*object.Hash)
+	ents := len(hash.Pairs)
+
+	// Create a new array for the results.
+	array := make([]object.Object, ents)
+
+	// Now copy the keys into it.
+	i := 0
+	for _, ent := range hash.Pairs {
+		array[i] = ent.Key
+		i++
+	}
+
+	// Return the array.
+	return &object.Array{Elements: array}
+}
+
 // length of item
-func lenFun(args ...object.Object) object.Object {
+func builtinLen(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -154,7 +216,7 @@ func lenFun(args ...object.Object) object.Object {
 }
 
 // regular expression match
-func matchFun(args ...object.Object) object.Object {
+func builtinMatch(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 2 {
 		return newError("wrong number of arguments. got=%d, want=2",
 			len(args))
@@ -205,7 +267,7 @@ func matchFun(args ...object.Object) object.Object {
 }
 
 // mkdir
-func mkdirFun(args ...object.Object) object.Object {
+func builtinMkdir(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -232,48 +294,8 @@ func mkdirFun(args ...object.Object) object.Object {
 
 }
 
-// Open a file
-func openFun(args ...object.Object) object.Object {
-
-	path := ""
-	mode := "r"
-
-	// We need at least one arg
-	if len(args) < 1 {
-		return newError("wrong number of arguments. got=%d, want=1+",
-			len(args))
-	}
-
-	// Get the filename
-	switch args[0].(type) {
-	case *object.String:
-		path = args[0].(*object.String).Value
-	default:
-		return newError("argument to `file` not supported, got=%s",
-			args[0].Type())
-
-	}
-
-	// Get the mode (optiona)
-	if len(args) > 1 {
-		switch args[1].(type) {
-		case *object.String:
-			mode = args[1].(*object.String).Value
-		default:
-			return newError("argument to `file` not supported, got=%s",
-				args[0].Type())
-
-		}
-	}
-
-	// Create the object
-	file := &object.File{Filename: path}
-	file.Open(mode)
-	return (file)
-}
-
 // set a global pragma
-func pragmaFun(args ...object.Object) object.Object {
+func builtinPragma(env *object.Environment, args ...object.Object) object.Object {
 
 	// If more than one argument that's an error
 	if len(args) > 1 {
@@ -315,8 +337,48 @@ func pragmaFun(args ...object.Object) object.Object {
 	return &object.Array{Elements: array}
 }
 
+// Open a file
+func builtinOpen(env *object.Environment, args ...object.Object) object.Object {
+
+	path := ""
+	mode := "r"
+
+	// We need at least one arg
+	if len(args) < 1 {
+		return newError("wrong number of arguments. got=%d, want=1+",
+			len(args))
+	}
+
+	// Get the filename
+	switch args[0].(type) {
+	case *object.String:
+		path = args[0].(*object.String).Value
+	default:
+		return newError("argument to `file` not supported, got=%s",
+			args[0].Type())
+
+	}
+
+	// Get the mode (optiona)
+	if len(args) > 1 {
+		switch args[1].(type) {
+		case *object.String:
+			mode = args[1].(*object.String).Value
+		default:
+			return newError("argument to `file` not supported, got=%s",
+				args[0].Type())
+
+		}
+	}
+
+	// Create the object
+	file := &object.File{Filename: path}
+	file.Open(mode)
+	return (file)
+}
+
 // push something onto an array
-func pushFun(args ...object.Object) object.Object {
+func builtinPush(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 2 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -334,7 +396,7 @@ func pushFun(args ...object.Object) object.Object {
 }
 
 // output a string to stdout
-func putsFun(args ...object.Object) object.Object {
+func builtinPuts(env *object.Environment, args ...object.Object) object.Object {
 	for _, arg := range args {
 		fmt.Print(arg.Inspect())
 	}
@@ -342,11 +404,11 @@ func putsFun(args ...object.Object) object.Object {
 }
 
 // printfFun is the implementation of our `printf` function.
-func printfFun(args ...object.Object) object.Object {
+func builtinPrintf(env *object.Environment, args ...object.Object) object.Object {
 
 	// Convert to the formatted version, via our `sprintf`
 	// function.
-	out := sprintfFun(args...)
+	out := builtinSprintf(env, args...)
 
 	// If that returned a string then we can print it
 	if out.Type() == objecttype.STRING {
@@ -357,8 +419,34 @@ func printfFun(args ...object.Object) object.Object {
 	return NULL
 }
 
+// set a hash-field
+func builtinSet(env *object.Environment, args ...object.Object) object.Object {
+	if len(args) != 3 {
+		return newError("wrong number of arguments. got=%d, want=2",
+			len(args))
+	}
+	if args[0].Type() != objecttype.HASH {
+		return newError("argument to `set` must be HASH, got=%s",
+			args[0].Type())
+	}
+	key, ok := args[1].(object.Hashable)
+	if !ok {
+		return newError("key `set` into HASH must be Hashable, got=%s",
+			args[1].Type())
+	}
+	newHash := make(map[object.HashKey]object.HashPair)
+	hash := args[0].(*object.Hash)
+	for k, v := range hash.Pairs {
+		newHash[k] = v
+	}
+	newHashKey := key.HashKey()
+	newHashPair := object.HashPair{Key: args[1], Value: args[2]}
+	newHash[newHashKey] = newHashPair
+	return &object.Hash{Pairs: newHash}
+}
+
 // sprintfFun is the implementation of our `sprintf` function.
-func sprintfFun(args ...object.Object) object.Object {
+func builtinSprintf(env *object.Environment, args ...object.Object) object.Object {
 
 	// We expect 1+ arguments
 	if len(args) < 1 {
@@ -391,7 +479,7 @@ func sprintfFun(args ...object.Object) object.Object {
 }
 
 // Get file info.
-func statFun(args ...object.Object) object.Object {
+func builtinStat(env *object.Environment, args ...object.Object) object.Object {
 
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
@@ -453,95 +541,7 @@ func statFun(args ...object.Object) object.Object {
 
 }
 
-// Get hash keys
-func hashKeys(args ...object.Object) object.Object {
-	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
-			len(args))
-	}
-	if args[0].Type() != objecttype.HASH {
-		return newError("argument to `keys` must be HASH, got=%s",
-			args[0].Type())
-	}
-
-	// The object we're working with
-	hash := args[0].(*object.Hash)
-	ents := len(hash.Pairs)
-
-	// Create a new array for the results.
-	array := make([]object.Object, ents)
-
-	// Now copy the keys into it.
-	i := 0
-	for _, ent := range hash.Pairs {
-		array[i] = ent.Key
-		i++
-	}
-
-	// Return the array.
-	return &object.Array{Elements: array}
-}
-
-// Delete a given hash-key
-func hashDelete(args ...object.Object) object.Object {
-	if len(args) != 2 {
-		return newError("wrong number of arguments. got=%d, want=2",
-			len(args))
-	}
-	if args[0].Type() != objecttype.HASH {
-		return newError("argument to `delete` must be HASH, got=%s",
-			args[0].Type())
-	}
-
-	// The object we're working with
-	hash := args[0].(*object.Hash)
-
-	// The key we're going to delete
-	key, ok := args[1].(object.Hashable)
-	if !ok {
-		return newError("key `delete` into HASH must be Hashable, got=%s",
-			args[1].Type())
-	}
-
-	// Make a new hash
-	newHash := make(map[object.HashKey]object.HashPair)
-
-	// Copy the values EXCEPT the one we have.
-	for k, v := range hash.Pairs {
-		if k != key.HashKey() {
-			newHash[k] = v
-		}
-	}
-	return &object.Hash{Pairs: newHash}
-}
-
-// set a hash-field
-func setFun(args ...object.Object) object.Object {
-	if len(args) != 3 {
-		return newError("wrong number of arguments. got=%d, want=2",
-			len(args))
-	}
-	if args[0].Type() != objecttype.HASH {
-		return newError("argument to `set` must be HASH, got=%s",
-			args[0].Type())
-	}
-	key, ok := args[1].(object.Hashable)
-	if !ok {
-		return newError("key `set` into HASH must be Hashable, got=%s",
-			args[1].Type())
-	}
-	newHash := make(map[object.HashKey]object.HashPair)
-	hash := args[0].(*object.Hash)
-	for k, v := range hash.Pairs {
-		newHash[k] = v
-	}
-	newHashKey := key.HashKey()
-	newHashPair := object.HashPair{Key: args[1], Value: args[2]}
-	newHash[newHashKey] = newHashPair
-	return &object.Hash{Pairs: newHash}
-}
-
-func strFun(args ...object.Object) object.Object {
+func builtinString(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -552,7 +552,7 @@ func strFun(args ...object.Object) object.Object {
 }
 
 // type of an item
-func typeFun(args ...object.Object) object.Object {
+func builtinType(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -585,7 +585,7 @@ func typeFun(args ...object.Object) object.Object {
 }
 
 // Remove a file/directory.
-func unlinkFun(args ...object.Object) object.Object {
+func builtinUnlink(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -598,87 +598,4 @@ func unlinkFun(args ...object.Object) object.Object {
 		return &object.Boolean{Value: false}
 	}
 	return &object.Boolean{Value: true}
-}
-
-func init() {
-	RegisterBuiltin("chmod",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (chmodFun(args...))
-		})
-	RegisterBuiltin("delete",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (hashDelete(args...))
-		})
-	RegisterBuiltin("eval",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (evalFun(env, args...))
-		})
-	RegisterBuiltin("exit",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (exitFun(args...))
-		})
-	RegisterBuiltin("int",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (intFun(args...))
-		})
-	RegisterBuiltin("keys",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (hashKeys(args...))
-		})
-	RegisterBuiltin("len",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (lenFun(args...))
-		})
-	RegisterBuiltin("match",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (matchFun(args...))
-		})
-	RegisterBuiltin("mkdir",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (mkdirFun(args...))
-		})
-	RegisterBuiltin("pragma",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (pragmaFun(args...))
-		})
-	RegisterBuiltin("open",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (openFun(args...))
-		})
-	RegisterBuiltin("push",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (pushFun(args...))
-		})
-	RegisterBuiltin("puts",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (putsFun(args...))
-		})
-	RegisterBuiltin("printf",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (printfFun(args...))
-		})
-	RegisterBuiltin("set",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (setFun(args...))
-		})
-	RegisterBuiltin("sprintf",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (sprintfFun(args...))
-		})
-	RegisterBuiltin("stat",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (statFun(args...))
-		})
-	RegisterBuiltin("string",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (strFun(args...))
-		})
-	RegisterBuiltin("type",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (typeFun(args...))
-		})
-	RegisterBuiltin("unlink",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (unlinkFun(args...))
-		})
 }

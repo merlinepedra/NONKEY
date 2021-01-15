@@ -7,7 +7,7 @@ import (
 )
 
 // array = directory.glob( "/etc/*.conf" )
-func dirGlob(args ...object.Object) object.Object {
+func builtinDirectoryGlob(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -26,11 +26,4 @@ func dirGlob(args ...object.Object) object.Object {
 		result[i] = &object.String{Value: txt}
 	}
 	return &object.Array{Elements: result}
-}
-
-func init() {
-	RegisterBuiltin("directory.glob",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (dirGlob(args...))
-		})
 }

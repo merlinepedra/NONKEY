@@ -24,9 +24,6 @@ var (
 	PRAGMAS = make(map[string]int)
 )
 
-// The built-in functions / standard-library methods are stored here.
-var builtins = map[string]*object.Builtin{}
-
 // Eval is our core function for evaluating nodes.
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
@@ -910,7 +907,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	if val, ok := env.Get(node.Value); ok {
 		return val
 	}
-	if builtin, ok := builtins[node.Value]; ok {
+	if builtin, ok := builtinFunctions[node.Value]; ok {
 		return builtin
 	}
 	fmt.Fprintf(os.Stderr, "identifier not found: %s\n", node.Value)
@@ -1127,12 +1124,6 @@ func upwrapReturnValue(obj object.Object) object.Object {
 		return returnValue.Value
 	}
 	return obj
-}
-
-// RegisterBuiltin registers a built-in function.  This is used to register
-// our "standard library" functions.
-func RegisterBuiltin(name string, fun object.BuiltinFunction) {
-	builtins[name] = &object.Builtin{Fn: fun}
 }
 
 // evalObjectCallExpression invokes methods against objects.

@@ -8,7 +8,7 @@ import (
 	"github.com/kasworld/nonkey/object"
 )
 
-func mathAbs(args ...object.Object) object.Object {
+func builtinMathAbs(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -34,12 +34,12 @@ func mathAbs(args ...object.Object) object.Object {
 }
 
 // val = math.random()
-func mathRandom(args ...object.Object) object.Object {
+func builtinMathRandom(env *object.Environment, args ...object.Object) object.Object {
 	return &object.Float{Value: rand.Float64()}
 }
 
 // val = math.sqrt(int);
-func mathSqrt(args ...object.Object) object.Object {
+func builtinMathSqrt(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return newError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -63,16 +63,4 @@ func init() {
 	// Setup our random seed.
 	//
 	rand.Seed(time.Now().UnixNano())
-	RegisterBuiltin("math.abs",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (mathAbs(args...))
-		})
-	RegisterBuiltin("math.random",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (mathRandom(args...))
-		})
-	RegisterBuiltin("math.sqrt",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (mathSqrt(args...))
-		})
 }
