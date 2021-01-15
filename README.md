@@ -28,6 +28,10 @@ add repl from waig_code
 
 move static.go to package to exec "go run nonkey.go"  
 
+add runmon for runfile, runstring with env 
+
+update nonkey, run 1 line ,run file, repl with autostart.mon
+
 ## TODO
 
 replace ';' with '\n' or '\r'

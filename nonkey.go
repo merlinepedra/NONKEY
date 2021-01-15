@@ -56,7 +56,7 @@ func main() {
 	evaluator.RegisterBuiltin("args", builtinArgs)
 
 	env := object.NewEnvironment()
-	env = runmon.RunFile("data/stdlib.mon", env)
+	env = runmon.RunFile("autostart.mon", env)
 
 	if *eval != "" { // run 1 line
 		runmon.RunString(*eval, env)
