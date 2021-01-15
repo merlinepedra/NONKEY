@@ -8,6 +8,7 @@ import "github.com/kasworld/nonkey/tokentype"
 type Token struct {
 	Type    tokentype.TokenType
 	Literal string
+	Pos     int // token post of source code
 }
 
 // reversed keywords

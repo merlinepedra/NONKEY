@@ -86,77 +86,77 @@ func (l *Lexer) NextToken() token.Token {
 		if l.peekChar() == rune('&') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.AND, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.AND, string(ch)+string(l.ch))
 		}
 	case rune('|'):
 		if l.peekChar() == rune('|') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.OR, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.OR, string(ch)+string(l.ch))
 		}
 
 	case rune('='):
-		tok = newToken(tokentype.ASSIGN, l.ch)
+		tok = l.newToken(tokentype.ASSIGN, string(l.ch))
 		if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.EQ, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.EQ, string(ch)+string(l.ch))
 		} else {
-			tok = newToken(tokentype.ASSIGN, l.ch)
+			tok = l.newToken(tokentype.ASSIGN, string(l.ch))
 		}
 	case rune(';'):
-		tok = newToken(tokentype.SEMICOLON, l.ch)
+		tok = l.newToken(tokentype.SEMICOLON, string(l.ch))
 	case rune('?'):
-		tok = newToken(tokentype.QUESTION, l.ch)
+		tok = l.newToken(tokentype.QUESTION, string(l.ch))
 	case rune('('):
-		tok = newToken(tokentype.LPAREN, l.ch)
+		tok = l.newToken(tokentype.LPAREN, string(l.ch))
 	case rune(')'):
-		tok = newToken(tokentype.RPAREN, l.ch)
+		tok = l.newToken(tokentype.RPAREN, string(l.ch))
 	case rune(','):
-		tok = newToken(tokentype.COMMA, l.ch)
+		tok = l.newToken(tokentype.COMMA, string(l.ch))
 	case rune('.'):
 		if l.peekChar() == rune('.') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.DOTDOT, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.DOTDOT, string(ch)+string(l.ch))
 		} else {
-			tok = newToken(tokentype.PERIOD, l.ch)
+			tok = l.newToken(tokentype.PERIOD, string(l.ch))
 		}
 	case rune('+'):
 		if l.peekChar() == rune('+') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.PLUS_PLUS, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.PLUS_PLUS, string(ch)+string(l.ch))
 		} else if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.PLUS_EQUALS, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.PLUS_EQUALS, string(ch)+string(l.ch))
 		} else {
-			tok = newToken(tokentype.PLUS, l.ch)
+			tok = l.newToken(tokentype.PLUS, string(l.ch))
 		}
 	case rune('%'):
-		tok = newToken(tokentype.MOD, l.ch)
+		tok = l.newToken(tokentype.MOD, string(l.ch))
 	case rune('{'):
-		tok = newToken(tokentype.LBRACE, l.ch)
+		tok = l.newToken(tokentype.LBRACE, string(l.ch))
 	case rune('}'):
-		tok = newToken(tokentype.RBRACE, l.ch)
+		tok = l.newToken(tokentype.RBRACE, string(l.ch))
 	case rune('-'):
 		if l.peekChar() == rune('-') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.MINUS_MINUS, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.MINUS_MINUS, string(ch)+string(l.ch))
 		} else if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.MINUS_EQUALS, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.MINUS_EQUALS, string(ch)+string(l.ch))
 		} else {
-			tok = newToken(tokentype.MINUS, l.ch)
+			tok = l.newToken(tokentype.MINUS, string(l.ch))
 		}
 	case rune('/'):
 		if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.SLASH_EQUALS, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.SLASH_EQUALS, string(ch)+string(l.ch))
 		} else {
 			// slash is mostly division, but could
 			// be the start of a regular expression
@@ -174,7 +174,7 @@ func (l *Lexer) NextToken() token.Token {
 				l.prevToken.Type == tokentype.INT ||
 				l.prevToken.Type == tokentype.FLOAT {
 
-				tok = newToken(tokentype.SLASH, l.ch)
+				tok = l.newToken(tokentype.SLASH, string(l.ch))
 			} else {
 				str, err := l.readRegexp()
 				if err == nil {
@@ -191,50 +191,50 @@ func (l *Lexer) NextToken() token.Token {
 		if l.peekChar() == rune('*') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.POW, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.POW, string(ch)+string(l.ch))
 		} else if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.ASTERISK_EQUALS, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.ASTERISK_EQUALS, string(ch)+string(l.ch))
 		} else {
-			tok = newToken(tokentype.ASTERISK, l.ch)
+			tok = l.newToken(tokentype.ASTERISK, string(l.ch))
 		}
 	case rune('<'):
 		if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.LT_EQUALS, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.LT_EQUALS, string(ch)+string(l.ch))
 		} else {
-			tok = newToken(tokentype.LT, l.ch)
+			tok = l.newToken(tokentype.LT, string(l.ch))
 		}
 	case rune('>'):
 		if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.GT_EQUALS, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.GT_EQUALS, string(ch)+string(l.ch))
 		} else {
-			tok = newToken(tokentype.GT, l.ch)
+			tok = l.newToken(tokentype.GT, string(l.ch))
 		}
 	case rune('~'):
 		if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.CONTAINS, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.CONTAINS, string(ch)+string(l.ch))
 		}
 
 	case rune('!'):
 		if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: tokentype.NOT_EQ, Literal: string(ch) + string(l.ch)}
+			tok = l.newToken(tokentype.NOT_EQ, string(ch)+string(l.ch))
 		} else {
 			if l.peekChar() == rune('~') {
 				ch := l.ch
 				l.readChar()
-				tok = token.Token{Type: tokentype.NOT_CONTAINS, Literal: string(ch) + string(l.ch)}
+				tok = l.newToken(tokentype.NOT_CONTAINS, string(ch)+string(l.ch))
 
 			} else {
-				tok = newToken(tokentype.BANG, l.ch)
+				tok = l.newToken(tokentype.BANG, string(l.ch))
 			}
 		}
 	case rune('"'):
@@ -244,11 +244,11 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Type = tokentype.BACKTICK
 		tok.Literal = l.readBacktick()
 	case rune('['):
-		tok = newToken(tokentype.LBRACKET, l.ch)
+		tok = l.newToken(tokentype.LBRACKET, string(l.ch))
 	case rune(']'):
-		tok = newToken(tokentype.RBRACKET, l.ch)
+		tok = l.newToken(tokentype.RBRACKET, string(l.ch))
 	case rune(':'):
-		tok = newToken(tokentype.COLON, l.ch)
+		tok = l.newToken(tokentype.COLON, string(l.ch))
 	case rune(0):
 		tok.Literal = ""
 		tok.Type = tokentype.EOF
@@ -272,8 +272,8 @@ func (l *Lexer) NextToken() token.Token {
 }
 
 // return new token
-func newToken(tokenType tokentype.TokenType, ch rune) token.Token {
-	return token.Token{Type: tokenType, Literal: string(ch)}
+func (l *Lexer) newToken(tokenType tokentype.TokenType, s string) token.Token {
+	return token.Token{Type: tokenType, Literal: s, Pos: l.position}
 }
 
 // readIdentifier is designed to read an identifier (name of variable,
@@ -484,9 +484,9 @@ func (l *Lexer) readDecimal() token.Token {
 		//
 		l.readChar()
 		fraction := l.readNumber()
-		return token.Token{Type: tokentype.FLOAT, Literal: integer + "." + fraction}
+		return l.newToken(tokentype.FLOAT, integer+"."+fraction)
 	}
-	return token.Token{Type: tokentype.INT, Literal: integer}
+	return l.newToken(tokentype.INT, integer)
 }
 
 // read string
