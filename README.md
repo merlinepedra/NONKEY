@@ -5,13 +5,29 @@ from https://github.com/skx/monkey/
 
 from https://interpreterbook.com/
 
-## TODO
+## changed 
 
-support unicode(utf-8) (may already supported?)
+changed to typed enum by genenum (https://github.com/kasworld/genenum)
+
+    tokentype
+    objecttype
+    precedence
+
+change builtin function init 
+
+    evaluator/builtinfunctions.go
+
+change parse function init 
+
+    parser/parser.go 
+    prefixParseFns
+    infixParseFns
+    postfixParseFns
+
+add repl from waig_code
+
+## TODO
 
 replace ';' with '\n' or '\r'
 
-more typed const using genenum
-
-replace "switch case" with map[] to faster interpreting
 
