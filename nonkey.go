@@ -15,10 +15,8 @@ import (
 	"os"
 
 	"github.com/kasworld/nonkey/evaluator"
-	"github.com/kasworld/nonkey/lexer"
 	"github.com/kasworld/nonkey/object"
-	"github.com/kasworld/nonkey/parser"
-	"github.com/kasworld/nonkey/static"
+	"github.com/kasworld/nonkey/runmon"
 )
 
 // This version-string will be updated via travis for generated binaries.
@@ -43,109 +41,37 @@ func builtinArgs(env *object.Environment, args ...object.Object) object.Object {
 	return &object.Array{Elements: result}
 }
 
-//
-// Execute the supplied string as a program.
-//
-func Execute(input string) int {
-
-	env := object.NewEnvironment()
-	l := lexer.New(input)
-	p := parser.New(l)
-
-	program := p.ParseProgram()
-	if len(p.Errors()) != 0 {
-		for _, msg := range p.Errors() {
-			fmt.Printf("\t%s\n", msg)
-		}
-		os.Exit(1)
-	}
-
-	// Register a function called version()
-	// that the script can call.
-	evaluator.RegisterBuiltin("version", builtinVersion)
-
-	// Access to the command-line arguments
-	evaluator.RegisterBuiltin("args", builtinArgs)
-
-	//
-	// Our standard-library is mostly written in C,
-	// and can be found implemented in evaluator/stdlib*.go
-	//
-	// However there is also data/stdlib.mon, and here we
-	// load that
-	//
-	tmpl, err := static.GetResource("data/stdlib.mon")
-	if err != nil {
-		fmt.Printf("Failed to load our standard-library: %s",
-			err.Error())
-		os.Exit(33)
-	}
-
-	//
-	//  Parse and evaluate our standard-library.
-	//
-	initL := lexer.New(string(tmpl))
-	initP := parser.New(initL)
-	initProg := initP.ParseProgram()
-	evaluator.Eval(initProg, env)
-
-	//
-	//  Now evaluate the code the user wanted to load.
-	//
-	//  Note that here our environment will still contain
-	// the code we just loaded from our data-resource
-	//
-	//  (i.e. Our monkey-based standard library.)
-	//
-	evaluator.Eval(program, env)
-	return 0
-}
-
 func main() {
-
-	//
-	// Setup some flags.
-	//
 	eval := flag.String("eval", "", "Code to execute.")
 	vers := flag.Bool("version", false, "Show our version and exit.")
-
-	//
-	// Parse the flags
-	//
 	flag.Parse()
 
-	//
-	// Showing the version?
-	//
+	// show version
 	if *vers {
 		fmt.Printf("monkey %s\n", version)
 		os.Exit(1)
 	}
 
-	//
-	// Executing code?
-	//
+	evaluator.RegisterBuiltin("version", builtinVersion)
+	evaluator.RegisterBuiltin("args", builtinArgs)
+
+	env := object.NewEnvironment()
+	env = runmon.RunFile("data/stdlib.mon", env)
+
 	if *eval != "" {
-		Execute(*eval)
+		runmon.RunString(*eval, env)
 		os.Exit(1)
-	}
-
-	//
-	// Otherwise we're either reading from STDIN, or the
-	// named file containing source-code.
-	//
-	var input []byte
-	var err error
-
-	if len(flag.Args()) > 0 {
-		input, err = ioutil.ReadFile(os.Args[1])
 	} else {
-		input, err = ioutil.ReadAll(os.Stdin)
+		if len(flag.Args()) > 0 {
+			runmon.RunFile(os.Args[1], env)
+		} else {
+			input, err := ioutil.ReadAll(os.Stdin)
+			if err == nil {
+				runmon.RunString(string(input), env)
+			} else {
+				fmt.Printf("Error reading: %v\n", err)
+			}
+		}
 	}
 
-	if err != nil {
-		fmt.Printf("Error reading: %s\n", err.Error())
-	}
-
-	Execute(string(input))
 }
