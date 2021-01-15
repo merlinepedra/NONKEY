@@ -27,14 +27,14 @@ var version = "master/unreleased"
 //
 // Implemention of "version()" function.
 //
-func versionFun(args ...object.Object) object.Object {
+func builtinVersion(env *object.Environment, args ...object.Object) object.Object {
 	return &object.String{Value: version}
 }
 
 //
 // Implemention of "args()" function.
 //
-func argsFun(args ...object.Object) object.Object {
+func builtinArgs(env *object.Environment, args ...object.Object) object.Object {
 	l := len(os.Args[1:])
 	result := make([]object.Object, l)
 	for i, txt := range os.Args[1:] {
@@ -62,16 +62,10 @@ func Execute(input string) int {
 
 	// Register a function called version()
 	// that the script can call.
-	evaluator.RegisterBuiltin("version",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (versionFun(args...))
-		})
+	evaluator.RegisterBuiltin("version", builtinVersion)
 
 	// Access to the command-line arguments
-	evaluator.RegisterBuiltin("args",
-		func(env *object.Environment, args ...object.Object) object.Object {
-			return (argsFun(args...))
-		})
+	evaluator.RegisterBuiltin("args", builtinArgs)
 
 	//
 	// Our standard-library is mostly written in C,
