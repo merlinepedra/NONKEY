@@ -7,7 +7,8 @@ import "fmt"
 type Precedence uint8
 
 const (
-	LOWEST       Precedence = iota //
+	Invalid      Precedence = iota // Not used
+	LOWEST                         //
 	COND                           // OR or AND
 	ASSIGN                         // =
 	TERNARY                        // ? :
@@ -29,6 +30,7 @@ const (
 )
 
 var _Precedence2string = [Precedence_Count][2]string{
+	Invalid:      {"Invalid", "Not used"},
 	LOWEST:       {"LOWEST", ""},
 	COND:         {"COND", "OR or AND"},
 	ASSIGN:       {"ASSIGN", "="},
@@ -62,6 +64,7 @@ func (e Precedence) CommentString() string {
 }
 
 var _string2Precedence = map[string]Precedence{
+	"Invalid":      Invalid,
 	"LOWEST":       LOWEST,
 	"COND":         COND,
 	"ASSIGN":       ASSIGN,
