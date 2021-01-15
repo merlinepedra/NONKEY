@@ -1223,6 +1223,8 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 				evaluated := Eval(fn.(*object.Function).Body, extendEnv)
 				obj = upwrapReturnValue(evaluated)
 				return obj
+			} else {
+				//fmt.Printf("fail to exec %v %v\n", name, env)
 			}
 		}
 

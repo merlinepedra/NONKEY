@@ -1,10 +1,38 @@
 package object
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"strings"
 )
+
+func (env *Environment) String() string {
+	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "Environment[\n")
+	fmt.Fprintf(&buf, "store[\n")
+	for n, v := range env.store {
+		fmt.Fprintf(&buf, "\t%v : %v\n", n, v.Inspect())
+	}
+	fmt.Fprintf(&buf, "]\n")
+
+	fmt.Fprintf(&buf, "readonly[\n")
+	for n, v := range env.store {
+		fmt.Fprintf(&buf, "\t%v : %v\n", n, v.Inspect())
+	}
+	fmt.Fprintf(&buf, "]\n")
+
+	fmt.Fprintf(&buf, "permit[\n")
+	fmt.Fprintf(&buf, "\t%v\n", env.permit)
+	fmt.Fprintf(&buf, "]\n")
+
+	fmt.Fprintf(&buf, "outer[\n")
+	fmt.Fprintf(&buf, "\t%v\n", env.outer)
+	fmt.Fprintf(&buf, "]\n")
+
+	fmt.Fprintf(&buf, "]\n")
+	return buf.String()
+}
 
 // Environment stores our functions, variables, constants, etc.
 type Environment struct {
