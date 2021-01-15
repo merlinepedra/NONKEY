@@ -11,11 +11,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/kasworld/nonkey/evaluator"
 	"github.com/kasworld/nonkey/object"
+	"github.com/kasworld/nonkey/repl"
 	"github.com/kasworld/nonkey/runmon"
 )
 
@@ -58,20 +58,14 @@ func main() {
 	env := object.NewEnvironment()
 	env = runmon.RunFile("data/stdlib.mon", env)
 
-	if *eval != "" {
+	if *eval != "" { // run 1 line
 		runmon.RunString(*eval, env)
 		os.Exit(1)
 	} else {
-		if len(flag.Args()) > 0 {
+		if len(flag.Args()) > 0 { // run file
 			runmon.RunFile(os.Args[1], env)
-		} else {
-			input, err := ioutil.ReadAll(os.Stdin)
-			if err == nil {
-				runmon.RunString(string(input), env)
-			} else {
-				fmt.Printf("Error reading: %v\n", err)
-			}
+		} else { // repl line by line
+			repl.Start(os.Stdin, os.Stdout, env)
 		}
 	}
-
 }
