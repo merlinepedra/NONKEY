@@ -316,7 +316,8 @@ func (l *Lexer) readIdentifier() string {
 	//
 	// Types which will have valid methods.
 	//
-	types := []string{"string.",
+	types := []string{
+		"string.",
 		"array.",
 		"integer.",
 		"float.",
