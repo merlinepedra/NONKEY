@@ -16,10 +16,7 @@ import (
 	"github.com/kasworld/nonkey/objecttype"
 )
 
-// pre-defined object including Null, True and False
-var (
-	PRAGMAS = make(map[string]int)
-)
+var PRAGMAS = make(map[string]int)
 
 // Eval is our core function for evaluating nodes.
 func Eval(node ast.Node, env *object.Environment) object.Object {
