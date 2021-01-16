@@ -203,7 +203,7 @@ func TestIfElseExpression(t *testing.T) {
 }
 
 func testNullObject(t *testing.T, obj object.Object) bool {
-	if obj != NULL {
+	if obj != object.NULL {
 		t.Errorf("object is not NULL. got=%T(%+v)", obj, obj)
 		return false
 	}
@@ -360,7 +360,7 @@ func TestBuiltinFunction(t *testing.T) {
 		case int:
 			testDecimalObject(t, evaluated, int64(expected))
 		case string:
-			if evaluated == NULL {
+			if evaluated == object.NULL {
 				t.Errorf("Got NULL output on input of '%s'\n", tt.input)
 			} else {
 				errObj, ok := evaluated.(*object.Error)
@@ -509,8 +509,8 @@ func TestHashLiterals(t *testing.T) {
 		(&object.String{Value: "two"}).HashKey():   2,
 		(&object.String{Value: "three"}).HashKey(): 3,
 		(&object.Integer{Value: 4}).HashKey():      4,
-		TRUE.HashKey():                             5,
-		FALSE.HashKey():                            6,
+		object.TRUE.HashKey():                      5,
+		object.FALSE.HashKey():                     6,
 	}
 	if len(result.Pairs) != len(expected) {
 		t.Fatalf("Hash has wrong num of pairs. got=%d", len(result.Pairs))
@@ -592,23 +592,23 @@ func TestTypeBuiltin(t *testing.T) {
 	}{
 		{
 			"type( \"Steve\" );",
-			"string",
+			"STRING",
 		},
 		{
 			"type( 1 );",
-			"integer",
+			"INTEGER",
 		},
 		{
 			"type( 3.14159 );",
-			"float",
+			"FLOAT",
 		},
 		{
 			"type( [1,2,3] );",
-			"array",
+			"ARRAY",
 		},
 		{
 			"type( { \"name\":\"monkey\", true:1, 7:\"sevent\"} );",
-			"hash",
+			"HASH",
 		},
 	}
 	for _, tt := range tests {
