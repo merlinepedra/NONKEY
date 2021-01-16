@@ -1,20 +1,18 @@
-// Package evaluator contains the core of our interpreter, which walks
-// the AST produced by the parser and evaluates the user-submitted program.
 package evaluator
 
 import "github.com/kasworld/nonkey/object"
 
 // The built-in functions / standard-library methods are stored here.
-var builtinFunctions = map[string]*object.Builtin{}
+var BuiltinFunctions = map[string]*object.Builtin{}
 
 // RegisterBuiltin registers a built-in function.  This is used to register
 // our "standard library" functions.
 func RegisterBuiltin(name string, fun object.BuiltinFunction) {
-	builtinFunctions[name] = &object.Builtin{Fn: fun}
+	BuiltinFunctions[name] = &object.Builtin{Fn: fun}
 }
 
 func init() {
-	builtinFunctions = map[string]*object.Builtin{
+	BuiltinFunctions = map[string]*object.Builtin{
 		"chmod":          {Fn: builtinChmod},
 		"delete":         {Fn: builtinDelete},
 		"eval":           {Fn: builtinEval},

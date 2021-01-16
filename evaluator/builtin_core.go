@@ -18,7 +18,7 @@ import (
 // to emphasise octal.
 func builtinChmod(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 2 {
-		return newError("wrong number of arguments. got=%d, want=2",
+		return object.NewError("wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
 
@@ -29,7 +29,7 @@ func builtinChmod(env *object.Environment, args ...object.Object) object.Object 
 	case *object.String:
 		mode = args[1].(*object.String).Value
 	default:
-		return newError("Second argument must be string, got %v", args[1])
+		return object.NewError("Second argument must be string, got %v", args[1])
 	}
 
 	// convert from octal -> decimal
@@ -49,11 +49,11 @@ func builtinChmod(env *object.Environment, args ...object.Object) object.Object 
 // Delete a given hash-key
 func builtinDelete(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 2 {
-		return newError("wrong number of arguments. got=%d, want=2",
+		return object.NewError("wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
 	if args[0].Type() != objecttype.HASH {
-		return newError("argument to `delete` must be HASH, got=%s",
+		return object.NewError("argument to `delete` must be HASH, got=%s",
 			args[0].Type())
 	}
 
@@ -63,7 +63,7 @@ func builtinDelete(env *object.Environment, args ...object.Object) object.Object
 	// The key we're going to delete
 	key, ok := args[1].(object.Hashable)
 	if !ok {
-		return newError("key `delete` into HASH must be Hashable, got=%s",
+		return object.NewError("key `delete` into HASH must be Hashable, got=%s",
 			args[1].Type())
 	}
 
@@ -82,7 +82,7 @@ func builtinDelete(env *object.Environment, args ...object.Object) object.Object
 // evaluate a string containing monkey-code
 func builtinEval(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	switch args[0].(type) {
@@ -110,7 +110,7 @@ func builtinEval(env *object.Environment, args ...object.Object) object.Object {
 		}
 		os.Exit(1)
 	}
-	return newError("argument to `eval` not supported, got=%s",
+	return object.NewError("argument to `eval` not supported, got=%s",
 		args[0].Type())
 }
 
@@ -136,7 +136,7 @@ func builtinExit(env *object.Environment, args ...object.Object) object.Object {
 // convert a double/string to an int
 func builtinInt(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	switch args[0].(type) {
@@ -146,7 +146,7 @@ func builtinInt(env *object.Environment, args ...object.Object) object.Object {
 		if err == nil {
 			return &object.Integer{Value: int64(i)}
 		}
-		return newError("Converting string '%s' to int failed %s", input, err.Error())
+		return object.NewError("Converting string '%s' to int failed %s", input, err.Error())
 
 	case *object.Boolean:
 		input := args[0].(*object.Boolean).Value
@@ -162,7 +162,7 @@ func builtinInt(env *object.Environment, args ...object.Object) object.Object {
 		input := args[0].(*object.Float).Value
 		return &object.Integer{Value: int64(input)}
 	default:
-		return newError("argument to `int` not supported, got=%s",
+		return object.NewError("argument to `int` not supported, got=%s",
 			args[0].Type())
 	}
 }
@@ -170,11 +170,11 @@ func builtinInt(env *object.Environment, args ...object.Object) object.Object {
 // Get hash keys
 func builtinKeys(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	if args[0].Type() != objecttype.HASH {
-		return newError("argument to `keys` must be HASH, got=%s",
+		return object.NewError("argument to `keys` must be HASH, got=%s",
 			args[0].Type())
 	}
 
@@ -199,7 +199,7 @@ func builtinKeys(env *object.Environment, args ...object.Object) object.Object {
 // length of item
 func builtinLen(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	switch arg := args[0].(type) {
@@ -210,7 +210,7 @@ func builtinLen(env *object.Environment, args ...object.Object) object.Object {
 	case *object.Array:
 		return &object.Integer{Value: int64(len(arg.Elements))}
 	default:
-		return newError("argument to `len` not supported, got=%s",
+		return object.NewError("argument to `len` not supported, got=%s",
 			args[0].Type())
 	}
 }
@@ -218,16 +218,16 @@ func builtinLen(env *object.Environment, args ...object.Object) object.Object {
 // regular expression match
 func builtinMatch(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 2 {
-		return newError("wrong number of arguments. got=%d, want=2",
+		return object.NewError("wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
 
 	if args[0].Type() != objecttype.STRING {
-		return newError("argument to `match` must be STRING, got %s",
+		return object.NewError("argument to `match` must be STRING, got %s",
 			args[0].Type())
 	}
 	if args[1].Type() != objecttype.STRING {
-		return newError("argument to `match` must be STRING, got %s",
+		return object.NewError("argument to `match` must be STRING, got %s",
 			args[1].Type())
 	}
 
@@ -269,12 +269,12 @@ func builtinMatch(env *object.Environment, args ...object.Object) object.Object 
 // mkdir
 func builtinMkdir(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 
 	if args[0].Type() != objecttype.STRING {
-		return newError("argument to `mkdir` must be STRING, got %s",
+		return object.NewError("argument to `mkdir` must be STRING, got %s",
 			args[0].Type())
 	}
 
@@ -299,7 +299,7 @@ func builtinPragma(env *object.Environment, args ...object.Object) object.Object
 
 	// If more than one argument that's an error
 	if len(args) > 1 {
-		return newError("wrong number of arguments. got=%d, want=0|1",
+		return object.NewError("wrong number of arguments. got=%d, want=0|1",
 			len(args))
 	}
 
@@ -317,7 +317,7 @@ func builtinPragma(env *object.Environment, args ...object.Object) object.Object
 				PRAGMAS[input] = 1
 			}
 		default:
-			return newError("argument to `pragma` not supported, got=%s",
+			return object.NewError("argument to `pragma` not supported, got=%s",
 				args[0].Type())
 		}
 	}
@@ -345,7 +345,7 @@ func builtinOpen(env *object.Environment, args ...object.Object) object.Object {
 
 	// We need at least one arg
 	if len(args) < 1 {
-		return newError("wrong number of arguments. got=%d, want=1+",
+		return object.NewError("wrong number of arguments. got=%d, want=1+",
 			len(args))
 	}
 
@@ -354,7 +354,7 @@ func builtinOpen(env *object.Environment, args ...object.Object) object.Object {
 	case *object.String:
 		path = args[0].(*object.String).Value
 	default:
-		return newError("argument to `file` not supported, got=%s",
+		return object.NewError("argument to `file` not supported, got=%s",
 			args[0].Type())
 
 	}
@@ -365,7 +365,7 @@ func builtinOpen(env *object.Environment, args ...object.Object) object.Object {
 		case *object.String:
 			mode = args[1].(*object.String).Value
 		default:
-			return newError("argument to `file` not supported, got=%s",
+			return object.NewError("argument to `file` not supported, got=%s",
 				args[0].Type())
 
 		}
@@ -380,11 +380,11 @@ func builtinOpen(env *object.Environment, args ...object.Object) object.Object {
 // push something onto an array
 func builtinPush(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 2 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	if args[0].Type() != objecttype.ARRAY {
-		return newError("argument to `push` must be ARRAY, got=%s",
+		return object.NewError("argument to `push` must be ARRAY, got=%s",
 			args[0].Type())
 	}
 	arr := args[0].(*object.Array)
@@ -422,16 +422,16 @@ func builtinPrintf(env *object.Environment, args ...object.Object) object.Object
 // set a hash-field
 func builtinSet(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 3 {
-		return newError("wrong number of arguments. got=%d, want=2",
+		return object.NewError("wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
 	if args[0].Type() != objecttype.HASH {
-		return newError("argument to `set` must be HASH, got=%s",
+		return object.NewError("argument to `set` must be HASH, got=%s",
 			args[0].Type())
 	}
 	key, ok := args[1].(object.Hashable)
 	if !ok {
-		return newError("key `set` into HASH must be Hashable, got=%s",
+		return object.NewError("key `set` into HASH must be Hashable, got=%s",
 			args[1].Type())
 	}
 	newHash := make(map[object.HashKey]object.HashPair)
@@ -482,7 +482,7 @@ func builtinSprintf(env *object.Environment, args ...object.Object) object.Objec
 func builtinStat(env *object.Environment, args ...object.Object) object.Object {
 
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	path := args[0].Inspect()
@@ -543,7 +543,7 @@ func builtinStat(env *object.Environment, args ...object.Object) object.Object {
 
 func builtinString(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 
@@ -554,7 +554,7 @@ func builtinString(env *object.Environment, args ...object.Object) object.Object
 // type of an item
 func builtinType(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	return &object.String{Value: args[0].Type().String()}
@@ -563,7 +563,7 @@ func builtinType(env *object.Environment, args ...object.Object) object.Object {
 // Remove a file/directory.
 func builtinUnlink(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 

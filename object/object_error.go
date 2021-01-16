@@ -1,6 +1,21 @@
 package object
 
-import "github.com/kasworld/nonkey/objecttype"
+import (
+	"fmt"
+
+	"github.com/kasworld/nonkey/objecttype"
+)
+
+func NewError(format string, a ...interface{}) *Error {
+	return &Error{Message: fmt.Sprintf(format, a...)}
+}
+
+func IsError(obj Object) bool {
+	if obj != nil {
+		return obj.Type() == objecttype.ERROR
+	}
+	return false
+}
 
 // Error wraps string and implements Object interface.
 type Error struct {

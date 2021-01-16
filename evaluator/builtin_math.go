@@ -10,7 +10,7 @@ import (
 
 func builtinMathAbs(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	switch arg := args[0].(type) {
@@ -27,7 +27,7 @@ func builtinMathAbs(env *object.Environment, args ...object.Object) object.Objec
 		}
 		return &object.Float{Value: v}
 	default:
-		return newError("argument to `math.abs` not supported, got=%s",
+		return object.NewError("argument to `math.abs` not supported, got=%s",
 			args[0].Type())
 	}
 
@@ -41,7 +41,7 @@ func builtinMathRandom(env *object.Environment, args ...object.Object) object.Ob
 // val = math.sqrt(int);
 func builtinMathSqrt(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	switch arg := args[0].(type) {
@@ -52,7 +52,7 @@ func builtinMathSqrt(env *object.Environment, args ...object.Object) object.Obje
 		v := arg.Value
 		return &object.Float{Value: math.Sqrt(v)}
 	default:
-		return newError("argument to `math.sqrt` not supported, got=%s",
+		return object.NewError("argument to `math.sqrt` not supported, got=%s",
 			args[0].Type())
 	}
 

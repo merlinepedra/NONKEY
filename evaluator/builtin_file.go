@@ -9,7 +9,7 @@ import (
 // array = directory.glob( "/etc/*.conf" )
 func builtinDirectoryGlob(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	pattern := args[0].(*object.String).Value

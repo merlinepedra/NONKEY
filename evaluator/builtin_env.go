@@ -34,11 +34,11 @@ func builtinOsEnvironment(env *object.Environment, args ...object.Object) object
 // os.getenv( "PATH" ) -> string
 func builtinOsGetEnv(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	if args[0].Type() != objecttype.STRING {
-		return newError("argument must be a string, got=%s",
+		return object.NewError("argument must be a string, got=%s",
 			args[0].Type())
 	}
 	input := args[0].(*object.String).Value
@@ -49,15 +49,15 @@ func builtinOsGetEnv(env *object.Environment, args ...object.Object) object.Obje
 // os.setenv( "PATH", "/home/skx/bin:/usr/bin" );
 func builtinOsSetEnv(env *object.Environment, args ...object.Object) object.Object {
 	if len(args) != 2 {
-		return newError("wrong number of arguments. got=%d, want=1",
+		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	if args[0].Type() != objecttype.STRING {
-		return newError("argument must be a string, got=%s",
+		return object.NewError("argument must be a string, got=%s",
 			args[0].Type())
 	}
 	if args[1].Type() != objecttype.STRING {
-		return newError("argument must be a string, got=%s",
+		return object.NewError("argument must be a string, got=%s",
 			args[1].Type())
 	}
 	name := args[0].(*object.String).Value
