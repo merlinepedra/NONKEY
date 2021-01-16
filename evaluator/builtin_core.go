@@ -130,7 +130,7 @@ func builtinExit(env *object.Environment, args ...object.Object) object.Object {
 	}
 
 	os.Exit(code)
-	return NULL
+	return object.NULL
 }
 
 // convert a double/string to an int
@@ -263,7 +263,7 @@ func builtinMatch(env *object.Environment, args ...object.Object) object.Object 
 	}
 
 	// No match
-	return NULL
+	return object.NULL
 }
 
 // mkdir
@@ -400,7 +400,7 @@ func builtinPuts(env *object.Environment, args ...object.Object) object.Object {
 	for _, arg := range args {
 		fmt.Print(arg.Inspect())
 	}
-	return NULL
+	return object.NULL
 }
 
 // printfFun is the implementation of our `printf` function.
@@ -416,7 +416,7 @@ func builtinPrintf(env *object.Environment, args ...object.Object) object.Object
 
 	}
 
-	return NULL
+	return object.NULL
 }
 
 // set a hash-field

@@ -63,5 +63,5 @@ func builtinOsSetEnv(env *object.Environment, args ...object.Object) object.Obje
 	name := args[0].(*object.String).Value
 	value := args[1].(*object.String).Value
 	os.Setenv(name, value)
-	return NULL
+	return object.NULL
 }

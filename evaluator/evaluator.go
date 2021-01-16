@@ -18,9 +18,6 @@ import (
 
 // pre-defined object including Null, True and False
 var (
-	NULL    = &object.Null{}
-	TRUE    = &object.Boolean{Value: true}
-	FALSE   = &object.Boolean{Value: false}
 	PRAGMAS = make(map[string]int)
 )
 
@@ -109,7 +106,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		body := node.Body
 		defaults := node.Defaults
 		env.Set(node.TokenLiteral(), &object.Function{Parameters: params, Env: env, Body: body, Defaults: defaults})
-		return NULL
+		return object.NULL
 	case *ast.ObjectCallExpression:
 		res := evalObjectCallExpression(node, env)
 		if object.IsError(res) {
@@ -188,9 +185,9 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 // for performance, using single instance of boolean
 func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	if input {
-		return TRUE
+		return object.TRUE
 	}
-	return FALSE
+	return object.FALSE
 }
 
 // eval prefix expression
@@ -243,14 +240,14 @@ func evalPostfixExpression(env *object.Environment, operator string, node *ast.P
 
 func evalBangOperatorExpression(right object.Object) object.Object {
 	switch right {
-	case TRUE:
-		return FALSE
-	case FALSE:
-		return TRUE
-	case NULL:
-		return TRUE
+	case object.TRUE:
+		return object.FALSE
+	case object.FALSE:
+		return object.TRUE
+	case object.NULL:
+		return object.TRUE
 	default:
-		return FALSE
+		return object.FALSE
 	}
 }
 
@@ -334,10 +331,10 @@ func matches(left, right object.Object, env *object.Environment) object.Object {
 
 	// Test if it matched
 	if len(res) > 0 {
-		return TRUE
+		return object.TRUE
 	}
 
-	return FALSE
+	return object.FALSE
 }
 
 func notMatches(left, right object.Object) object.Object {
@@ -362,10 +359,10 @@ func notMatches(left, right object.Object) object.Object {
 
 	// Test if it matched
 	if r.MatchString(str) {
-		return FALSE
+		return object.FALSE
 	}
 
-	return TRUE
+	return object.TRUE
 }
 
 // boolean operations
@@ -610,7 +607,7 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 	} else if ie.Alternative != nil {
 		return Eval(ie.Alternative, nEnv)
 	} else {
-		return NULL
+		return object.NULL
 	}
 }
 
@@ -764,7 +761,7 @@ func evalSwitchStatement(se *ast.SwitchExpression, env *object.Environment) obje
 			if out.Type() == objecttype.REGEXP {
 
 				m := matches(obj, out, env)
-				if m == TRUE {
+				if m == object.TRUE {
 
 					// Evaluate the block and return the value
 					out := evalBlockStatement(opt.Block, env)
@@ -867,11 +864,11 @@ func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) o
 
 func isTruthy(obj object.Object) bool {
 	switch obj {
-	case NULL:
+	case object.NULL:
 		return false
-	case TRUE:
+	case object.TRUE:
 		return true
-	case FALSE:
+	case object.FALSE:
 		return false
 	default:
 		return true
@@ -978,7 +975,7 @@ func backTickOperation(command string) object.Object {
 	// to regard that as a non-failure.
 	if err != nil && err != err.(*exec.ExitError) {
 		fmt.Printf("Failed to run '%s' -> %s\n", command, err.Error())
-		return NULL
+		return object.NULL
 	}
 
 	//
@@ -1021,7 +1018,7 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 	idx := index.(*object.Integer).Value
 	max := int64(len(arrayObject.Elements) - 1)
 	if idx < 0 || idx > max {
-		return NULL
+		return object.NULL
 	}
 	return arrayObject.Elements[idx]
 }
@@ -1033,7 +1030,7 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 	}
 	pair, ok := hashObject.Pairs[key.HashKey()]
 	if !ok {
-		return NULL
+		return object.NULL
 	}
 	return pair.Value
 }
@@ -1043,7 +1040,7 @@ func evalStringIndexExpression(input, index object.Object) object.Object {
 	idx := index.(*object.Integer).Value
 	max := int64(len(str))
 	if idx < 0 || idx > max {
-		return NULL
+		return object.NULL
 	}
 
 	// Get the characters as an array of runes

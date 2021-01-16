@@ -16,7 +16,7 @@ func builtinDirectoryGlob(env *object.Environment, args ...object.Object) object
 
 	entries, err := filepath.Glob(pattern)
 	if err != nil {
-		return NULL
+		return object.NULL
 	}
 
 	// Create an array to hold the results and populate it
