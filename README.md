@@ -15,48 +15,56 @@ changed to typed enum by genenum (https://github.com/kasworld/genenum)
 
 change builtin function init 
 
-    evaluator/builtinfunctions.go
+    interpreter/evaluator/builtin_init.go
 
 change parse function init 
 
-    parser/parser.go 
+    interpreter/parser/parser.go 
+
     prefixParseFns
     infixParseFns
     postfixParseFns
 
 add repl from waig_code
 
-move static.go to package to exec "go run nonkey.go"  
-
 add runmon for runfile, runstring with env 
 
-update nonkey, run 1 line ,run file, repl with autostart.mon
+update nonkey, run 1 line ,run file, repl
+
+add autoload arg
+
+add global data package builtinfunctions, pragmas
+
+change some map to slice for performance
+
+    interpreter/parser/parser.go
+
+    prefixParseFns
+    infixParseFns
+    postfixParseFns
+
+    enum/tokentype/attrib.go
+
+    Token2Precedences
 
 ## TODO
 
 replace ';' with '\n' or '\r'
 
+del method call (tokentype PERIOD .) implement incomplete 
+
+    If the implementation is hard to explain, it's a bad idea.
+
+del redundant function define (tokentype DEFINE_FUNCTION function) 
+
+    There should be one--and preferably only one--obvious way to do it.
+
+del redundant ternary operator( tokentype QUESTION  "? :"  )
+
+del indentifier composite char ( ? . %  ) 
+
+identifier start char must letter and _ , not digit, following letter,_ and digit
 
 ## bug to fix 
 
-load data/stdlib.mon make error 
-
-    //
-    // Is the given array empty?
-    //
-    function array.empty?() {
-    if ( len(self) == 0 ) {
-        return true;
-    }
-    return false;
-    }
-
-    assert( "[].empty?()" );
-    assert( "![1,2].empty?()" );
-    assert( "![\"steve\",3].empty?()" );
-
-    produce 
-    
-    Error calling object-method ERROR: Failed to invoke method: empty?
-    Error calling `eval` : ERROR: Failed to invoke method: empty?
-    Error calling `assert` : ERROR: Failed to invoke method: empty?
+method call act oddly
