@@ -5,9 +5,9 @@
 ################################################################################
 # generate enum
 Write-Output "generate enums"
-genenum -typename=TokenType -packagename=tokentype -basedir="." 
-genenum -typename=ObjectType -packagename=objecttype -basedir="." 
-genenum -typename=Precedence -packagename=precedence -basedir="." 
+genenum -typename=TokenType -packagename=tokentype -basedir=enum 
+genenum -typename=ObjectType -packagename=objecttype -basedir=enum 
+genenum -typename=Precedence -packagename=precedence -basedir=enum 
 
-goimports -w tokentype
+goimports -w enum
 

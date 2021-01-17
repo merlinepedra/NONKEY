@@ -13,10 +13,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kasworld/nonkey/evaluator"
-	"github.com/kasworld/nonkey/object"
-	"github.com/kasworld/nonkey/repl"
-	"github.com/kasworld/nonkey/runmon"
+	"github.com/kasworld/nonkey/interpreter/evaluator"
+	"github.com/kasworld/nonkey/interpreter/object"
+	"github.com/kasworld/nonkey/interpreter/repl"
+	"github.com/kasworld/nonkey/interpreter/runmon"
 )
 
 // This version-string will be updated via travis for generated binaries.
