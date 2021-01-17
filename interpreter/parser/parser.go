@@ -902,16 +902,10 @@ func (p *Parser) expectPeek(t tokentype.TokenType) bool {
 
 // peekPrecedence looks up the next token precedence.
 func (p *Parser) peekPrecedence() precedence.Precedence {
-	if prd, ok := tokentype.Token2Precedences[p.peekToken.Type]; ok {
-		return prd
-	}
-	return precedence.LOWEST
+	return tokentype.Token2Precedences[p.peekToken.Type]
 }
 
 // curPrecedence looks up the current token precedence.
 func (p *Parser) curPrecedence() precedence.Precedence {
-	if prd, ok := tokentype.Token2Precedences[p.curToken.Type]; ok {
-		return prd
-	}
-	return precedence.LOWEST
+	return tokentype.Token2Precedences[p.curToken.Type]
 }

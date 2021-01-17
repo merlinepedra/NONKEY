@@ -2,7 +2,7 @@ package tokentype
 
 import "github.com/kasworld/nonkey/enum/precedence"
 
-// reversed keywords
+// Keywords reversed keywords
 var Keywords = map[string]TokenType{
 	"case":     CASE,
 	"const":    CONST,
@@ -29,8 +29,8 @@ func LookupIdentifier(identifier string) TokenType {
 	return IDENT
 }
 
-// each token precedence
-var Token2Precedences = map[TokenType]precedence.Precedence{
+// Token2Precedences each token precedence
+var Token2Precedences = [TokenType_Count]precedence.Precedence{
 	QUESTION:     precedence.TERNARY,
 	ASSIGN:       precedence.ASSIGN,
 	DOTDOT:       precedence.DOTDOT,
