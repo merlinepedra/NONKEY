@@ -47,6 +47,10 @@ change some map to slice for performance
 
     Token2Precedences
 
+change "for" keyword to "while"
+
+del const statement
+
 ## TODO
 
 replace ';' with '\n' or '\r'
