@@ -44,6 +44,7 @@ func builtinArgs(env *object.Environment, args ...object.Object) object.Object {
 func main() {
 	eval := flag.String("eval", "", "Code to execute.")
 	vers := flag.Bool("version", false, "Show our version and exit.")
+	autoload := flag.String("autoload", "", "autoload filename")
 	flag.Parse()
 
 	// show version
@@ -56,7 +57,10 @@ func main() {
 	evaluator.RegisterBuiltin("args", builtinArgs)
 
 	env := object.NewEnvironment()
-	env = runmon.RunFile("autostart.mon", env)
+	if *autoload != "" {
+		fmt.Printf("autoload %v\n", *autoload)
+		env = runmon.RunFile(*autoload, env)
+	}
 
 	if *eval != "" { // run 1 line
 		runmon.RunString(*eval, env)

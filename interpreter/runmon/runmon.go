@@ -13,7 +13,7 @@ import (
 func RunFile(filename string, env *object.Environment) *object.Environment {
 	input, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Printf("fail to load %v %v", filename, err)
+		fmt.Printf("fail to load %v %v\n", filename, err)
 		return env
 	}
 	return RunString(string(input), env)
