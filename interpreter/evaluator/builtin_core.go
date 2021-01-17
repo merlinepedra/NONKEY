@@ -8,6 +8,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/kasworld/nonkey/config/pragmas"
 	"github.com/kasworld/nonkey/enum/objecttype"
 	"github.com/kasworld/nonkey/interpreter/lexer"
 	"github.com/kasworld/nonkey/interpreter/object"
@@ -312,9 +313,9 @@ func builtinPragma(env *object.Environment, args ...object.Object) object.Object
 
 			if strings.HasPrefix(input, "no-") {
 				real := strings.TrimPrefix(input, "no-")
-				delete(PRAGMAS, real)
+				delete(pragmas.PRAGMAS, real)
 			} else {
-				PRAGMAS[input] = 1
+				pragmas.PRAGMAS[input] = 1
 			}
 		default:
 			return object.NewError("argument to `pragma` not supported, got=%s",
@@ -323,13 +324,13 @@ func builtinPragma(env *object.Environment, args ...object.Object) object.Object
 	}
 
 	// Now return the pragmas that are in-use.
-	len := len(PRAGMAS)
+	len := len(pragmas.PRAGMAS)
 
 	// Create a new array for the results.
 	array := make([]object.Object, len)
 
 	i := 0
-	for key := range PRAGMAS {
+	for key := range pragmas.PRAGMAS {
 		array[i] = &object.String{Value: key}
 		i++
 

@@ -12,12 +12,11 @@ import (
 	"strings"
 
 	"github.com/kasworld/nonkey/config/builtinfunctions"
+	"github.com/kasworld/nonkey/config/pragmas"
 	"github.com/kasworld/nonkey/enum/objecttype"
 	"github.com/kasworld/nonkey/interpreter/ast"
 	"github.com/kasworld/nonkey/interpreter/object"
 )
-
-var PRAGMAS = make(map[string]int)
 
 // Eval is our core function for evaluating nodes.
 func Eval(node ast.Node, env *object.Environment) object.Object {
@@ -56,7 +55,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		res := evalInfixExpression(node.Operator, left, right, env)
 		if object.IsError(res) {
 			fmt.Printf("Error: %s\n", res.Inspect())
-			if PRAGMAS["strict"] == 1 {
+			if pragmas.PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
 		}
@@ -109,7 +108,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		res := evalObjectCallExpression(node, env)
 		if object.IsError(res) {
 			fmt.Fprintf(os.Stderr, "Error calling object-method %s\n", res.Inspect())
-			if PRAGMAS["strict"] == 1 {
+			if pragmas.PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
 		}
@@ -126,7 +125,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		res := applyFunction(env, function, args)
 		if object.IsError(res) {
 			fmt.Fprintf(os.Stderr, "Error calling `%s` : %s\n", node.Function, res.Inspect())
-			if PRAGMAS["strict"] == 1 {
+			if pragmas.PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
 			return res
@@ -713,7 +712,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 	case "=":
 		// If we're running with the strict-pragma it is
 		// a bug to set a variable which wasn't declared (via let).
-		if PRAGMAS["strict"] == 1 {
+		if pragmas.PRAGMAS["strict"] == 1 {
 			_, ok := env.Get(a.Name.String())
 			if !ok {
 				fmt.Printf("Setting unknown variable '%s' is a bug under strict-pragma!\n", a.Name.String())
@@ -895,7 +894,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 		return builtin
 	}
 	fmt.Fprintf(os.Stderr, "identifier not found: %s\n", node.Value)
-	if PRAGMAS["strict"] == 1 {
+	if pragmas.PRAGMAS["strict"] == 1 {
 		os.Exit(1)
 	}
 	return object.NewError("identifier not found: " + node.Value)
