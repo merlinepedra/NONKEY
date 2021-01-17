@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kasworld/nonkey/config/token"
 	"github.com/kasworld/nonkey/enum/precedence"
 	"github.com/kasworld/nonkey/enum/tokentype"
 	"github.com/kasworld/nonkey/interpreter/ast"
 	"github.com/kasworld/nonkey/interpreter/lexer"
+	"github.com/kasworld/nonkey/interpreter/token"
 )
 
 // prefix Parse function
@@ -22,37 +22,6 @@ type (
 	infixParseFn   func(ast.Expression) ast.Expression
 	postfixParseFn func() ast.Expression
 )
-
-// each token precedence
-var token2precedences = map[tokentype.TokenType]precedence.Precedence{
-	tokentype.QUESTION:     precedence.TERNARY,
-	tokentype.ASSIGN:       precedence.ASSIGN,
-	tokentype.DOTDOT:       precedence.DOTDOT,
-	tokentype.EQ:           precedence.EQUALS,
-	tokentype.NOT_EQ:       precedence.EQUALS,
-	tokentype.LT:           precedence.LESSGREATER,
-	tokentype.LT_EQUALS:    precedence.LESSGREATER,
-	tokentype.GT:           precedence.LESSGREATER,
-	tokentype.GT_EQUALS:    precedence.LESSGREATER,
-	tokentype.CONTAINS:     precedence.REGEXP_MATCH,
-	tokentype.NOT_CONTAINS: precedence.REGEXP_MATCH,
-
-	tokentype.PLUS:            precedence.SUM,
-	tokentype.PLUS_EQUALS:     precedence.SUM,
-	tokentype.MINUS:           precedence.SUM,
-	tokentype.MINUS_EQUALS:    precedence.SUM,
-	tokentype.SLASH:           precedence.PRODUCT,
-	tokentype.SLASH_EQUALS:    precedence.PRODUCT,
-	tokentype.ASTERISK:        precedence.PRODUCT,
-	tokentype.ASTERISK_EQUALS: precedence.PRODUCT,
-	tokentype.POW:             precedence.POWER,
-	tokentype.MOD:             precedence.MOD,
-	tokentype.AND:             precedence.COND,
-	tokentype.OR:              precedence.COND,
-	tokentype.LPAREN:          precedence.CALL,
-	tokentype.PERIOD:          precedence.CALL,
-	tokentype.LBRACKET:        precedence.INDEX,
-}
 
 // Parser object
 type Parser struct {
@@ -933,7 +902,7 @@ func (p *Parser) expectPeek(t tokentype.TokenType) bool {
 
 // peekPrecedence looks up the next token precedence.
 func (p *Parser) peekPrecedence() precedence.Precedence {
-	if p, ok := token2precedences[p.peekToken.Type]; ok {
+	if p, ok := tokentype.Token2Precedences[p.peekToken.Type]; ok {
 		return p
 	}
 	return precedence.LOWEST
@@ -941,7 +910,7 @@ func (p *Parser) peekPrecedence() precedence.Precedence {
 
 // curPrecedence looks up the current token precedence.
 func (p *Parser) curPrecedence() precedence.Precedence {
-	if p, ok := token2precedences[p.curToken.Type]; ok {
+	if p, ok := tokentype.Token2Precedences[p.curToken.Type]; ok {
 		return p
 	}
 	return precedence.LOWEST

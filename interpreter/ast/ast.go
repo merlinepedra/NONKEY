@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kasworld/nonkey/config/token"
+	"github.com/kasworld/nonkey/interpreter/token"
 )
 
 // Node reresents a node.

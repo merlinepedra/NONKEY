@@ -7,8 +7,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/kasworld/nonkey/config/token"
 	"github.com/kasworld/nonkey/enum/tokentype"
+	"github.com/kasworld/nonkey/interpreter/token"
 )
 
 // Lexer holds our object-state.
@@ -261,7 +261,7 @@ func (l *Lexer) NextToken() token.Token {
 
 		}
 		tok.Literal = l.readIdentifier()
-		tok.Type = token.LookupIdentifier(tok.Literal)
+		tok.Type = tokentype.LookupIdentifier(tok.Literal)
 		l.prevToken = tok
 
 		return tok
