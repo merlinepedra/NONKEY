@@ -43,15 +43,15 @@ type Parser struct {
 
 	// prefixParseFns holds a map of parsing methods for
 	// prefix-based syntax.
-	prefixParseFns map[tokentype.TokenType]prefixParseFn
+	prefixParseFns [tokentype.TokenType_Count]prefixParseFn
 
 	// infixParseFns holds a map of parsing methods for
 	// infix-based syntax.
-	infixParseFns map[tokentype.TokenType]infixParseFn
+	infixParseFns [tokentype.TokenType_Count]infixParseFn
 
 	// postfixParseFns holds a map of parsing methods for
 	// postfix-based syntax.
-	postfixParseFns map[tokentype.TokenType]postfixParseFn
+	postfixParseFns [tokentype.TokenType_Count]postfixParseFn
 
 	// are we inside a ternary expression?
 	//
@@ -68,7 +68,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 
 	// Register prefix-functions
-	p.prefixParseFns = map[tokentype.TokenType]prefixParseFn{
+	p.prefixParseFns = [tokentype.TokenType_Count]prefixParseFn{
 		tokentype.BACKTICK:        p.parseBacktickLiteral,
 		tokentype.BANG:            p.parsePrefixExpression,
 		tokentype.DEFINE_FUNCTION: p.parseFunctionDefinition,
@@ -93,7 +93,7 @@ func New(l *lexer.Lexer) *Parser {
 	}
 
 	// Register infix functions
-	p.infixParseFns = map[tokentype.TokenType]infixParseFn{
+	p.infixParseFns = [tokentype.TokenType_Count]infixParseFn{
 		tokentype.AND:             p.parseInfixExpression,
 		tokentype.ASSIGN:          p.parseAssignExpression,
 		tokentype.ASTERISK:        p.parseInfixExpression,
@@ -123,7 +123,7 @@ func New(l *lexer.Lexer) *Parser {
 	}
 
 	// Register postfix functions.
-	p.postfixParseFns = map[tokentype.TokenType]postfixParseFn{
+	p.postfixParseFns = [tokentype.TokenType_Count]postfixParseFn{
 		tokentype.MINUS_MINUS: p.parsePostfixExpression,
 		tokentype.PLUS_PLUS:   p.parsePostfixExpression,
 	}
@@ -902,16 +902,16 @@ func (p *Parser) expectPeek(t tokentype.TokenType) bool {
 
 // peekPrecedence looks up the next token precedence.
 func (p *Parser) peekPrecedence() precedence.Precedence {
-	if p, ok := tokentype.Token2Precedences[p.peekToken.Type]; ok {
-		return p
+	if prd, ok := tokentype.Token2Precedences[p.peekToken.Type]; ok {
+		return prd
 	}
 	return precedence.LOWEST
 }
 
 // curPrecedence looks up the current token precedence.
 func (p *Parser) curPrecedence() precedence.Precedence {
-	if p, ok := tokentype.Token2Precedences[p.curToken.Type]; ok {
-		return p
+	if prd, ok := tokentype.Token2Precedences[p.curToken.Type]; ok {
+		return prd
 	}
 	return precedence.LOWEST
 }

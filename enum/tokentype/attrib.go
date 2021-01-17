@@ -3,7 +3,7 @@ package tokentype
 import "github.com/kasworld/nonkey/enum/precedence"
 
 // reversed keywords
-var keywords = map[string]TokenType{
+var Keywords = map[string]TokenType{
 	"case":     CASE,
 	"const":    CONST,
 	"default":  DEFAULT,
@@ -23,7 +23,7 @@ var keywords = map[string]TokenType{
 
 // LookupIdentifier used to determinate whether identifier is keyword nor not
 func LookupIdentifier(identifier string) TokenType {
-	if tok, ok := keywords[identifier]; ok {
+	if tok, ok := Keywords[identifier]; ok {
 		return tok
 	}
 	return IDENT

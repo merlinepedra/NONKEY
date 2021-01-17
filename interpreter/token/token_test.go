@@ -10,7 +10,7 @@ import (
 // Test looking up values succeeds, then fails
 func TestLookup(t *testing.T) {
 
-	for key, val := range keywords {
+	for key, val := range tokentype.Keywords {
 
 		// Obviously this will pass.
 		if tokentype.LookupIdentifier(string(key)) != val {
