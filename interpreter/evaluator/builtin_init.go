@@ -1,18 +1,12 @@
 package evaluator
 
-import "github.com/kasworld/nonkey/interpreter/object"
-
-// The built-in functions / standard-library methods are stored here.
-var BuiltinFunctions = map[string]*object.Builtin{}
-
-// RegisterBuiltin registers a built-in function.  This is used to register
-// our "standard library" functions.
-func RegisterBuiltin(name string, fun object.BuiltinFunction) {
-	BuiltinFunctions[name] = &object.Builtin{Fn: fun}
-}
+import (
+	"github.com/kasworld/nonkey/config/builtinfunctions"
+	"github.com/kasworld/nonkey/interpreter/object"
+)
 
 func init() {
-	BuiltinFunctions = map[string]*object.Builtin{
+	builtinfunctions.BuiltinFunctions = map[string]*object.Builtin{
 		"chmod":          {Fn: builtinChmod},
 		"delete":         {Fn: builtinDelete},
 		"eval":           {Fn: builtinEval},

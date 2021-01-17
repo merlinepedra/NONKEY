@@ -3,8 +3,8 @@ package ast
 import (
 	"testing"
 
+	"github.com/kasworld/nonkey/config/token"
 	"github.com/kasworld/nonkey/enum/tokentype"
-	"github.com/kasworld/nonkey/interpreter/token"
 )
 
 func TestString(t *testing.T) {

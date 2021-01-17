@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kasworld/nonkey/interpreter/evaluator"
+	"github.com/kasworld/nonkey/config/builtinfunctions"
 	"github.com/kasworld/nonkey/interpreter/object"
 	"github.com/kasworld/nonkey/interpreter/repl"
 	"github.com/kasworld/nonkey/interpreter/runmon"
@@ -53,8 +53,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	evaluator.RegisterBuiltin("version", builtinVersion)
-	evaluator.RegisterBuiltin("args", builtinArgs)
+	builtinfunctions.Register("version", builtinVersion)
+	builtinfunctions.Register("args", builtinArgs)
 
 	env := object.NewEnvironment()
 	if *autoload != "" {

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/kasworld/nonkey/config/token"
 	"github.com/kasworld/nonkey/enum/tokentype"
-	"github.com/kasworld/nonkey/interpreter/token"
 )
 
 // Lexer holds our object-state.

@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/kasworld/nonkey/config/builtinfunctions"
 	"github.com/kasworld/nonkey/enum/objecttype"
 	"github.com/kasworld/nonkey/interpreter/ast"
 	"github.com/kasworld/nonkey/interpreter/object"
@@ -890,7 +891,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	if val, ok := env.Get(node.Value); ok {
 		return val
 	}
-	if builtin, ok := BuiltinFunctions[node.Value]; ok {
+	if builtin, ok := builtinfunctions.BuiltinFunctions[node.Value]; ok {
 		return builtin
 	}
 	fmt.Fprintf(os.Stderr, "identifier not found: %s\n", node.Value)

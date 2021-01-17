@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/kasworld/nonkey/config/token"
 	"github.com/kasworld/nonkey/enum/precedence"
 	"github.com/kasworld/nonkey/enum/tokentype"
 	"github.com/kasworld/nonkey/interpreter/ast"
 	"github.com/kasworld/nonkey/interpreter/lexer"
-	"github.com/kasworld/nonkey/interpreter/token"
 )
 
 // prefix Parse function
