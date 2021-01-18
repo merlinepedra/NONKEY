@@ -2,10 +2,22 @@ package tokentype
 
 import "github.com/kasworld/nonkey/enum/precedence"
 
-var Attrib = [TokenType_Count]struct {
-	Keyword  bool
-	Operator bool
-	String   string
+func (tk TokenType) IsKeyword() bool {
+	return attrib[tk].keyword
+}
+
+func (tk TokenType) IsOperator() bool {
+	return attrib[tk].operator
+}
+
+func (tk TokenType) Literal() string {
+	return attrib[tk].literal
+}
+
+var attrib = [TokenType_Count]struct {
+	keyword  bool
+	operator bool
+	literal  string
 }{
 	ILLEGAL:         {false, false, "ILLEGAL"},
 	REGEXP:          {false, false, "REGEXP"},
@@ -73,9 +85,9 @@ var Keywords = map[string]TokenType{}
 
 func init() {
 	// build keyword map
-	for i, v := range Attrib {
-		if v.Keyword {
-			Keywords[v.String] = TokenType(i)
+	for i, v := range attrib {
+		if v.keyword {
+			Keywords[v.literal] = TokenType(i)
 		}
 	}
 }

@@ -198,7 +198,7 @@ func evalPrefixExpression(operator tokentype.TokenType, right object.ObjectI) ob
 		return evalMinusPrefixOperatorExpression(right)
 	default:
 		return object.NewError("unknown operator: %s%s",
-			tokentype.Attrib[operator].String, right.Type())
+			operator.Literal(), right.Type())
 	}
 }
 
@@ -235,7 +235,7 @@ func evalPostfixExpression(env *object.Environment, operator tokentype.TokenType
 		}
 	default:
 		return object.NewError("unknown operator: %s",
-			tokentype.Attrib[operator].String)
+			operator.Literal())
 	}
 }
 
@@ -293,10 +293,10 @@ func evalInfixExpression(operator tokentype.TokenType, left, right object.Object
 		return evalBooleanInfixExpression(operator, left, right)
 	case left.Type() != right.Type():
 		return object.NewError("type mismatch: %s %s %s",
-			left.Type(), tokentype.Attrib[operator].String, right.Type())
+			left.Type(), operator.Literal(), right.Type())
 	default:
 		return object.NewError("unknown operator: %s %s %s",
-			left.Type(), tokentype.Attrib[operator].String, right.Type())
+			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
@@ -383,7 +383,7 @@ func evalBooleanInfixExpression(operator tokentype.TokenType, left, right object
 		return evalStringInfixExpression(operator, l, r)
 	default:
 		return object.NewError("unknown operator: %s %s %s",
-			left.Type(), tokentype.Attrib[operator].String, right.Type())
+			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
@@ -435,7 +435,7 @@ func evalIntegerInfixExpression(operator tokentype.TokenType, left, right object
 		return &object.Array{Elements: array}
 	default:
 		return object.NewError("unknown operator: %s %s %s",
-			left.Type(), tokentype.Attrib[operator].String, right.Type())
+			left.Type(), operator.Literal(), right.Type())
 	}
 }
 func evalFloatInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
@@ -474,7 +474,7 @@ func evalFloatInfixExpression(operator tokentype.TokenType, left, right object.O
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
 		return object.NewError("unknown operator: %s %s %s",
-			left.Type(), tokentype.Attrib[operator].String, right.Type())
+			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
@@ -514,7 +514,7 @@ func evalFloatIntegerInfixExpression(operator tokentype.TokenType, left, right o
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
 		return object.NewError("unknown operator: %s %s %s",
-			left.Type(), tokentype.Attrib[operator].String, right.Type())
+			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
@@ -554,7 +554,7 @@ func evalIntegerFloatInfixExpression(operator tokentype.TokenType, left, right o
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
 		return object.NewError("unknown operator: %s %s %s",
-			left.Type(), tokentype.Attrib[operator].String, right.Type())
+			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
@@ -582,7 +582,7 @@ func evalStringInfixExpression(operator tokentype.TokenType, left, right object.
 	}
 
 	return object.NewError("unknown operator: %s %s %s",
-		left.Type(), tokentype.Attrib[operator].String, right.Type())
+		left.Type(), operator.Literal(), right.Type())
 }
 
 // evalIfExpression handles an `if` expression, running the block

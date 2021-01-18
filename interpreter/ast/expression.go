@@ -94,7 +94,7 @@ func (pe *PrefixExpression) GetToken() token.Token { return pe.Token }
 // String returns this object as a string.
 func (pe *PrefixExpression) String() string {
 	var out bytes.Buffer
-	fmt.Fprintf(&out, "(%v%v)", tokentype.Attrib[pe.Operator].String, pe.Right)
+	fmt.Fprintf(&out, "(%v%v)", pe.Operator.Literal(), pe.Right)
 	return out.String()
 }
 
@@ -121,7 +121,7 @@ func (ie *InfixExpression) GetToken() token.Token { return ie.Token }
 // String returns this object as a string.
 func (ie *InfixExpression) String() string {
 	var out bytes.Buffer
-	fmt.Fprintf(&out, "(%v %v %v)", ie.Left, tokentype.Attrib[ie.Operator].String, ie.Right)
+	fmt.Fprintf(&out, "(%v %v %v)", ie.Left, ie.Operator.Literal(), ie.Right)
 	return out.String()
 }
 
@@ -141,7 +141,7 @@ func (pe *PostfixExpression) GetToken() token.Token { return pe.Token }
 // String returns this object as a string.
 func (pe *PostfixExpression) String() string {
 	var out bytes.Buffer
-	fmt.Fprintf(&out, "(%v%v)", pe.Token.Literal, tokentype.Attrib[pe.Operator].String)
+	fmt.Fprintf(&out, "(%v%v)", pe.Token.Literal, pe.Operator.Literal())
 	return out.String()
 }
 
@@ -626,6 +626,6 @@ func (as *AssignStatement) GetToken() token.Token { return as.Token }
 // String returns this object as a string.
 func (as *AssignStatement) String() string {
 	var out bytes.Buffer
-	fmt.Fprintf(&out, "%v%v%v", as.Name, tokentype.Attrib[as.Operator].String, as.Value)
+	fmt.Fprintf(&out, "%v%v%v", as.Name, as.Operator.Literal(), as.Value)
 	return out.String()
 }
