@@ -15,11 +15,12 @@ import (
 	"github.com/kasworld/nonkey/config/pragmas"
 	"github.com/kasworld/nonkey/enum/objecttype"
 	"github.com/kasworld/nonkey/interpreter/ast"
+	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/object"
 )
 
 // Eval is our core function for evaluating nodes.
-func Eval(node ast.NodeI, env *object.Environment) object.ObjectI {
+func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 	switch node := node.(type) {
 
 	//Statements
@@ -900,7 +901,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	return object.NewError("identifier not found: " + node.Value)
 }
 
-func evalExpression(exps []ast.ExpressionI, env *object.Environment) []object.ObjectI {
+func evalExpression(exps []asti.ExpressionI, env *object.Environment) []object.ObjectI {
 	var result []object.ObjectI
 	for _, e := range exps {
 		evaluated := Eval(e, env)

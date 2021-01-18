@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/kasworld/nonkey/interpreter/ast"
+	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/lexer"
 )
 
@@ -92,7 +93,7 @@ func TestConstStatements(t *testing.T) {
 	}
 }
 
-func testLetStatement(t *testing.T, s ast.StatementI, name string) bool {
+func testLetStatement(t *testing.T, s asti.StatementI, name string) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got %q", s.TokenLiteral())
 		return false
@@ -113,7 +114,7 @@ func testLetStatement(t *testing.T, s ast.StatementI, name string) bool {
 	return true
 }
 
-func testConstStatement(t *testing.T, s ast.StatementI, name string) bool {
+func testConstStatement(t *testing.T, s asti.StatementI, name string) bool {
 	if s.TokenLiteral() != "const" {
 		t.Errorf("s.TokenLiteral not 'const'. got %q", s.TokenLiteral())
 		return false
@@ -283,7 +284,7 @@ func TestParsingPrefixExpression(t *testing.T) {
 	}
 }
 
-func testIntegerLiteral(t *testing.T, il ast.ExpressionI, value int64) bool {
+func testIntegerLiteral(t *testing.T, il asti.ExpressionI, value int64) bool {
 	integ, ok := il.(*ast.IntegerLiteral)
 	if !ok {
 		t.Errorf("il not *ast.IntegerLiteral. got=%T", il)
@@ -302,7 +303,7 @@ func testIntegerLiteral(t *testing.T, il ast.ExpressionI, value int64) bool {
 }
 
 // skip float literal test
-func testFloatLiteral(t *testing.T, exp ast.ExpressionI, v float64) bool {
+func testFloatLiteral(t *testing.T, exp asti.ExpressionI, v float64) bool {
 	float, ok := exp.(*ast.FloatLiteral)
 	if !ok {
 		t.Errorf("exp not *ast.FloatLiteral. got=%T", exp)
@@ -399,7 +400,7 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 	}
 }
 
-func testIdentifier(t *testing.T, exp ast.ExpressionI, value string) bool {
+func testIdentifier(t *testing.T, exp asti.ExpressionI, value string) bool {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
 		t.Errorf("exp not *ast.Identifier. got=%T", exp)
@@ -416,7 +417,7 @@ func testIdentifier(t *testing.T, exp ast.ExpressionI, value string) bool {
 	return true
 }
 
-func testBooleanLiteral(t *testing.T, exp ast.ExpressionI, value bool) bool {
+func testBooleanLiteral(t *testing.T, exp asti.ExpressionI, value bool) bool {
 	bo, ok := exp.(*ast.Boolean)
 	if !ok {
 		t.Errorf("exp not *ast.Boolean. got=%T", exp)
@@ -434,7 +435,7 @@ func testBooleanLiteral(t *testing.T, exp ast.ExpressionI, value bool) bool {
 	return true
 }
 
-func testLiteralExpression(t *testing.T, exp ast.ExpressionI, expected interface{}) bool {
+func testLiteralExpression(t *testing.T, exp asti.ExpressionI, expected interface{}) bool {
 	switch v := expected.(type) {
 	case int:
 		return testIntegerLiteral(t, exp, int64(v))
@@ -453,7 +454,7 @@ func testLiteralExpression(t *testing.T, exp ast.ExpressionI, expected interface
 	return false
 }
 
-func testInfixExpression(t *testing.T, exp ast.ExpressionI, left interface{},
+func testInfixExpression(t *testing.T, exp asti.ExpressionI, left interface{},
 	operator string, right interface{}) bool {
 	opExp, ok := exp.(*ast.InfixExpression)
 	if !ok {
@@ -813,14 +814,14 @@ func TestParsingHashLiteralWithExpression(t *testing.T) {
 		t.Errorf("hash.Pairs has wrong length. got=%d",
 			len(hash.Pairs))
 	}
-	tests := map[string]func(ast.ExpressionI){
-		"one": func(e ast.ExpressionI) {
+	tests := map[string]func(asti.ExpressionI){
+		"one": func(e asti.ExpressionI) {
 			testInfixExpression(t, e, 0, "+", 1)
 		},
-		"two": func(e ast.ExpressionI) {
+		"two": func(e asti.ExpressionI) {
 			testInfixExpression(t, e, 10, "-", 8)
 		},
-		"three": func(e ast.ExpressionI) {
+		"three": func(e asti.ExpressionI) {
 			testInfixExpression(t, e, 15, "/", 5)
 		},
 	}

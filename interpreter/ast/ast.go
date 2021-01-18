@@ -7,38 +7,15 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/token"
 )
-
-// NodeI reresents a node.
-type NodeI interface {
-	// TokenLiteral returns the literal of the token.
-	TokenLiteral() string
-
-	// String returns this object as a string.
-	String() string
-}
-
-// StatementI represents a single statement.
-type StatementI interface {
-	// NodeI is the node holding the actual statement
-	NodeI
-
-	statementNode()
-}
-
-// Expression represents a single expression.
-type ExpressionI interface {
-	// NodeI is the node holding the expression.
-	NodeI
-	expressionNode()
-}
 
 // Program represents a complete program.
 type Program struct {
 	// Statements is the set of statements which the program is comprised
 	// of.
-	Statements []StatementI
+	Statements []asti.StatementI
 }
 
 // TokenLiteral returns the literal token of our program.
@@ -67,10 +44,10 @@ type LetStatement struct {
 	Name *Identifier
 
 	// Value is the thing we're storing in the variable.
-	Value ExpressionI
+	Value asti.ExpressionI
 }
 
-func (ls *LetStatement) statementNode() {}
+func (ls *LetStatement) StatementNode() {}
 
 // TokenLiteral returns the literal token.
 func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
@@ -98,10 +75,10 @@ type ConstStatement struct {
 	Name *Identifier
 
 	// Value contains the value which is to be set
-	Value ExpressionI
+	Value asti.ExpressionI
 }
 
-func (ls *ConstStatement) statementNode() {}
+func (ls *ConstStatement) StatementNode() {}
 
 // TokenLiteral returns the literal token.
 func (ls *ConstStatement) TokenLiteral() string { return ls.Token.Literal }
@@ -128,7 +105,7 @@ type Identifier struct {
 	Value string
 }
 
-func (i *Identifier) expressionNode() {}
+func (i *Identifier) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
@@ -144,10 +121,10 @@ type ReturnStatement struct {
 	Token token.Token
 
 	// ReturnValue is the value whichis to be returned.
-	ReturnValue ExpressionI
+	ReturnValue asti.ExpressionI
 }
 
-func (rs *ReturnStatement) statementNode() {}
+func (rs *ReturnStatement) StatementNode() {}
 
 // TokenLiteral returns the literal token.
 func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
@@ -169,10 +146,10 @@ type ExpressionStatement struct {
 	Token token.Token
 
 	// Expression holds the expression
-	Expression ExpressionI
+	Expression asti.ExpressionI
 }
 
-func (es *ExpressionStatement) statementNode() {}
+func (es *ExpressionStatement) StatementNode() {}
 
 // TokenLiteral returns the literal token.
 func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
@@ -194,7 +171,7 @@ type IntegerLiteral struct {
 	Value int64
 }
 
-func (il *IntegerLiteral) expressionNode() {}
+func (il *IntegerLiteral) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
@@ -211,7 +188,7 @@ type FloatLiteral struct {
 	Value float64
 }
 
-func (fl *FloatLiteral) expressionNode() {}
+func (fl *FloatLiteral) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (fl *FloatLiteral) TokenLiteral() string { return fl.Token.Literal }
@@ -228,10 +205,10 @@ type PrefixExpression struct {
 	Operator string
 
 	// Right holds the thing to be operated upon
-	Right ExpressionI
+	Right asti.ExpressionI
 }
 
-func (pe *PrefixExpression) expressionNode() {}
+func (pe *PrefixExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
@@ -252,16 +229,16 @@ type InfixExpression struct {
 	Token token.Token
 
 	// Left holds the left-most argument
-	Left ExpressionI
+	Left asti.ExpressionI
 
 	// Operator holds the operation to be carried out (e.g. "+", "-" )
 	Operator string
 
 	// Right holds the right-most argument
-	Right ExpressionI
+	Right asti.ExpressionI
 }
 
-func (ie *InfixExpression) expressionNode() {}
+func (ie *InfixExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (ie *InfixExpression) TokenLiteral() string { return ie.Token.Literal }
@@ -285,7 +262,7 @@ type PostfixExpression struct {
 	Operator string
 }
 
-func (pe *PostfixExpression) expressionNode() {}
+func (pe *PostfixExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (pe *PostfixExpression) TokenLiteral() string { return pe.Token.Literal }
@@ -309,7 +286,7 @@ type Boolean struct {
 	Value bool
 }
 
-func (b *Boolean) expressionNode() {}
+func (b *Boolean) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
@@ -324,10 +301,10 @@ type BlockStatement struct {
 	Token token.Token
 
 	// Statements contain the set of statements within the block
-	Statements []StatementI
+	Statements []asti.StatementI
 }
 
-func (bs *BlockStatement) statementNode() {}
+func (bs *BlockStatement) StatementNode() {}
 
 // TokenLiteral returns the literal token.
 func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
@@ -348,7 +325,7 @@ type IfExpression struct {
 
 	// Condition is the thing that is evaluated to determine
 	// which block should be executed.
-	Condition ExpressionI
+	Condition asti.ExpressionI
 
 	// Consequence is the set of statements executed if the
 	// condition is true.
@@ -359,7 +336,7 @@ type IfExpression struct {
 	Alternative *BlockStatement
 }
 
-func (ie *IfExpression) expressionNode() {}
+func (ie *IfExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
@@ -385,13 +362,13 @@ type TernaryExpression struct {
 
 	// Condition is the thing that is evaluated to determine
 	// which expression should be returned
-	Condition ExpressionI
+	Condition asti.ExpressionI
 
 	// IfTrue is the expression to return if the condition is true.
-	IfTrue ExpressionI
+	IfTrue asti.ExpressionI
 
 	// IFFalse is the expression to return if the condition is not true.
-	IfFalse ExpressionI
+	IfFalse asti.ExpressionI
 }
 
 // ForeachStatement holds a foreach-statement.
@@ -408,13 +385,13 @@ type ForeachStatement struct {
 	Ident string
 
 	// Value is the thing we'll range over.
-	Value ExpressionI
+	Value asti.ExpressionI
 
 	// Body is the block we'll execute.
 	Body *BlockStatement
 }
 
-func (fes *ForeachStatement) expressionNode() {}
+func (fes *ForeachStatement) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (fes *ForeachStatement) TokenLiteral() string { return fes.Token.Literal }
@@ -430,7 +407,7 @@ func (fes *ForeachStatement) String() string {
 	return out.String()
 }
 
-func (te *TernaryExpression) expressionNode() {}
+func (te *TernaryExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (te *TernaryExpression) TokenLiteral() string { return te.Token.Literal }
@@ -457,14 +434,14 @@ type ForLoopExpression struct {
 
 	// Condition is the expression used to determine if the loop
 	// is still running.
-	Condition ExpressionI
+	Condition asti.ExpressionI
 
 	// Consequence is the set of statements to be executed for the
 	// loop body.
 	Consequence *BlockStatement
 }
 
-func (fle *ForLoopExpression) expressionNode() {}
+func (fle *ForLoopExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (fle *ForLoopExpression) TokenLiteral() string { return fle.Token.Literal }
@@ -492,13 +469,13 @@ type FunctionLiteral struct {
 
 	// Defaults holds any default values for arguments which aren't
 	// specified
-	Defaults map[string]ExpressionI
+	Defaults map[string]asti.ExpressionI
 
 	// Body contains the set of statements within the function.
 	Body *BlockStatement
 }
 
-func (fl *FunctionLiteral) expressionNode() {}
+func (fl *FunctionLiteral) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
@@ -530,13 +507,13 @@ type FunctionDefineLiteral struct {
 	Parameters []*Identifier
 
 	// Defaults holds any default-arguments.
-	Defaults map[string]ExpressionI
+	Defaults map[string]asti.ExpressionI
 
 	// Body holds the set of statements in the functions' body.
 	Body *BlockStatement
 }
 
-func (fl *FunctionDefineLiteral) expressionNode() {}
+func (fl *FunctionDefineLiteral) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (fl *FunctionDefineLiteral) TokenLiteral() string {
@@ -565,13 +542,13 @@ type CallExpression struct {
 	Token token.Token
 
 	// Function is the function to be invoked.
-	Function ExpressionI
+	Function asti.ExpressionI
 
 	// Arguments are the arguments to be applied
-	Arguments []ExpressionI
+	Arguments []asti.ExpressionI
 }
 
-func (ce *CallExpression) expressionNode() {}
+func (ce *CallExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
@@ -596,13 +573,13 @@ type ObjectCallExpression struct {
 	Token token.Token
 
 	// Object is the object against which the call is invoked.
-	Object ExpressionI
+	Object asti.ExpressionI
 
 	// Call is the method-name.
-	Call ExpressionI
+	Call asti.ExpressionI
 }
 
-func (oce *ObjectCallExpression) expressionNode() {}
+func (oce *ObjectCallExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (oce *ObjectCallExpression) TokenLiteral() string {
@@ -628,7 +605,7 @@ type StringLiteral struct {
 	Value string
 }
 
-func (sl *StringLiteral) expressionNode() {}
+func (sl *StringLiteral) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
@@ -648,7 +625,7 @@ type RegexpLiteral struct {
 	Flags string
 }
 
-func (rl *RegexpLiteral) expressionNode() {}
+func (rl *RegexpLiteral) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (rl *RegexpLiteral) TokenLiteral() string { return rl.Token.Literal }
@@ -668,7 +645,7 @@ type BacktickLiteral struct {
 	Value string
 }
 
-func (bl *BacktickLiteral) expressionNode() {}
+func (bl *BacktickLiteral) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (bl *BacktickLiteral) TokenLiteral() string { return bl.Token.Literal }
@@ -682,10 +659,10 @@ type ArrayLiteral struct {
 	Token token.Token
 
 	// Elements holds the members of the array.
-	Elements []ExpressionI
+	Elements []asti.ExpressionI
 }
 
-func (al *ArrayLiteral) expressionNode() {}
+func (al *ArrayLiteral) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal }
@@ -709,13 +686,13 @@ type IndexExpression struct {
 	Token token.Token
 
 	// Left is the thing being indexed.
-	Left ExpressionI
+	Left asti.ExpressionI
 
 	// Index is the value we're indexing
-	Index ExpressionI
+	Index asti.ExpressionI
 }
 
-func (ie *IndexExpression) expressionNode() {}
+func (ie *IndexExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (ie *IndexExpression) TokenLiteral() string { return ie.Token.Literal }
@@ -737,10 +714,10 @@ type HashLiteral struct {
 	Token token.Token // the '{' token
 
 	// Pairs stores the name/value sets of the hash-content
-	Pairs map[ExpressionI]ExpressionI
+	Pairs map[asti.ExpressionI]asti.ExpressionI
 }
 
-func (hl *HashLiteral) expressionNode() {}
+func (hl *HashLiteral) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
@@ -769,10 +746,10 @@ type AssignStatement struct {
 	Token    token.Token
 	Name     *Identifier
 	Operator string
-	Value    ExpressionI
+	Value    asti.ExpressionI
 }
 
-func (as *AssignStatement) expressionNode() {}
+func (as *AssignStatement) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (as *AssignStatement) TokenLiteral() string { return as.Token.Literal }
@@ -795,13 +772,13 @@ type CaseExpression struct {
 	Default bool
 
 	// The thing we match
-	Expr []ExpressionI
+	Expr []asti.ExpressionI
 
 	// The code to execute if there is a match
 	Block *BlockStatement
 }
 
-func (ce *CaseExpression) expressionNode() {}
+func (ce *CaseExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (ce *CaseExpression) TokenLiteral() string { return ce.Token.Literal }
@@ -832,13 +809,13 @@ type SwitchExpression struct {
 
 	// Value is the thing that is evaluated to determine
 	// which block should be executed.
-	Value ExpressionI
+	Value asti.ExpressionI
 
 	// The branches we handle
 	Choices []*CaseExpression
 }
 
-func (se *SwitchExpression) expressionNode() {}
+func (se *SwitchExpression) ExpressionNode() {}
 
 // TokenLiteral returns the literal token.
 func (se *SwitchExpression) TokenLiteral() string { return se.Token.Literal }

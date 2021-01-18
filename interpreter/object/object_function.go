@@ -7,13 +7,14 @@ import (
 
 	"github.com/kasworld/nonkey/enum/objecttype"
 	"github.com/kasworld/nonkey/interpreter/ast"
+	"github.com/kasworld/nonkey/interpreter/asti"
 )
 
 // Function wraps ast.Identifier array, ast.BlockStatement and Environment and implements ObjectI interface.
 type Function struct {
 	Parameters []*ast.Identifier
 	Body       *ast.BlockStatement
-	Defaults   map[string]ast.ExpressionI
+	Defaults   map[string]asti.ExpressionI
 	Env        *Environment
 }
 
