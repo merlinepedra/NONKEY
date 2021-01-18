@@ -39,19 +39,6 @@ type ExpressionStatement struct {
 	Expression asti.ExpressionI
 }
 
-func (es *ExpressionStatement) StatementNode() {}
-
-// TokenLiteral returns the literal token.
-func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
-
-// String returns this object as a string.
-func (es *ExpressionStatement) String() string {
-	if es.Expression != nil {
-		return es.Expression.String()
-	}
-	return ""
-}
-
 // IntegerLiteral holds an integer
 type IntegerLiteral struct {
 	// Token is the literal token
@@ -636,5 +623,69 @@ func (se *SwitchExpression) String() string {
 	}
 	out.WriteString("}\n")
 
+	return out.String()
+}
+
+// ForeachStatement holds a foreach-statement.
+type ForeachStatement struct {
+	// Token is the actual token
+	Token token.Token
+
+	// Index is the variable we'll set with the index, for the blocks' scope
+	//
+	// This is optional.
+	Index string
+
+	// Ident is the variable we'll set with each item, for the blocks' scope
+	Ident string
+
+	// Value is the thing we'll range over.
+	Value asti.ExpressionI
+
+	// Body is the block we'll execute.
+	Body *BlockStatement
+}
+
+func (fes *ForeachStatement) ExpressionNode() {}
+
+// TokenLiteral returns the literal token.
+func (fes *ForeachStatement) TokenLiteral() string { return fes.Token.Literal }
+
+// String returns this object as a string.
+func (fes *ForeachStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString("foreach ")
+	out.WriteString(fes.Ident)
+	out.WriteString(" ")
+	out.WriteString(fes.Value.String())
+	out.WriteString(fes.Body.String())
+	return out.String()
+}
+
+// AssignStatement is generally used for a (let-less) assignment,
+// such as "x = y", however we allow an operator to be stored ("=" in that
+// example), such that we can do self-operations.
+//
+// Specifically "x += y" is defined as an assignment-statement with
+// the operator set to "+=".  The same applies for "+=", "-=", "*=", and
+// "/=".
+type AssignStatement struct {
+	Token    token.Token
+	Name     *Identifier
+	Operator string
+	Value    asti.ExpressionI
+}
+
+func (as *AssignStatement) ExpressionNode() {}
+
+// TokenLiteral returns the literal token.
+func (as *AssignStatement) TokenLiteral() string { return as.Token.Literal }
+
+// String returns this object as a string.
+func (as *AssignStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(as.Name.String())
+	out.WriteString(as.Operator)
+	out.WriteString(as.Value.String())
 	return out.String()
 }
