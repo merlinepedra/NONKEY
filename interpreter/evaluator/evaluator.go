@@ -19,7 +19,7 @@ import (
 )
 
 // Eval is our core function for evaluating nodes.
-func Eval(node ast.Node, env *object.Environment) object.Object {
+func Eval(node ast.NodeI, env *object.Environment) object.Object {
 	switch node := node.(type) {
 
 	//Statements
@@ -900,7 +900,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	return object.NewError("identifier not found: " + node.Value)
 }
 
-func evalExpression(exps []ast.Expression, env *object.Environment) []object.Object {
+func evalExpression(exps []ast.ExpressionI, env *object.Environment) []object.Object {
 	var result []object.Object
 	for _, e := range exps {
 		evaluated := Eval(e, env)

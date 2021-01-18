@@ -92,7 +92,7 @@ func TestConstStatements(t *testing.T) {
 	}
 }
 
-func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
+func testLetStatement(t *testing.T, s ast.StatementI, name string) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got %q", s.TokenLiteral())
 		return false
@@ -113,7 +113,7 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	return true
 }
 
-func testConstStatement(t *testing.T, s ast.Statement, name string) bool {
+func testConstStatement(t *testing.T, s ast.StatementI, name string) bool {
 	if s.TokenLiteral() != "const" {
 		t.Errorf("s.TokenLiteral not 'const'. got %q", s.TokenLiteral())
 		return false
@@ -261,7 +261,7 @@ func TestParsingPrefixExpression(t *testing.T) {
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 		if len(program.Statements) != 1 {
-			t.Fatalf("program.Statement doest not contain %d statements. got=%d\n",
+			t.Fatalf("program.Statements doest not contain %d statements. got=%d\n",
 				1, len(program.Statements))
 		}
 		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
@@ -283,7 +283,7 @@ func TestParsingPrefixExpression(t *testing.T) {
 	}
 }
 
-func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
+func testIntegerLiteral(t *testing.T, il ast.ExpressionI, value int64) bool {
 	integ, ok := il.(*ast.IntegerLiteral)
 	if !ok {
 		t.Errorf("il not *ast.IntegerLiteral. got=%T", il)
@@ -302,7 +302,7 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 }
 
 // skip float literal test
-func testFloatLiteral(t *testing.T, exp ast.Expression, v float64) bool {
+func testFloatLiteral(t *testing.T, exp ast.ExpressionI, v float64) bool {
 	float, ok := exp.(*ast.FloatLiteral)
 	if !ok {
 		t.Errorf("exp not *ast.FloatLiteral. got=%T", exp)
@@ -399,7 +399,7 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 	}
 }
 
-func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
+func testIdentifier(t *testing.T, exp ast.ExpressionI, value string) bool {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
 		t.Errorf("exp not *ast.Identifier. got=%T", exp)
@@ -416,7 +416,7 @@ func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	return true
 }
 
-func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
+func testBooleanLiteral(t *testing.T, exp ast.ExpressionI, value bool) bool {
 	bo, ok := exp.(*ast.Boolean)
 	if !ok {
 		t.Errorf("exp not *ast.Boolean. got=%T", exp)
@@ -434,7 +434,7 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 	return true
 }
 
-func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
+func testLiteralExpression(t *testing.T, exp ast.ExpressionI, expected interface{}) bool {
 	switch v := expected.(type) {
 	case int:
 		return testIntegerLiteral(t, exp, int64(v))
@@ -453,7 +453,7 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 	return false
 }
 
-func testInfixExpression(t *testing.T, exp ast.Expression, left interface{},
+func testInfixExpression(t *testing.T, exp ast.ExpressionI, left interface{},
 	operator string, right interface{}) bool {
 	opExp, ok := exp.(*ast.InfixExpression)
 	if !ok {
@@ -542,7 +542,7 @@ func TestForLoopExpression(t *testing.T) {
 	}
 	consequence, ok := exp.Consequence.Statements[0].(*ast.LetStatement)
 	if !ok {
-		t.Fatalf("exp.Consequence.Statement[0] is not ast.ExpressionStatement. got=%T",
+		t.Fatalf("exp.Consequence.Statements[0] is not ast.ExpressionStatement. got=%T",
 			exp.Consequence.Statements[0])
 	}
 	if !testLetStatement(t, consequence, "x") {
@@ -813,14 +813,14 @@ func TestParsingHashLiteralWithExpression(t *testing.T) {
 		t.Errorf("hash.Pairs has wrong length. got=%d",
 			len(hash.Pairs))
 	}
-	tests := map[string]func(ast.Expression){
-		"one": func(e ast.Expression) {
+	tests := map[string]func(ast.ExpressionI){
+		"one": func(e ast.ExpressionI) {
 			testInfixExpression(t, e, 0, "+", 1)
 		},
-		"two": func(e ast.Expression) {
+		"two": func(e ast.ExpressionI) {
 			testInfixExpression(t, e, 10, "-", 8)
 		},
-		"three": func(e ast.Expression) {
+		"three": func(e ast.ExpressionI) {
 			testInfixExpression(t, e, 15, "/", 5)
 		},
 	}

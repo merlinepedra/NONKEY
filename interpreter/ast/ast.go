@@ -10,8 +10,8 @@ import (
 	"github.com/kasworld/nonkey/interpreter/token"
 )
 
-// Node reresents a node.
-type Node interface {
+// NodeI reresents a node.
+type NodeI interface {
 	// TokenLiteral returns the literal of the token.
 	TokenLiteral() string
 
@@ -19,18 +19,18 @@ type Node interface {
 	String() string
 }
 
-// Statement represents a single statement.
-type Statement interface {
-	// Node is the node holding the actual statement
-	Node
+// StatementI represents a single statement.
+type StatementI interface {
+	// NodeI is the node holding the actual statement
+	NodeI
 
 	statementNode()
 }
 
 // Expression represents a single expression.
-type Expression interface {
-	// Node is the node holding the expression.
-	Node
+type ExpressionI interface {
+	// NodeI is the node holding the expression.
+	NodeI
 	expressionNode()
 }
 
@@ -38,7 +38,7 @@ type Expression interface {
 type Program struct {
 	// Statements is the set of statements which the program is comprised
 	// of.
-	Statements []Statement
+	Statements []StatementI
 }
 
 // TokenLiteral returns the literal token of our program.
@@ -67,7 +67,7 @@ type LetStatement struct {
 	Name *Identifier
 
 	// Value is the thing we're storing in the variable.
-	Value Expression
+	Value ExpressionI
 }
 
 func (ls *LetStatement) statementNode() {}
@@ -98,7 +98,7 @@ type ConstStatement struct {
 	Name *Identifier
 
 	// Value contains the value which is to be set
-	Value Expression
+	Value ExpressionI
 }
 
 func (ls *ConstStatement) statementNode() {}
@@ -144,7 +144,7 @@ type ReturnStatement struct {
 	Token token.Token
 
 	// ReturnValue is the value whichis to be returned.
-	ReturnValue Expression
+	ReturnValue ExpressionI
 }
 
 func (rs *ReturnStatement) statementNode() {}
@@ -169,7 +169,7 @@ type ExpressionStatement struct {
 	Token token.Token
 
 	// Expression holds the expression
-	Expression Expression
+	Expression ExpressionI
 }
 
 func (es *ExpressionStatement) statementNode() {}
@@ -228,7 +228,7 @@ type PrefixExpression struct {
 	Operator string
 
 	// Right holds the thing to be operated upon
-	Right Expression
+	Right ExpressionI
 }
 
 func (pe *PrefixExpression) expressionNode() {}
@@ -252,13 +252,13 @@ type InfixExpression struct {
 	Token token.Token
 
 	// Left holds the left-most argument
-	Left Expression
+	Left ExpressionI
 
 	// Operator holds the operation to be carried out (e.g. "+", "-" )
 	Operator string
 
 	// Right holds the right-most argument
-	Right Expression
+	Right ExpressionI
 }
 
 func (ie *InfixExpression) expressionNode() {}
@@ -324,7 +324,7 @@ type BlockStatement struct {
 	Token token.Token
 
 	// Statements contain the set of statements within the block
-	Statements []Statement
+	Statements []StatementI
 }
 
 func (bs *BlockStatement) statementNode() {}
@@ -348,7 +348,7 @@ type IfExpression struct {
 
 	// Condition is the thing that is evaluated to determine
 	// which block should be executed.
-	Condition Expression
+	Condition ExpressionI
 
 	// Consequence is the set of statements executed if the
 	// condition is true.
@@ -385,13 +385,13 @@ type TernaryExpression struct {
 
 	// Condition is the thing that is evaluated to determine
 	// which expression should be returned
-	Condition Expression
+	Condition ExpressionI
 
 	// IfTrue is the expression to return if the condition is true.
-	IfTrue Expression
+	IfTrue ExpressionI
 
 	// IFFalse is the expression to return if the condition is not true.
-	IfFalse Expression
+	IfFalse ExpressionI
 }
 
 // ForeachStatement holds a foreach-statement.
@@ -408,7 +408,7 @@ type ForeachStatement struct {
 	Ident string
 
 	// Value is the thing we'll range over.
-	Value Expression
+	Value ExpressionI
 
 	// Body is the block we'll execute.
 	Body *BlockStatement
@@ -457,7 +457,7 @@ type ForLoopExpression struct {
 
 	// Condition is the expression used to determine if the loop
 	// is still running.
-	Condition Expression
+	Condition ExpressionI
 
 	// Consequence is the set of statements to be executed for the
 	// loop body.
@@ -492,7 +492,7 @@ type FunctionLiteral struct {
 
 	// Defaults holds any default values for arguments which aren't
 	// specified
-	Defaults map[string]Expression
+	Defaults map[string]ExpressionI
 
 	// Body contains the set of statements within the function.
 	Body *BlockStatement
@@ -530,7 +530,7 @@ type FunctionDefineLiteral struct {
 	Parameters []*Identifier
 
 	// Defaults holds any default-arguments.
-	Defaults map[string]Expression
+	Defaults map[string]ExpressionI
 
 	// Body holds the set of statements in the functions' body.
 	Body *BlockStatement
@@ -565,10 +565,10 @@ type CallExpression struct {
 	Token token.Token
 
 	// Function is the function to be invoked.
-	Function Expression
+	Function ExpressionI
 
 	// Arguments are the arguments to be applied
-	Arguments []Expression
+	Arguments []ExpressionI
 }
 
 func (ce *CallExpression) expressionNode() {}
@@ -596,10 +596,10 @@ type ObjectCallExpression struct {
 	Token token.Token
 
 	// Object is the object against which the call is invoked.
-	Object Expression
+	Object ExpressionI
 
 	// Call is the method-name.
-	Call Expression
+	Call ExpressionI
 }
 
 func (oce *ObjectCallExpression) expressionNode() {}
@@ -682,7 +682,7 @@ type ArrayLiteral struct {
 	Token token.Token
 
 	// Elements holds the members of the array.
-	Elements []Expression
+	Elements []ExpressionI
 }
 
 func (al *ArrayLiteral) expressionNode() {}
@@ -709,10 +709,10 @@ type IndexExpression struct {
 	Token token.Token
 
 	// Left is the thing being indexed.
-	Left Expression
+	Left ExpressionI
 
 	// Index is the value we're indexing
-	Index Expression
+	Index ExpressionI
 }
 
 func (ie *IndexExpression) expressionNode() {}
@@ -737,7 +737,7 @@ type HashLiteral struct {
 	Token token.Token // the '{' token
 
 	// Pairs stores the name/value sets of the hash-content
-	Pairs map[Expression]Expression
+	Pairs map[ExpressionI]ExpressionI
 }
 
 func (hl *HashLiteral) expressionNode() {}
@@ -769,7 +769,7 @@ type AssignStatement struct {
 	Token    token.Token
 	Name     *Identifier
 	Operator string
-	Value    Expression
+	Value    ExpressionI
 }
 
 func (as *AssignStatement) expressionNode() {}
@@ -795,7 +795,7 @@ type CaseExpression struct {
 	Default bool
 
 	// The thing we match
-	Expr []Expression
+	Expr []ExpressionI
 
 	// The code to execute if there is a match
 	Block *BlockStatement
@@ -832,7 +832,7 @@ type SwitchExpression struct {
 
 	// Value is the thing that is evaluated to determine
 	// which block should be executed.
-	Value Expression
+	Value ExpressionI
 
 	// The branches we handle
 	Choices []*CaseExpression

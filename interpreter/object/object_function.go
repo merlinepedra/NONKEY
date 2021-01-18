@@ -13,7 +13,7 @@ import (
 type Function struct {
 	Parameters []*ast.Identifier
 	Body       *ast.BlockStatement
-	Defaults   map[string]ast.Expression
+	Defaults   map[string]ast.ExpressionI
 	Env        *Environment
 }
 
