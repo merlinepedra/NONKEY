@@ -658,3 +658,58 @@ func TestDotDot(t *testing.T) {
 		}
 	}
 }
+
+// TestGetLineStr test get source code line
+func TestGetLineStr(t *testing.T) {
+	code := `// A simple test-function for switch-statements.
+	function test( name ) {
+	
+	  // Did we match?
+	  m = false;
+	
+	  switch( name ) {
+		case /^steve$/ , /^STEVE$/i {
+		   printf("Hello Steve - we matched you via a regexp\n");
+		   m = true;
+		}
+		case "St" + "even" {
+		printf("Hello SteveN, you were matched via an expression\n" );
+			m = true;
+		}
+		case 3, 6, 9 {
+			printf("Hello multiple of three, we matched you literally: %d\n", int(name));
+			m = true;
+		}
+		default {
+		printf("Default case: %s\n", string(name) );
+		}
+	  }
+	
+	  // Show we matched, if we did.
+	  if ( m ) { printf( "\tMatched!\n"); }
+	}
+	
+	// Test the switch statement
+	test( "Steve" );   // Regexp match
+	test( "steve" );   // Regexp match
+	test( "Steven" );  // Literal match
+	test( 3 );         // Literal match
+	
+	// Unhandled/Default cases
+	test( "Bob" );
+	test( false );
+	
+	// Try some other numbers - only one will match
+	foreach number in 1..10 {
+	  test(number);
+	}
+	a = "으하하";
+	printf( "All done\n" );`
+
+	l := New(code)
+	for ; l.ch != rune(0); l.readChar() {
+	}
+	for i := range l.codeLineBegins {
+		println(l.GetLineStr(i))
+	}
+}

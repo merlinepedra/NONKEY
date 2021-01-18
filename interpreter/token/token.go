@@ -3,6 +3,8 @@
 package token
 
 import (
+	"fmt"
+
 	"github.com/kasworld/nonkey/enum/tokentype"
 )
 
@@ -10,5 +12,12 @@ import (
 type Token struct {
 	Type    tokentype.TokenType
 	Literal string
-	Pos     int // token post of source code
+
+	Line int // token pos line in source code
+	Pos  int // token pos of source code
+}
+
+func (tk Token) String() string {
+	return fmt.Sprintf("Token[%v %v at line %v pos %v",
+		tk.Type, tk.Literal, tk.Line, tk.Pos)
 }

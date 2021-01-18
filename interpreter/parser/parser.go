@@ -140,7 +140,10 @@ func (p *Parser) Errors() []string {
 
 // peekError raises an error if the next token is not the expected type.
 func (p *Parser) peekError(t tokentype.TokenType) {
-	msg := fmt.Sprintf("expected next token to be %s, got %s instead around line %d", t, p.curToken.Type, p.l.GetLine())
+	msg := fmt.Sprintf(
+		"expected next token to be %s, got %v",
+		t, p.curToken,
+	)
 	p.errors = append(p.errors, msg)
 }
 
@@ -246,7 +249,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 // no prefix parse function error
 func (p *Parser) noPrefixParseFnError(t tokentype.TokenType) {
-	msg := fmt.Sprintf("no prefix parse function for %s found around line %d", t, p.l.GetLine())
+	msg := fmt.Sprintf("no prefix parse function for %s at %v", t, p.l.CurrentLinePos())
 	p.errors = append(p.errors, msg)
 }
 
@@ -309,7 +312,7 @@ func (p *Parser) parseIntegerLiteral() asti.ExpressionI {
 	}
 
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as integer around line %d", p.curToken.Literal, p.l.GetLine())
+		msg := fmt.Sprintf("could not parse %q as integer at %v", p.curToken.Literal, p.l.CurrentLinePos())
 		p.errors = append(p.errors, msg)
 		return nil
 	}
@@ -322,7 +325,7 @@ func (p *Parser) parseFloatLiteral() asti.ExpressionI {
 	flo := &ast.FloatLiteral{Token: p.curToken}
 	value, err := strconv.ParseFloat(p.curToken.Literal, 64)
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as float around line %d", p.curToken.Literal, p.l.GetLine())
+		msg := fmt.Sprintf("could not parse %q as float at %v", p.curToken.Literal, p.l.CurrentLinePos())
 		p.errors = append(p.errors, msg)
 		return nil
 	}
@@ -488,7 +491,7 @@ func (p *Parser) parseInfixExpression(left asti.ExpressionI) asti.ExpressionI {
 func (p *Parser) parseTernaryExpression(condition asti.ExpressionI) asti.ExpressionI {
 
 	if p.tern {
-		msg := fmt.Sprintf("nested ternary expressions are illegal, around line %d", p.l.GetLine())
+		msg := fmt.Sprintf("nested ternary expressions are illegal at %v", p.l.CurrentLinePos())
 		p.errors = append(p.errors, msg)
 		return nil
 	}
@@ -805,7 +808,8 @@ func (p *Parser) parseAssignExpression(name asti.ExpressionI) asti.ExpressionI {
 	if n, ok := name.(*ast.Identifier); ok {
 		stmt.Name = n
 	} else {
-		msg := fmt.Sprintf("expected assign token to be IDENT, got %s instead around line %d", name.TokenLiteral(), p.l.GetLine())
+		msg := fmt.Sprintf("expected assign token to be IDENT, got %s instead, at %v",
+			name.TokenLiteral(), p.l.CurrentLinePos())
 		p.errors = append(p.errors, msg)
 	}
 

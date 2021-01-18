@@ -13,6 +13,11 @@ import (
 
 // Lexer holds our object-state.
 type Lexer struct {
+	// for debug,error message
+	curLine        int
+	curPosInLine   int
+	codeLineBegins []int // line begin pos
+
 	// The current character position
 	position int
 
@@ -32,36 +37,43 @@ type Lexer struct {
 // New a Lexer instance from string input.
 func New(input string) *Lexer {
 	l := &Lexer{characters: []rune(input)}
+	l.codeLineBegins = []int{0}
 	l.readChar()
 	return l
 }
 
-// GetLine returns the rough line-number of our current position.
-func (l *Lexer) GetLine() int {
-	line := 0
-	chars := len(l.characters)
-	i := 0
-
-	for i < l.readPosition && i < chars {
-
-		if l.characters[i] == rune('\n') {
-			line++
-		}
-
-		i++
+func (l *Lexer) GetLineStr(line int) string {
+	lineBegin := l.codeLineBegins[line]
+	if len(l.codeLineBegins) > line+1 {
+		lineEnd := l.codeLineBegins[line+1]
+		return string(l.characters[lineBegin:lineEnd])
+	} else {
+		return string(l.characters[lineBegin:])
 	}
-	return line
+}
+
+func (l *Lexer) CurrentLinePos() string {
+	return fmt.Sprintf("Line %v Pos %v", l.curLine, l.curPosInLine)
 }
 
 // read one forward character
 func (l *Lexer) readChar() {
 	if l.readPosition >= len(l.characters) {
 		l.ch = rune(0)
+		l.codeLineBegins = append(l.codeLineBegins, l.position+1)
 	} else {
 		l.ch = l.characters[l.readPosition]
 	}
 	l.position = l.readPosition
 	l.readPosition++
+
+	// for debug, error message
+	l.curPosInLine++
+	if l.ch == rune('\n') {
+		l.curLine++
+		l.curPosInLine = 0
+		l.codeLineBegins = append(l.codeLineBegins, l.position)
+	}
 }
 
 // NextToken to read next token, skipping the white space.
@@ -273,7 +285,12 @@ func (l *Lexer) NextToken() token.Token {
 
 // return new token
 func (l *Lexer) newToken(tokenType tokentype.TokenType, s string) token.Token {
-	return token.Token{Type: tokenType, Literal: s, Pos: l.position}
+	return token.Token{
+		Type:    tokenType,
+		Literal: s,
+		Line:    l.curLine,
+		Pos:     l.curPosInLine,
+	}
 }
 
 // readIdentifier is designed to read an identifier (name of variable,
