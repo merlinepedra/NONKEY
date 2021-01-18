@@ -22,8 +22,8 @@ type Identifier struct {
 
 func (i *Identifier) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+// GetToken returns the token.
+func (i *Identifier) GetToken() token.Token { return i.Token }
 
 // String returns this object as a string.
 func (i *Identifier) String() string {
@@ -50,8 +50,8 @@ type IntegerLiteral struct {
 
 func (il *IntegerLiteral) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
+// GetToken returns the token.
+func (il *IntegerLiteral) GetToken() token.Token { return il.Token }
 
 // String returns this object as a string.
 func (il *IntegerLiteral) String() string { return il.Token.Literal }
@@ -67,8 +67,8 @@ type FloatLiteral struct {
 
 func (fl *FloatLiteral) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (fl *FloatLiteral) TokenLiteral() string { return fl.Token.Literal }
+// GetToken returns the token.
+func (fl *FloatLiteral) GetToken() token.Token { return fl.Token }
 
 // String returns this object as a string.
 func (fl *FloatLiteral) String() string { return fl.Token.Literal }
@@ -87,8 +87,8 @@ type PrefixExpression struct {
 
 func (pe *PrefixExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
+// GetToken returns the token.
+func (pe *PrefixExpression) GetToken() token.Token { return pe.Token }
 
 // String returns this object as a string.
 func (pe *PrefixExpression) String() string {
@@ -117,8 +117,8 @@ type InfixExpression struct {
 
 func (ie *InfixExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (ie *InfixExpression) TokenLiteral() string { return ie.Token.Literal }
+// GetToken returns the token.
+func (ie *InfixExpression) GetToken() token.Token { return ie.Token }
 
 // String returns this object as a string.
 func (ie *InfixExpression) String() string {
@@ -141,8 +141,8 @@ type PostfixExpression struct {
 
 func (pe *PostfixExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (pe *PostfixExpression) TokenLiteral() string { return pe.Token.Literal }
+// GetToken returns the token.
+func (pe *PostfixExpression) GetToken() token.Token { return pe.Token }
 
 // String returns this object as a string.
 func (pe *PostfixExpression) String() string {
@@ -165,8 +165,8 @@ type Boolean struct {
 
 func (b *Boolean) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
+// GetToken returns the token.
+func (b *Boolean) GetToken() token.Token { return b.Token }
 
 // String returns this object as a string.
 func (b *Boolean) String() string { return b.Token.Literal }
@@ -191,8 +191,8 @@ type IfExpression struct {
 
 func (ie *IfExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
+// GetToken returns the token.
+func (ie *IfExpression) GetToken() token.Token { return ie.Token }
 
 // String returns this object as a string.
 func (ie *IfExpression) String() string {
@@ -226,8 +226,8 @@ type TernaryExpression struct {
 
 func (te *TernaryExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (te *TernaryExpression) TokenLiteral() string { return te.Token.Literal }
+// GetToken returns the token.
+func (te *TernaryExpression) GetToken() token.Token { return te.Token }
 
 // String returns this object as a string.
 func (te *TernaryExpression) String() string {
@@ -260,8 +260,8 @@ type ForLoopExpression struct {
 
 func (fle *ForLoopExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (fle *ForLoopExpression) TokenLiteral() string { return fle.Token.Literal }
+// GetToken returns the token.
+func (fle *ForLoopExpression) GetToken() token.Token { return fle.Token }
 
 // String returns this object as a string.
 func (fle *ForLoopExpression) String() string {
@@ -294,8 +294,8 @@ type FunctionLiteral struct {
 
 func (fl *FunctionLiteral) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
+// GetToken returns the token.
+func (fl *FunctionLiteral) GetToken() token.Token { return fl.Token }
 
 // String returns this object as a string.
 func (fl *FunctionLiteral) String() string {
@@ -304,7 +304,7 @@ func (fl *FunctionLiteral) String() string {
 	for _, p := range fl.Parameters {
 		params = append(params, p.String())
 	}
-	out.WriteString(fl.TokenLiteral())
+	out.WriteString(fl.GetToken().String())
 	out.WriteString("(")
 	out.WriteString(strings.Join(params, ", "))
 	out.WriteString(") ")
@@ -332,10 +332,8 @@ type FunctionDefineLiteral struct {
 
 func (fl *FunctionDefineLiteral) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (fl *FunctionDefineLiteral) TokenLiteral() string {
-	return fl.Token.Literal
-}
+// GetToken returns the token.
+func (fl *FunctionDefineLiteral) GetToken() token.Token { return fl.Token }
 
 // String returns this object as a string.
 func (fl *FunctionDefineLiteral) String() string {
@@ -344,7 +342,7 @@ func (fl *FunctionDefineLiteral) String() string {
 	for _, p := range fl.Parameters {
 		params = append(params, p.String())
 	}
-	out.WriteString(fl.TokenLiteral())
+	out.WriteString(fl.GetToken().String())
 	out.WriteString("(")
 	out.WriteString(strings.Join(params, ", "))
 	out.WriteString(") ")
@@ -367,8 +365,8 @@ type CallExpression struct {
 
 func (ce *CallExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
+// GetToken returns the token.
+func (ce *CallExpression) GetToken() token.Token { return ce.Token }
 
 // String returns this object as a string.
 func (ce *CallExpression) String() string {
@@ -398,10 +396,8 @@ type ObjectCallExpression struct {
 
 func (oce *ObjectCallExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (oce *ObjectCallExpression) TokenLiteral() string {
-	return oce.Token.Literal
-}
+// GetToken returns the token.
+func (oce *ObjectCallExpression) GetToken() token.Token { return oce.Token }
 
 // String returns this object as a string.
 func (oce *ObjectCallExpression) String() string {
@@ -424,8 +420,8 @@ type StringLiteral struct {
 
 func (sl *StringLiteral) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
+// GetToken returns the token.
+func (sl *StringLiteral) GetToken() token.Token { return sl.Token }
 
 // String returns this object as a string.
 func (sl *StringLiteral) String() string { return sl.Token.Literal }
@@ -444,8 +440,8 @@ type RegexpLiteral struct {
 
 func (rl *RegexpLiteral) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (rl *RegexpLiteral) TokenLiteral() string { return rl.Token.Literal }
+// GetToken returns the token.
+func (rl *RegexpLiteral) GetToken() token.Token { return rl.Token }
 
 // String returns this object as a string.
 func (rl *RegexpLiteral) String() string {
@@ -464,8 +460,8 @@ type BacktickLiteral struct {
 
 func (bl *BacktickLiteral) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (bl *BacktickLiteral) TokenLiteral() string { return bl.Token.Literal }
+// GetToken returns the token.
+func (bl *BacktickLiteral) GetToken() token.Token { return bl.Token }
 
 // String returns this object as a string.
 func (bl *BacktickLiteral) String() string { return bl.Token.Literal }
@@ -481,8 +477,8 @@ type ArrayLiteral struct {
 
 func (al *ArrayLiteral) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal }
+// GetToken returns the token.
+func (al *ArrayLiteral) GetToken() token.Token { return al.Token }
 
 // String returns this object as a string.
 func (al *ArrayLiteral) String() string {
@@ -511,8 +507,8 @@ type IndexExpression struct {
 
 func (ie *IndexExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (ie *IndexExpression) TokenLiteral() string { return ie.Token.Literal }
+// GetToken returns the token.
+func (ie *IndexExpression) GetToken() token.Token { return ie.Token }
 
 // String returns this object as a string.
 func (ie *IndexExpression) String() string {
@@ -536,8 +532,8 @@ type HashLiteral struct {
 
 func (hl *HashLiteral) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
+// GetToken returns the token.
+func (hl *HashLiteral) GetToken() token.Token { return hl.Token }
 
 // String returns this object as a string.
 func (hl *HashLiteral) String() string {
@@ -569,8 +565,8 @@ type CaseExpression struct {
 
 func (ce *CaseExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (ce *CaseExpression) TokenLiteral() string { return ce.Token.Literal }
+// GetToken returns the token.
+func (ce *CaseExpression) GetToken() token.Token { return ce.Token }
 
 // String returns this object as a string.
 func (ce *CaseExpression) String() string {
@@ -606,8 +602,8 @@ type SwitchExpression struct {
 
 func (se *SwitchExpression) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (se *SwitchExpression) TokenLiteral() string { return se.Token.Literal }
+// GetToken returns the token.
+func (se *SwitchExpression) GetToken() token.Token { return se.Token }
 
 // String returns this object as a string.
 func (se *SwitchExpression) String() string {
@@ -648,8 +644,8 @@ type ForeachStatement struct {
 
 func (fes *ForeachStatement) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (fes *ForeachStatement) TokenLiteral() string { return fes.Token.Literal }
+// GetToken returns the token.
+func (fes *ForeachStatement) GetToken() token.Token { return fes.Token }
 
 // String returns this object as a string.
 func (fes *ForeachStatement) String() string {
@@ -678,8 +674,8 @@ type AssignStatement struct {
 
 func (as *AssignStatement) ExpressionNode() {}
 
-// TokenLiteral returns the literal token.
-func (as *AssignStatement) TokenLiteral() string { return as.Token.Literal }
+// GetToken returns the token.
+func (as *AssignStatement) GetToken() token.Token { return as.Token }
 
 // String returns this object as a string.
 func (as *AssignStatement) String() string {

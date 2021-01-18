@@ -103,7 +103,7 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 		params := node.Parameters
 		body := node.Body
 		defaults := node.Defaults
-		env.Set(node.TokenLiteral(), &object.Function{Parameters: params, Env: env, Body: body, Defaults: defaults})
+		env.Set(node.GetToken().Literal, &object.Function{Parameters: params, Env: env, Body: body, Defaults: defaults})
 		return object.NULL
 	case *ast.ObjectCallExpression:
 		res := evalObjectCallExpression(node, env)

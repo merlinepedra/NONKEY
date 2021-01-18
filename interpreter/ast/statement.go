@@ -23,14 +23,14 @@ type LetStatement struct {
 
 func (ls *LetStatement) StatementNode() {}
 
-// TokenLiteral returns the literal token.
-func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
+// GetToken returns the token.
+func (ls *LetStatement) GetToken() token.Token { return ls.Token }
 
 // String returns this object as a string.
 func (ls *LetStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString(ls.TokenLiteral() + " ")
-	out.WriteString(ls.Name.TokenLiteral())
+	out.WriteString(ls.GetToken().String() + " ")
+	out.WriteString(ls.Name.GetToken().String())
 	out.WriteString(" = ")
 	if ls.Value != nil {
 		out.WriteString(ls.Value.String())
@@ -54,14 +54,14 @@ type ConstStatement struct {
 
 func (ls *ConstStatement) StatementNode() {}
 
-// TokenLiteral returns the literal token.
-func (ls *ConstStatement) TokenLiteral() string { return ls.Token.Literal }
+// GetToken returns the token.
+func (ls *ConstStatement) GetToken() token.Token { return ls.Token }
 
 // String returns this object as a string.
 func (ls *ConstStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString(ls.TokenLiteral() + " ")
-	out.WriteString(ls.Name.TokenLiteral())
+	out.WriteString(ls.GetToken().String() + " ")
+	out.WriteString(ls.Name.GetToken().String())
 	out.WriteString(" = ")
 	if ls.Value != nil {
 		out.WriteString(ls.Value.String())
@@ -81,15 +81,15 @@ type ReturnStatement struct {
 
 func (rs *ReturnStatement) StatementNode() {}
 
-// TokenLiteral returns the literal token.
-func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
+// GetToken returns the token.
+func (rs *ReturnStatement) GetToken() token.Token { return rs.Token }
 
 // String returns this object as a string.
 func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString(rs.TokenLiteral() + " ")
+	out.WriteString(rs.GetToken().String() + " ")
 	if rs.ReturnValue != nil {
-		out.WriteString(rs.ReturnValue.TokenLiteral())
+		out.WriteString(rs.ReturnValue.GetToken().String())
 	}
 	out.WriteString(";")
 	return out.String()
@@ -107,8 +107,8 @@ type BlockStatement struct {
 
 func (bs *BlockStatement) StatementNode() {}
 
-// TokenLiteral returns the literal token.
-func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+// GetToken returns the token.
+func (bs *BlockStatement) GetToken() token.Token { return bs.Token }
 
 // String returns this object as a string.
 func (bs *BlockStatement) String() string {
@@ -121,8 +121,8 @@ func (bs *BlockStatement) String() string {
 
 func (es *ExpressionStatement) StatementNode() {}
 
-// TokenLiteral returns the literal token.
-func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
+// GetToken returns the token.
+func (es *ExpressionStatement) GetToken() token.Token { return es.Token }
 
 // String returns this object as a string.
 func (es *ExpressionStatement) String() string {

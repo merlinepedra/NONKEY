@@ -1,9 +1,13 @@
 package asti
 
+import (
+	"github.com/kasworld/nonkey/interpreter/token"
+)
+
 // NodeI reresents a node.
 type NodeI interface {
 	// TokenLiteral returns the literal of the token.
-	TokenLiteral() string
+	GetToken() token.Token
 
 	// String returns this object as a string.
 	String() string

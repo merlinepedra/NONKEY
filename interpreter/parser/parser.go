@@ -788,7 +788,7 @@ func (p *Parser) parseAssignExpression(name asti.ExpressionI) asti.ExpressionI {
 		stmt.Name = n
 	} else {
 		p.AddError("expected assign token to be IDENT, got %s instead",
-			name.TokenLiteral())
+			name.GetToken().Literal)
 	}
 
 	oper := p.curToken

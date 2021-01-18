@@ -6,6 +6,7 @@ import (
 	"bytes"
 
 	"github.com/kasworld/nonkey/interpreter/asti"
+	"github.com/kasworld/nonkey/interpreter/token"
 )
 
 // Program represents a complete program.
@@ -15,10 +16,17 @@ type Program struct {
 	Statements []asti.StatementI
 }
 
+func (p *Program) GetToken() token.Token {
+	if len(p.Statements) > 0 {
+		return p.Statements[0].GetToken()
+	}
+	return token.Token{}
+}
+
 // TokenLiteral returns the literal token of our program.
 func (p *Program) TokenLiteral() string {
 	if len(p.Statements) > 0 {
-		return p.Statements[0].TokenLiteral()
+		return p.Statements[0].GetToken().String()
 	}
 	return ""
 }
