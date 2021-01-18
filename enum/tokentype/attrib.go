@@ -69,22 +69,15 @@ var Attrib = [TokenType_Count]struct {
 }
 
 // Keywords reversed keywords
-var Keywords = map[string]TokenType{
-	"case":     CASE,
-	"const":    CONST,
-	"default":  DEFAULT,
-	"else":     ELSE,
-	"false":    FALSE,
-	"fn":       FUNCTION,
-	"for":      FOR,
-	"foreach":  FOREACH,
-	"function": DEFINE_FUNCTION,
-	"if":       IF,
-	"in":       IN,
-	"let":      LET,
-	"return":   RETURN,
-	"switch":   SWITCH,
-	"true":     TRUE,
+var Keywords = map[string]TokenType{}
+
+func init() {
+	// build keyword map
+	for i, v := range Attrib {
+		if v.Keyword {
+			Keywords[v.String] = TokenType(i)
+		}
+	}
 }
 
 // LookupKeyword used to determinate whether identifier is keyword nor not
