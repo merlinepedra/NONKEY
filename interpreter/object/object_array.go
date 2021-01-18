@@ -2,6 +2,7 @@ package object
 
 import (
 	"bytes"
+	"fmt"
 	"sort"
 	"strings"
 
@@ -29,9 +30,7 @@ func (ao *Array) Inspect() string {
 	for _, e := range ao.Elements {
 		elements = append(elements, e.Inspect())
 	}
-	out.WriteString("[")
-	out.WriteString(strings.Join(elements, ", "))
-	out.WriteString("]")
+	fmt.Fprintf(&out, "[%v]", strings.Join(elements, ", "))
 	return out.String()
 }
 

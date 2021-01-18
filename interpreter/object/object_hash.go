@@ -49,9 +49,7 @@ func (h *Hash) Inspect() string {
 		pairs = append(pairs, fmt.Sprintf("%s: %s",
 			pair.Key.Inspect(), pair.Value.Inspect()))
 	}
-	out.WriteString("{")
-	out.WriteString(strings.Join(pairs, ", "))
-	out.WriteString("}")
+	fmt.Fprintf(&out, "{%v}", strings.Join(pairs, ", "))
 	return out.String()
 }
 

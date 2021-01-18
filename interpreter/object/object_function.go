@@ -2,6 +2,7 @@ package object
 
 import (
 	"bytes"
+	"fmt"
 	"sort"
 	"strings"
 
@@ -30,12 +31,7 @@ func (f *Function) Inspect() string {
 	for _, p := range f.Parameters {
 		parameters = append(parameters, p.String())
 	}
-	out.WriteString("fn")
-	out.WriteString("(")
-	out.WriteString(strings.Join(parameters, ", "))
-	out.WriteString(") {\n")
-	out.WriteString(f.Body.String())
-	out.WriteString("\n}")
+	fmt.Fprintf(&out, "fn(%v) {\n%v\n}", strings.Join(parameters, ", "), f.Body)
 	return out.String()
 }
 
