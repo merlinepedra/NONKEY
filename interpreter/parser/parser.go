@@ -437,7 +437,7 @@ func (p *Parser) parseBoolean() asti.ExpressionI {
 func (p *Parser) parsePrefixExpression() asti.ExpressionI {
 	expression := &ast.PrefixExpression{
 		Token:    p.curToken,
-		Operator: p.curToken.Literal,
+		Operator: p.curToken.Type,
 	}
 	p.nextToken()
 	expression.Right = p.parseExpression(precedence.PREFIX)
@@ -448,7 +448,7 @@ func (p *Parser) parsePrefixExpression() asti.ExpressionI {
 func (p *Parser) parsePostfixExpression() asti.ExpressionI {
 	expression := &ast.PostfixExpression{
 		Token:    p.prevToken,
-		Operator: p.curToken.Literal,
+		Operator: p.curToken.Type,
 	}
 	return expression
 }
@@ -457,7 +457,7 @@ func (p *Parser) parsePostfixExpression() asti.ExpressionI {
 func (p *Parser) parseInfixExpression(left asti.ExpressionI) asti.ExpressionI {
 	expression := &ast.InfixExpression{
 		Token:    p.curToken,
-		Operator: p.curToken.Literal,
+		Operator: p.curToken.Type,
 		Left:     left,
 	}
 
@@ -794,29 +794,7 @@ func (p *Parser) parseAssignExpression(name asti.ExpressionI) asti.ExpressionI {
 	oper := p.curToken
 	p.nextToken()
 
-	//
-	// An assignment is generally:
-	//
-	//    variable = value
-	//
-	// But we cheat and reuse the implementation for:
-	//
-	//    i += 4
-	//
-	// In this case we record the "operator" as "+="
-	//
-	switch oper.Type {
-	case tokentype.PLUS_EQUALS:
-		stmt.Operator = "+="
-	case tokentype.MINUS_EQUALS:
-		stmt.Operator = "-="
-	case tokentype.SLASH_EQUALS:
-		stmt.Operator = "/="
-	case tokentype.ASTERISK_EQUALS:
-		stmt.Operator = "*="
-	default:
-		stmt.Operator = "="
-	}
+	stmt.Operator = oper.Type
 	stmt.Value = p.parseExpression(precedence.LOWEST)
 	return stmt
 }

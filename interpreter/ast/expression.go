@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/kasworld/nonkey/enum/tokentype"
 	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/token"
 )
@@ -79,7 +80,7 @@ type PrefixExpression struct {
 	Token token.Token
 
 	// Operator holds the operator being invoked (e.g. "!" ).
-	Operator string
+	Operator tokentype.TokenType
 
 	// Right holds the thing to be operated upon
 	Right asti.ExpressionI
@@ -106,7 +107,7 @@ type InfixExpression struct {
 	Left asti.ExpressionI
 
 	// Operator holds the operation to be carried out (e.g. "+", "-" )
-	Operator string
+	Operator tokentype.TokenType
 
 	// Right holds the right-most argument
 	Right asti.ExpressionI
@@ -129,7 +130,7 @@ type PostfixExpression struct {
 	// Token holds the token we're operating upon
 	Token token.Token
 	// Operator holds the postfix token, e.g. ++
-	Operator string
+	Operator tokentype.TokenType
 }
 
 func (pe *PostfixExpression) ExpressionNode() {}
@@ -613,7 +614,7 @@ func (fes *ForeachStatement) String() string {
 type AssignStatement struct {
 	Token    token.Token
 	Name     *Identifier
-	Operator string
+	Operator tokentype.TokenType
 	Value    asti.ExpressionI
 }
 

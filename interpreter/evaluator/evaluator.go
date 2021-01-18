@@ -14,6 +14,7 @@ import (
 	"github.com/kasworld/nonkey/config/builtinfunctions"
 	"github.com/kasworld/nonkey/config/pragmas"
 	"github.com/kasworld/nonkey/enum/objecttype"
+	"github.com/kasworld/nonkey/enum/tokentype"
 	"github.com/kasworld/nonkey/interpreter/ast"
 	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/object"
@@ -189,20 +190,20 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 }
 
 // eval prefix expression
-func evalPrefixExpression(operator string, right object.ObjectI) object.ObjectI {
+func evalPrefixExpression(operator tokentype.TokenType, right object.ObjectI) object.ObjectI {
 	switch operator {
-	case "!":
+	case tokentype.BANG:
 		return evalBangOperatorExpression(right)
-	case "-":
+	case tokentype.MINUS:
 		return evalMinusPrefixOperatorExpression(right)
 	default:
 		return object.NewError("unknown operator: %s%s", operator, right.Type())
 	}
 }
 
-func evalPostfixExpression(env *object.Environment, operator string, node *ast.PostfixExpression) object.ObjectI {
+func evalPostfixExpression(env *object.Environment, operator tokentype.TokenType, node *ast.PostfixExpression) object.ObjectI {
 	switch operator {
-	case "++":
+	case tokentype.PLUS_PLUS:
 		val, ok := env.Get(node.Token.Literal)
 		if !ok {
 			return object.NewError("%s is unknown", node.Token.Literal)
@@ -217,7 +218,7 @@ func evalPostfixExpression(env *object.Environment, operator string, node *ast.P
 			return object.NewError("%s is not an int", node.Token.Literal)
 
 		}
-	case "--":
+	case tokentype.MINUS_MINUS:
 		val, ok := env.Get(node.Token.Literal)
 		if !ok {
 			return object.NewError("%s is unknown", node.Token.Literal)
@@ -260,7 +261,7 @@ func evalMinusPrefixOperatorExpression(right object.ObjectI) object.ObjectI {
 	}
 }
 
-func evalInfixExpression(operator string, left, right object.ObjectI, env *object.Environment) object.ObjectI {
+func evalInfixExpression(operator tokentype.TokenType, left, right object.ObjectI, env *object.Environment) object.ObjectI {
 	switch {
 	case left.Type() == objecttype.INTEGER && right.Type() == objecttype.INTEGER:
 		return evalIntegerInfixExpression(operator, left, right)
@@ -272,19 +273,19 @@ func evalInfixExpression(operator string, left, right object.ObjectI, env *objec
 		return evalIntegerFloatInfixExpression(operator, left, right)
 	case left.Type() == objecttype.STRING && right.Type() == objecttype.STRING:
 		return evalStringInfixExpression(operator, left, right)
-	case operator == "&&":
+	case operator == tokentype.AND:
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) && objectToNativeBoolean(right))
-	case operator == "||":
+	case operator == tokentype.OR:
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) || objectToNativeBoolean(right))
-	case operator == "!~":
+	case operator == tokentype.NOT_CONTAINS:
 		return notMatches(left, right)
-	case operator == "~=":
+	case operator == tokentype.CONTAINS:
 		return matches(left, right, env)
 
-	case operator == "==":
+	case operator == tokentype.EQ:
 		return nativeBoolToBooleanObject(left == right)
 
-	case operator == "!=":
+	case operator == tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(left != right)
 	case left.Type() == objecttype.BOOLEAN && right.Type() == objecttype.BOOLEAN:
 		return evalBooleanInfixExpression(operator, left, right)
@@ -364,19 +365,19 @@ func notMatches(left, right object.ObjectI) object.ObjectI {
 }
 
 // boolean operations
-func evalBooleanInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
+func evalBooleanInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	// convert the bools to strings.
 	l := &object.String{Value: string(left.Inspect())}
 	r := &object.String{Value: string(right.Inspect())}
 
 	switch operator {
-	case "<":
+	case tokentype.LT:
 		return evalStringInfixExpression(operator, l, r)
-	case "<=":
+	case tokentype.LT_EQUALS:
 		return evalStringInfixExpression(operator, l, r)
-	case ">":
+	case tokentype.GT:
 		return evalStringInfixExpression(operator, l, r)
-	case ">=":
+	case tokentype.GT_EQUALS:
 		return evalStringInfixExpression(operator, l, r)
 	default:
 		return object.NewError("unknown operator: %s %s %s",
@@ -384,43 +385,43 @@ func evalBooleanInfixExpression(operator string, left, right object.ObjectI) obj
 	}
 }
 
-func evalIntegerInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
+func evalIntegerInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
 	switch operator {
-	case "+":
+	case tokentype.PLUS:
 		return &object.Integer{Value: leftVal + rightVal}
-	case "+=":
+	case tokentype.PLUS_EQUALS:
 		return &object.Integer{Value: leftVal + rightVal}
-	case "%":
+	case tokentype.MOD:
 		return &object.Integer{Value: leftVal % rightVal}
-	case "**":
+	case tokentype.POW:
 		return &object.Integer{Value: int64(math.Pow(float64(leftVal), float64(rightVal)))}
-	case "-":
+	case tokentype.MINUS:
 		return &object.Integer{Value: leftVal - rightVal}
-	case "-=":
+	case tokentype.MINUS_EQUALS:
 		return &object.Integer{Value: leftVal - rightVal}
-	case "*":
+	case tokentype.ASTERISK:
 		return &object.Integer{Value: leftVal * rightVal}
-	case "*=":
+	case tokentype.ASTERISK_EQUALS:
 		return &object.Integer{Value: leftVal * rightVal}
-	case "/":
+	case tokentype.SLASH:
 		return &object.Integer{Value: leftVal / rightVal}
-	case "/=":
+	case tokentype.SLASH_EQUALS:
 		return &object.Integer{Value: leftVal / rightVal}
-	case "<":
+	case tokentype.LT:
 		return nativeBoolToBooleanObject(leftVal < rightVal)
-	case "<=":
+	case tokentype.LT_EQUALS:
 		return nativeBoolToBooleanObject(leftVal <= rightVal)
-	case ">":
+	case tokentype.GT:
 		return nativeBoolToBooleanObject(leftVal > rightVal)
-	case ">=":
+	case tokentype.GT_EQUALS:
 		return nativeBoolToBooleanObject(leftVal >= rightVal)
-	case "==":
+	case tokentype.EQ:
 		return nativeBoolToBooleanObject(leftVal == rightVal)
-	case "!=":
+	case tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(leftVal != rightVal)
-	case "..":
+	case tokentype.DOTDOT:
 		len := int(rightVal-leftVal) + 1
 		array := make([]object.ObjectI, len)
 		i := 0
@@ -435,39 +436,39 @@ func evalIntegerInfixExpression(operator string, left, right object.ObjectI) obj
 			left.Type(), operator, right.Type())
 	}
 }
-func evalFloatInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
+func evalFloatInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	leftVal := left.(*object.Float).Value
 	rightVal := right.(*object.Float).Value
 	switch operator {
-	case "+":
+	case tokentype.PLUS:
 		return &object.Float{Value: leftVal + rightVal}
-	case "+=":
+	case tokentype.PLUS_EQUALS:
 		return &object.Float{Value: leftVal + rightVal}
-	case "-":
+	case tokentype.MINUS:
 		return &object.Float{Value: leftVal - rightVal}
-	case "-=":
+	case tokentype.MINUS_EQUALS:
 		return &object.Float{Value: leftVal - rightVal}
-	case "*":
+	case tokentype.ASTERISK:
 		return &object.Float{Value: leftVal * rightVal}
-	case "*=":
+	case tokentype.ASTERISK_EQUALS:
 		return &object.Float{Value: leftVal * rightVal}
-	case "**":
+	case tokentype.POW:
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
-	case "/":
+	case tokentype.SLASH:
 		return &object.Float{Value: leftVal / rightVal}
-	case "/=":
+	case tokentype.SLASH_EQUALS:
 		return &object.Float{Value: leftVal / rightVal}
-	case "<":
+	case tokentype.LT:
 		return nativeBoolToBooleanObject(leftVal < rightVal)
-	case "<=":
+	case tokentype.LT_EQUALS:
 		return nativeBoolToBooleanObject(leftVal <= rightVal)
-	case ">":
+	case tokentype.GT:
 		return nativeBoolToBooleanObject(leftVal > rightVal)
-	case ">=":
+	case tokentype.GT_EQUALS:
 		return nativeBoolToBooleanObject(leftVal >= rightVal)
-	case "==":
+	case tokentype.EQ:
 		return nativeBoolToBooleanObject(leftVal == rightVal)
-	case "!=":
+	case tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
 		return object.NewError("unknown operator: %s %s %s",
@@ -475,39 +476,39 @@ func evalFloatInfixExpression(operator string, left, right object.ObjectI) objec
 	}
 }
 
-func evalFloatIntegerInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
+func evalFloatIntegerInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	leftVal := left.(*object.Float).Value
 	rightVal := float64(right.(*object.Integer).Value)
 	switch operator {
-	case "+":
+	case tokentype.PLUS:
 		return &object.Float{Value: leftVal + rightVal}
-	case "+=":
+	case tokentype.PLUS_EQUALS:
 		return &object.Float{Value: leftVal + rightVal}
-	case "-":
+	case tokentype.MINUS:
 		return &object.Float{Value: leftVal - rightVal}
-	case "-=":
+	case tokentype.MINUS_EQUALS:
 		return &object.Float{Value: leftVal - rightVal}
-	case "*":
+	case tokentype.ASTERISK:
 		return &object.Float{Value: leftVal * rightVal}
-	case "*=":
+	case tokentype.ASTERISK_EQUALS:
 		return &object.Float{Value: leftVal * rightVal}
-	case "**":
+	case tokentype.POW:
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
-	case "/":
+	case tokentype.SLASH:
 		return &object.Float{Value: leftVal / rightVal}
-	case "/=":
+	case tokentype.SLASH_EQUALS:
 		return &object.Float{Value: leftVal / rightVal}
-	case "<":
+	case tokentype.LT:
 		return nativeBoolToBooleanObject(leftVal < rightVal)
-	case "<=":
+	case tokentype.LT_EQUALS:
 		return nativeBoolToBooleanObject(leftVal <= rightVal)
-	case ">":
+	case tokentype.GT:
 		return nativeBoolToBooleanObject(leftVal > rightVal)
-	case ">=":
+	case tokentype.GT_EQUALS:
 		return nativeBoolToBooleanObject(leftVal >= rightVal)
-	case "==":
+	case tokentype.EQ:
 		return nativeBoolToBooleanObject(leftVal == rightVal)
-	case "!=":
+	case tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
 		return object.NewError("unknown operator: %s %s %s",
@@ -515,39 +516,39 @@ func evalFloatIntegerInfixExpression(operator string, left, right object.ObjectI
 	}
 }
 
-func evalIntegerFloatInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
+func evalIntegerFloatInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	leftVal := float64(left.(*object.Integer).Value)
 	rightVal := right.(*object.Float).Value
 	switch operator {
-	case "+":
+	case tokentype.PLUS:
 		return &object.Float{Value: leftVal + rightVal}
-	case "+=":
+	case tokentype.PLUS_EQUALS:
 		return &object.Float{Value: leftVal + rightVal}
-	case "-":
+	case tokentype.MINUS:
 		return &object.Float{Value: leftVal - rightVal}
-	case "-=":
+	case tokentype.MINUS_EQUALS:
 		return &object.Float{Value: leftVal - rightVal}
-	case "*":
+	case tokentype.ASTERISK:
 		return &object.Float{Value: leftVal * rightVal}
-	case "*=":
+	case tokentype.ASTERISK_EQUALS:
 		return &object.Float{Value: leftVal * rightVal}
-	case "**":
+	case tokentype.POW:
 		return &object.Float{Value: math.Pow(leftVal, rightVal)}
-	case "/":
+	case tokentype.SLASH:
 		return &object.Float{Value: leftVal / rightVal}
-	case "/=":
+	case tokentype.SLASH_EQUALS:
 		return &object.Float{Value: leftVal / rightVal}
-	case "<":
+	case tokentype.LT:
 		return nativeBoolToBooleanObject(leftVal < rightVal)
-	case "<=":
+	case tokentype.LT_EQUALS:
 		return nativeBoolToBooleanObject(leftVal <= rightVal)
-	case ">":
+	case tokentype.GT:
 		return nativeBoolToBooleanObject(leftVal > rightVal)
-	case ">=":
+	case tokentype.GT_EQUALS:
 		return nativeBoolToBooleanObject(leftVal >= rightVal)
-	case "==":
+	case tokentype.EQ:
 		return nativeBoolToBooleanObject(leftVal == rightVal)
-	case "!=":
+	case tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
 		return object.NewError("unknown operator: %s %s %s",
@@ -555,26 +556,26 @@ func evalIntegerFloatInfixExpression(operator string, left, right object.ObjectI
 	}
 }
 
-func evalStringInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
+func evalStringInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	l := left.(*object.String)
 	r := right.(*object.String)
 
 	switch operator {
-	case "==":
+	case tokentype.EQ:
 		return nativeBoolToBooleanObject(l.Value == r.Value)
-	case "!=":
+	case tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(l.Value != r.Value)
-	case ">=":
+	case tokentype.GT_EQUALS:
 		return nativeBoolToBooleanObject(l.Value >= r.Value)
-	case ">":
+	case tokentype.GT:
 		return nativeBoolToBooleanObject(l.Value > r.Value)
-	case "<=":
+	case tokentype.LT_EQUALS:
 		return nativeBoolToBooleanObject(l.Value <= r.Value)
-	case "<":
+	case tokentype.LT:
 		return nativeBoolToBooleanObject(l.Value < r.Value)
-	case "+":
+	case tokentype.PLUS:
 		return &object.String{Value: l.Value + r.Value}
-	case "+=":
+	case tokentype.PLUS_EQUALS:
 		return &object.String{Value: l.Value + r.Value}
 	}
 
@@ -641,17 +642,17 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 	//
 	//    i += 4
 	//
-	// In this case we record the "operator" as "+="
+	// In this case we record the "operator" as tokentype.PLUS_EQUALS
 	//
 	switch a.Operator {
-	case "+=":
+	case tokentype.PLUS_EQUALS:
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
 			return object.NewError("%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression("+=", current, evaluated, env)
+		res := evalInfixExpression(tokentype.PLUS_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
 			fmt.Printf("Error handling += %s\n", res.Inspect())
 			return res
@@ -660,7 +661,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		env.Set(a.Name.String(), res)
 		return res
 
-	case "-=":
+	case tokentype.MINUS_EQUALS:
 
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
@@ -668,7 +669,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 			return object.NewError("%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression("-=", current, evaluated, env)
+		res := evalInfixExpression(tokentype.MINUS_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
 			fmt.Printf("Error handling -= %s\n", res.Inspect())
 			return res
@@ -677,14 +678,14 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		env.Set(a.Name.String(), res)
 		return res
 
-	case "*=":
+	case tokentype.ASTERISK_EQUALS:
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
 			return object.NewError("%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression("*=", current, evaluated, env)
+		res := evalInfixExpression(tokentype.ASTERISK_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
 			fmt.Printf("Error handling *= %s\n", res.Inspect())
 			return res
@@ -693,7 +694,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		env.Set(a.Name.String(), res)
 		return res
 
-	case "/=":
+	case tokentype.SLASH_EQUALS:
 
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
@@ -701,7 +702,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 			return object.NewError("%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression("/=", current, evaluated, env)
+		res := evalInfixExpression(tokentype.SLASH_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
 			fmt.Printf("Error handling /= %s\n", res.Inspect())
 			return res
@@ -710,7 +711,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		env.Set(a.Name.String(), res)
 		return res
 
-	case "=":
+	case tokentype.ASSIGN:
 		// If we're running with the strict-pragma it is
 		// a bug to set a variable which wasn't declared (via let).
 		if pragmas.PRAGMAS["strict"] == 1 {
