@@ -93,10 +93,7 @@ func (pe *PrefixExpression) GetToken() token.Token { return pe.Token }
 // String returns this object as a string.
 func (pe *PrefixExpression) String() string {
 	var out bytes.Buffer
-	out.WriteString("(")
-	out.WriteString(pe.Operator)
-	out.WriteString(pe.Right.String())
-	out.WriteString(")")
+	fmt.Fprintf(&out, "(%v%v)", pe.Operator, pe.Right)
 	return out.String()
 }
 
@@ -123,11 +120,7 @@ func (ie *InfixExpression) GetToken() token.Token { return ie.Token }
 // String returns this object as a string.
 func (ie *InfixExpression) String() string {
 	var out bytes.Buffer
-	out.WriteString("(")
-	out.WriteString(ie.Left.String())
-	out.WriteString(" " + ie.Operator + " ")
-	out.WriteString(ie.Right.String())
-	out.WriteString(")")
+	fmt.Fprintf(&out, "(%v %v %v)", ie.Left, ie.Operator, ie.Right)
 	return out.String()
 }
 
@@ -147,10 +140,7 @@ func (pe *PostfixExpression) GetToken() token.Token { return pe.Token }
 // String returns this object as a string.
 func (pe *PostfixExpression) String() string {
 	var out bytes.Buffer
-	out.WriteString("(")
-	out.WriteString(pe.Token.Literal)
-	out.WriteString(pe.Operator)
-	out.WriteString(")")
+	fmt.Fprintf(&out, "(%v%v)", pe.Token.Literal, pe.Operator)
 	return out.String()
 }
 
@@ -197,13 +187,9 @@ func (ie *IfExpression) GetToken() token.Token { return ie.Token }
 // String returns this object as a string.
 func (ie *IfExpression) String() string {
 	var out bytes.Buffer
-	out.WriteString("if")
-	out.WriteString(ie.Condition.String())
-	out.WriteString(" ")
-	out.WriteString(ie.Consequence.String())
+	fmt.Fprintf(&out, "if %v %v", ie.Condition, ie.Consequence)
 	if ie.Alternative != nil {
-		out.WriteString("else")
-		out.WriteString(ie.Alternative.String())
+		fmt.Fprintf(&out, "else %v", ie.Alternative)
 	}
 	return out.String()
 }
@@ -232,15 +218,7 @@ func (te *TernaryExpression) GetToken() token.Token { return te.Token }
 // String returns this object as a string.
 func (te *TernaryExpression) String() string {
 	var out bytes.Buffer
-
-	out.WriteString("(")
-	out.WriteString(te.Condition.String())
-	out.WriteString(" ? ")
-	out.WriteString(te.IfTrue.String())
-	out.WriteString(" : ")
-	out.WriteString(te.IfFalse.String())
-	out.WriteString(")")
-
+	fmt.Fprintf(&out, "(%v ? %v : %v)", te.Condition, te.IfTrue, te.IfFalse)
 	return out.String()
 }
 
@@ -266,11 +244,7 @@ func (fle *ForLoopExpression) GetToken() token.Token { return fle.Token }
 // String returns this object as a string.
 func (fle *ForLoopExpression) String() string {
 	var out bytes.Buffer
-	out.WriteString("for (")
-	out.WriteString(fle.Condition.String())
-	out.WriteString(" ) {")
-	out.WriteString(fle.Consequence.String())
-	out.WriteString("}")
+	fmt.Fprintf(&out, "for (%v) {%v}", fle.Condition, fle.Consequence)
 	return out.String()
 }
 
@@ -304,11 +278,7 @@ func (fl *FunctionLiteral) String() string {
 	for _, p := range fl.Parameters {
 		params = append(params, p.String())
 	}
-	out.WriteString(fl.GetToken().String())
-	out.WriteString("(")
-	out.WriteString(strings.Join(params, ", "))
-	out.WriteString(") ")
-	out.WriteString(fl.Body.String())
+	fmt.Fprintf(&out, "%v(%v) %v", fl.GetToken(), strings.Join(params, ", "), fl.Body)
 	return out.String()
 
 }
@@ -342,11 +312,7 @@ func (fl *FunctionDefineLiteral) String() string {
 	for _, p := range fl.Parameters {
 		params = append(params, p.String())
 	}
-	out.WriteString(fl.GetToken().String())
-	out.WriteString("(")
-	out.WriteString(strings.Join(params, ", "))
-	out.WriteString(") ")
-	out.WriteString(fl.Body.String())
+	fmt.Fprintf(&out, "%v(%v) %v", fl.GetToken(), strings.Join(params, ", "), fl.Body)
 	return out.String()
 
 }
@@ -375,10 +341,7 @@ func (ce *CallExpression) String() string {
 	for _, a := range ce.Arguments {
 		args = append(args, a.String())
 	}
-	out.WriteString(ce.Function.String())
-	out.WriteString("(")
-	out.WriteString(strings.Join(args, ", "))
-	out.WriteString(")")
+	fmt.Fprintf(&out, "%v(%v)", ce.Function, strings.Join(args, ", "))
 	return out.String()
 }
 
@@ -402,10 +365,7 @@ func (oce *ObjectCallExpression) GetToken() token.Token { return oce.Token }
 // String returns this object as a string.
 func (oce *ObjectCallExpression) String() string {
 	var out bytes.Buffer
-	out.WriteString(oce.Object.String())
-	out.WriteString(".")
-	out.WriteString(oce.Call.String())
-
+	fmt.Fprintf(&out, "%v.%v", oce.Object, oce.Call)
 	return out.String()
 }
 
@@ -487,9 +447,7 @@ func (al *ArrayLiteral) String() string {
 	for _, el := range al.Elements {
 		elements = append(elements, el.String())
 	}
-	out.WriteString("[")
-	out.WriteString(strings.Join(elements, ", "))
-	out.WriteString("]")
+	fmt.Fprintf(&out, "[%v]", strings.Join(elements, ", "))
 	return out.String()
 }
 
@@ -513,11 +471,7 @@ func (ie *IndexExpression) GetToken() token.Token { return ie.Token }
 // String returns this object as a string.
 func (ie *IndexExpression) String() string {
 	var out bytes.Buffer
-	out.WriteString("(")
-	out.WriteString(ie.Left.String())
-	out.WriteString("[")
-	out.WriteString(ie.Index.String())
-	out.WriteString("])")
+	fmt.Fprintf(&out, "(%v[%v])", ie.Left, ie.Index)
 	return out.String()
 }
 
@@ -542,9 +496,7 @@ func (hl *HashLiteral) String() string {
 	for key, value := range hl.Pairs {
 		pairs = append(pairs, key.String()+":"+value.String())
 	}
-	out.WriteString("{")
-	out.WriteString(strings.Join(pairs, ", "))
-	out.WriteString("}")
+	fmt.Fprintf(&out, "{%v}", strings.Join(pairs, ", "))
 	return out.String()
 }
 
@@ -608,10 +560,7 @@ func (se *SwitchExpression) GetToken() token.Token { return se.Token }
 // String returns this object as a string.
 func (se *SwitchExpression) String() string {
 	var out bytes.Buffer
-	out.WriteString("\nswitch (")
-	out.WriteString(se.Value.String())
-	out.WriteString(")\n{\n")
-
+	fmt.Fprintf(&out, "\nswitch (%v)\n{\n", se.Value)
 	for _, tmp := range se.Choices {
 		if tmp != nil {
 			out.WriteString(tmp.String())
@@ -650,11 +599,7 @@ func (fes *ForeachStatement) GetToken() token.Token { return fes.Token }
 // String returns this object as a string.
 func (fes *ForeachStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString("foreach ")
-	out.WriteString(fes.Ident)
-	out.WriteString(" ")
-	out.WriteString(fes.Value.String())
-	out.WriteString(fes.Body.String())
+	fmt.Fprintf(&out, "foreach %v %v %v", fes.Ident, fes.Value, fes.Body)
 	return out.String()
 }
 
@@ -680,8 +625,6 @@ func (as *AssignStatement) GetToken() token.Token { return as.Token }
 // String returns this object as a string.
 func (as *AssignStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString(as.Name.String())
-	out.WriteString(as.Operator)
-	out.WriteString(as.Value.String())
+	fmt.Fprintf(&out, "%v%v%v", as.Name, as.Operator, as.Value)
 	return out.String()
 }

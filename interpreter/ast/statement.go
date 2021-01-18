@@ -4,6 +4,7 @@ package ast
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/token"
@@ -29,13 +30,11 @@ func (ls *LetStatement) GetToken() token.Token { return ls.Token }
 // String returns this object as a string.
 func (ls *LetStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString(ls.GetToken().String() + " ")
-	out.WriteString(ls.Name.GetToken().String())
-	out.WriteString(" = ")
-	if ls.Value != nil {
-		out.WriteString(ls.Value.String())
-	}
-	out.WriteString(";")
+	fmt.Fprintf(&out, "%v %v = %v;",
+		ls.GetToken(),
+		ls.Name.GetToken(),
+		ls.Value,
+	)
 	return out.String()
 }
 
@@ -60,13 +59,11 @@ func (ls *ConstStatement) GetToken() token.Token { return ls.Token }
 // String returns this object as a string.
 func (ls *ConstStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString(ls.GetToken().String() + " ")
-	out.WriteString(ls.Name.GetToken().String())
-	out.WriteString(" = ")
-	if ls.Value != nil {
-		out.WriteString(ls.Value.String())
-	}
-	out.WriteString(";")
+	fmt.Fprintf(&out, "%v %v = %v;",
+		ls.GetToken(),
+		ls.Name.GetToken(),
+		ls.Value,
+	)
 	return out.String()
 }
 
@@ -87,11 +84,10 @@ func (rs *ReturnStatement) GetToken() token.Token { return rs.Token }
 // String returns this object as a string.
 func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString(rs.GetToken().String() + " ")
-	if rs.ReturnValue != nil {
-		out.WriteString(rs.ReturnValue.GetToken().String())
-	}
-	out.WriteString(";")
+	fmt.Fprintf(&out, "%v %v;",
+		rs.GetToken(),
+		rs.ReturnValue.GetToken(),
+	)
 	return out.String()
 }
 
