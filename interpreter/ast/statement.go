@@ -31,8 +31,8 @@ func (ls *LetStatement) GetToken() token.Token { return ls.Token }
 func (ls *LetStatement) String() string {
 	var out bytes.Buffer
 	fmt.Fprintf(&out, "%v %v = %v;",
-		ls.GetToken(),
-		ls.Name.GetToken(),
+		ls.GetToken().Literal,
+		ls.Name.GetToken().Literal,
 		ls.Value,
 	)
 	return out.String()
@@ -60,8 +60,8 @@ func (ls *ConstStatement) GetToken() token.Token { return ls.Token }
 func (ls *ConstStatement) String() string {
 	var out bytes.Buffer
 	fmt.Fprintf(&out, "%v %v = %v;",
-		ls.GetToken(),
-		ls.Name.GetToken(),
+		ls.GetToken().Literal,
+		ls.Name.GetToken().Literal,
 		ls.Value,
 	)
 	return out.String()

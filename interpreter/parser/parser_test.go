@@ -94,8 +94,8 @@ func TestConstStatements(t *testing.T) {
 }
 
 func testLetStatement(t *testing.T, s asti.StatementI, name string) bool {
-	if s.TokenLiteral() != "let" {
-		t.Errorf("s.TokenLiteral not 'let'. got %q", s.TokenLiteral())
+	if s.GetToken().Literal != "let" {
+		t.Errorf("s.GetToken n.Literalot 'let'. got %q", s.GetToken().Literal)
 		return false
 	}
 	letStmt, ok := s.(*ast.LetStatement)
@@ -107,7 +107,7 @@ func testLetStatement(t *testing.T, s asti.StatementI, name string) bool {
 		t.Errorf("s.Name not '%s'. got=%s", name, letStmt.Name.Value)
 		return false
 	}
-	if letStmt.Name.TokenLiteral() != name {
+	if letStmt.Name.GetToken().Literal != name {
 		t.Errorf("s.Name not '%s'. got=%s", name, letStmt.Name.Value)
 		return false
 	}
@@ -115,8 +115,8 @@ func testLetStatement(t *testing.T, s asti.StatementI, name string) bool {
 }
 
 func testConstStatement(t *testing.T, s asti.StatementI, name string) bool {
-	if s.TokenLiteral() != "const" {
-		t.Errorf("s.TokenLiteral not 'const'. got %q", s.TokenLiteral())
+	if s.GetToken().Literal != "const" {
+		t.Errorf("s.GetToken n.Literalot 'const'. got %q", s.GetToken().Literal)
 		return false
 	}
 	letStmt, ok := s.(*ast.ConstStatement)
@@ -128,7 +128,7 @@ func testConstStatement(t *testing.T, s asti.StatementI, name string) bool {
 		t.Errorf("s.Name not '%s'. got=%s", name, letStmt.Name.Value)
 		return false
 	}
-	if letStmt.Name.TokenLiteral() != name {
+	if letStmt.Name.GetToken().Literal != name {
 		t.Errorf("s.Name not '%s'. got=%s", name, letStmt.Name.Value)
 		return false
 	}
@@ -153,8 +153,8 @@ return 993322;
 		if !ok {
 			t.Errorf("stmt not *ast.ReturnStatement. got %T", stmt)
 		}
-		if returnStatement.TokenLiteral() != "return" {
-			t.Errorf("returnStatement.TokenLiteral not 'return', got %q", returnStatement.TokenLiteral())
+		if returnStatement.GetToken().Literal != "return" {
+			t.Errorf("returnStatement.GetToken n.Literalot 'return', got %q", returnStatement.GetToken().Literal)
 		}
 	}
 }
@@ -181,9 +181,9 @@ func TestIdentifierExpression(t *testing.T) {
 	if ident.Value != "foobar" {
 		t.Errorf("ident.Value not %s. got=%s", "foobar", ident.Value)
 	}
-	if ident.TokenLiteral() != "foobar" {
-		t.Errorf("ident.TokenLiteral not %s. got=%s", "foobar",
-			ident.TokenLiteral())
+	if ident.GetToken().Literal != "foobar" {
+		t.Errorf("ident.GetToken n.Literalot %s. got=%s", "foobar",
+			ident.GetToken().Literal)
 	}
 }
 
@@ -209,8 +209,8 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	if integer.Value != 5 {
 		t.Errorf("integer.Value not %d. got=%d", 5, integer.Value)
 	}
-	if integer.TokenLiteral() != "5" {
-		t.Errorf("integer.TokenLiteral not %s. got=%s", "5", integer.TokenLiteral())
+	if integer.GetToken().Literal != "5" {
+		t.Errorf("integer.GetToken n.Literalot %s. got=%s", "5", integer.GetToken().Literal)
 	}
 }
 
@@ -294,9 +294,9 @@ func testIntegerLiteral(t *testing.T, il asti.ExpressionI, value int64) bool {
 		t.Errorf("integ.Value not %d. got=%d", value, integ.Value)
 		return false
 	}
-	if integ.TokenLiteral() != fmt.Sprintf("%d", value) {
-		t.Errorf("integ.TokenLiteral not %d. got=%s", value,
-			integ.TokenLiteral())
+	if integ.GetToken().Literal != fmt.Sprintf("%d", value) {
+		t.Errorf("integ.GetToken n.Literalot %d. got=%s", value,
+			integ.GetToken().Literal)
 		return false
 	}
 	return true
@@ -410,8 +410,8 @@ func testIdentifier(t *testing.T, exp asti.ExpressionI, value string) bool {
 		t.Errorf("ident.Value not %s. got=%s", value, ident.Value)
 		return false
 	}
-	if ident.TokenLiteral() != value {
-		t.Errorf("ident.TokenLiteral not %s. got=%s", value, ident.TokenLiteral())
+	if ident.GetToken().Literal != value {
+		t.Errorf("ident.GetToken n.Literalot %s. got=%s", value, ident.GetToken().Literal)
 		return false
 	}
 	return true
@@ -427,9 +427,9 @@ func testBooleanLiteral(t *testing.T, exp asti.ExpressionI, value bool) bool {
 		t.Errorf("bo.Value not %t, got=%t", value, bo.Value)
 		return false
 	}
-	if bo.TokenLiteral() != fmt.Sprintf("%t", value) {
-		t.Errorf("bo.TokenLiteral not %t, got=%s",
-			value, bo.TokenLiteral())
+	if bo.GetToken().Literal != fmt.Sprintf("%t", value) {
+		t.Errorf("bo.GetToken n.Literalot %t, got=%s",
+			value, bo.GetToken().Literal)
 		return false
 	}
 	return true
@@ -894,7 +894,7 @@ func TestIncompleThings(t *testing.T) {
 			t.Errorf("unexpected error-count, got %d  expected %d", len(p.errors), 1)
 		}
 
-		if !strings.Contains(p.errors[0], "unterminated") {
+		if !strings.Contains(p.errors[0].Msg, "unterminated") {
 			t.Errorf("Unexpected error-message %s\n", p.errors[0])
 		}
 	}
@@ -925,7 +925,7 @@ switch( val ) {
 		t.Errorf("unexpected error-count, got %d expected %d", len(p.errors), 1)
 	}
 
-	if !strings.Contains(p.errors[0], "only have one default block") {
+	if !strings.Contains(p.errors[0].Msg, "only have one default block") {
 		t.Errorf("Unexpected error-message %s\n", p.errors[0])
 	}
 }

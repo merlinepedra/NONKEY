@@ -278,7 +278,7 @@ func (fl *FunctionLiteral) String() string {
 	for _, p := range fl.Parameters {
 		params = append(params, p.String())
 	}
-	fmt.Fprintf(&out, "%v(%v) %v", fl.GetToken(), strings.Join(params, ", "), fl.Body)
+	fmt.Fprintf(&out, "%v(%v) %v", fl.GetToken().Literal, strings.Join(params, ", "), fl.Body)
 	return out.String()
 
 }
@@ -312,7 +312,7 @@ func (fl *FunctionDefineLiteral) String() string {
 	for _, p := range fl.Parameters {
 		params = append(params, p.String())
 	}
-	fmt.Fprintf(&out, "%v(%v) %v", fl.GetToken(), strings.Join(params, ", "), fl.Body)
+	fmt.Fprintf(&out, "%v(%v) %v", fl.GetToken().Literal, strings.Join(params, ", "), fl.Body)
 	return out.String()
 
 }

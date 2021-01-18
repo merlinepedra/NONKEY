@@ -18,6 +18,6 @@ type Token struct {
 }
 
 func (tk Token) String() string {
-	return fmt.Sprintf("Token[%v %v at line %v pos %v",
+	return fmt.Sprintf("Token[%v %v at line %v pos %v]",
 		tk.Type, tk.Literal, tk.Line, tk.Pos)
 }
