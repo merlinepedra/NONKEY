@@ -55,6 +55,8 @@ change version handle (use https://github.com/kasworld/version)
 
 update build script
 
+update build version, args handle
+
 ## TODO
 
 replace ';' with '\n' or '\r'

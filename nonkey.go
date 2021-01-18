@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kasworld/nonkey/config/builtinfunctions"
 	"github.com/kasworld/nonkey/interpreter/object"
 	"github.com/kasworld/nonkey/interpreter/repl"
 	"github.com/kasworld/nonkey/interpreter/runmon"
@@ -24,25 +23,6 @@ var Ver = "dev_notbuild"
 
 func init() {
 	version.Set(Ver)
-}
-
-//
-// Implemention of "version()" function.
-//
-func builtinVersion(env *object.Environment, args ...object.ObjectI) object.ObjectI {
-	return &object.String{Value: Ver}
-}
-
-//
-// Implemention of "args()" function.
-//
-func builtinArgs(env *object.Environment, args ...object.ObjectI) object.ObjectI {
-	l := len(os.Args[1:])
-	result := make([]object.ObjectI, l)
-	for i, txt := range os.Args[1:] {
-		result[i] = &object.String{Value: txt}
-	}
-	return &object.Array{Elements: result}
 }
 
 func main() {
@@ -56,9 +36,6 @@ func main() {
 		fmt.Printf("monkey %s\n", Ver)
 		os.Exit(1)
 	}
-
-	builtinfunctions.Register("version", builtinVersion)
-	builtinfunctions.Register("args", builtinArgs)
 
 	env := object.NewEnvironment()
 	if *autoload != "" {

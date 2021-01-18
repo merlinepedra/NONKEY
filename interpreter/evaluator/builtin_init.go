@@ -7,6 +7,8 @@ import (
 
 func init() {
 	builtinfunctions.BuiltinFunctions = map[string]*object.Builtin{
+		"version":        {Fn: builtinVersion},
+		"args":           {Fn: builtinArgs},
 		"chmod":          {Fn: builtinChmod},
 		"delete":         {Fn: builtinDelete},
 		"eval":           {Fn: builtinEval},
