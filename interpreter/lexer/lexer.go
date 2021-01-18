@@ -52,8 +52,14 @@ func (l *Lexer) GetLineStr(line int) string {
 	}
 }
 
-func (l *Lexer) CurrentLinePos() string {
-	return fmt.Sprintf("Line %v Pos %v", l.curLine, l.curPosInLine)
+// CurrentLine return current line in source code
+func (l *Lexer) CurrentLine() int {
+	return l.curLine
+}
+
+// CurrentPosInLine return current pos in line in source code
+func (l *Lexer) CurrentPosInLine() int {
+	return l.curPosInLine
 }
 
 // read one forward character

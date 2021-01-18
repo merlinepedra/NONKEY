@@ -46,10 +46,10 @@ func Start(in io.Reader, out io.Writer, env *object.Environment) {
 	}
 }
 
-func printParserErrors(out io.Writer, errors []string) {
+func printParserErrors(out io.Writer, errors []parser.Error) {
 	io.WriteString(out, "Woops! We ran into some monkey business here!\n")
 	io.WriteString(out, " parser errors:\n")
 	for _, msg := range errors {
-		io.WriteString(out, "\t"+msg+"\n")
+		io.WriteString(out, "\t"+msg.String()+"\n")
 	}
 }

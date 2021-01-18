@@ -40,7 +40,7 @@ type Parser struct {
 	peekToken token.Token
 
 	// errors holds parsing-errors.
-	errors []string
+	errors []Error
 
 	// prefixParseFns holds a map of parsing methods for
 	// prefix-based syntax.
@@ -64,7 +64,7 @@ type Parser struct {
 func New(l *lexer.Lexer) *Parser {
 
 	// Create the parser, and prime the pump
-	p := &Parser{l: l, errors: []string{}}
+	p := &Parser{l: l, errors: []Error{}}
 	p.nextToken()
 	p.nextToken()
 
@@ -133,20 +133,6 @@ func New(l *lexer.Lexer) *Parser {
 	return p
 }
 
-// Errors return stored errors
-func (p *Parser) Errors() []string {
-	return p.errors
-}
-
-// peekError raises an error if the next token is not the expected type.
-func (p *Parser) peekError(t tokentype.TokenType) {
-	msg := fmt.Sprintf(
-		"expected next token to be %s, got %v",
-		t, p.curToken,
-	)
-	p.errors = append(p.errors, msg)
-}
-
 // nextToken moves to our next token from the lexer.
 func (p *Parser) nextToken() {
 	p.prevToken = p.curToken
@@ -197,7 +183,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	for !p.curTokenIs(tokentype.SEMICOLON) {
 
 		if p.curTokenIs(tokentype.EOF) {
-			p.errors = append(p.errors, "unterminated let statement")
+			p.AddError("unterminated let statement")
 			return nil
 		}
 
@@ -221,7 +207,7 @@ func (p *Parser) parseConstStatement() *ast.ConstStatement {
 	for !p.curTokenIs(tokentype.SEMICOLON) {
 
 		if p.curTokenIs(tokentype.EOF) {
-			p.errors = append(p.errors, "unterminated const statement")
+			p.AddError("unterminated const statement")
 			return nil
 		}
 
@@ -238,7 +224,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	for !p.curTokenIs(tokentype.SEMICOLON) {
 
 		if p.curTokenIs(tokentype.EOF) {
-			p.errors = append(p.errors, "unterminated return statement")
+			p.AddError("unterminated return statement")
 			return nil
 		}
 
@@ -249,8 +235,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 // no prefix parse function error
 func (p *Parser) noPrefixParseFnError(t tokentype.TokenType) {
-	msg := fmt.Sprintf("no prefix parse function for %s at %v", t, p.l.CurrentLinePos())
-	p.errors = append(p.errors, msg)
+	p.AddError("no prefix parse function for %s", t)
 }
 
 // parse Expression Statement
@@ -312,8 +297,7 @@ func (p *Parser) parseIntegerLiteral() asti.ExpressionI {
 	}
 
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as integer at %v", p.curToken.Literal, p.l.CurrentLinePos())
-		p.errors = append(p.errors, msg)
+		p.AddError("could not parse %q as integer", p.curToken.Literal)
 		return nil
 	}
 	lit.Value = value
@@ -325,8 +309,7 @@ func (p *Parser) parseFloatLiteral() asti.ExpressionI {
 	flo := &ast.FloatLiteral{Token: p.curToken}
 	value, err := strconv.ParseFloat(p.curToken.Literal, 64)
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as float at %v", p.curToken.Literal, p.l.CurrentLinePos())
-		p.errors = append(p.errors, msg)
+		p.AddError("could not parse %q as float", p.curToken.Literal)
 		return nil
 	}
 	flo.Value = value
@@ -363,7 +346,7 @@ func (p *Parser) parseSwitchStatement() asti.ExpressionI {
 	for !p.curTokenIs(tokentype.RBRACE) {
 
 		if p.curTokenIs(tokentype.EOF) {
-			p.errors = append(p.errors, "unterminated switch statement")
+			p.AddError("unterminated switch statement")
 			return nil
 		}
 		tmp := &ast.CaseExpression{Token: p.curToken}
@@ -403,8 +386,7 @@ func (p *Parser) parseSwitchStatement() asti.ExpressionI {
 
 		if !p.expectPeek(tokentype.LBRACE) {
 
-			msg := fmt.Sprintf("expected token to be '{', got %s instead", p.curToken.Type)
-			p.errors = append(p.errors, msg)
+			p.AddError("expected token to be '{', got %s instead", p.curToken.Type)
 			fmt.Printf("error\n")
 			return nil
 		}
@@ -413,8 +395,7 @@ func (p *Parser) parseSwitchStatement() asti.ExpressionI {
 		tmp.Block = p.parseBlockStatement()
 
 		if !p.curTokenIs(tokentype.RBRACE) {
-			msg := fmt.Sprintf("Syntax Error: expected token to be '}', got %s instead", p.curToken.Type)
-			p.errors = append(p.errors, msg)
+			p.AddError("Syntax Error: expected token to be '}', got %s instead", p.curToken.Type)
 			fmt.Printf("error\n")
 			return nil
 
@@ -439,8 +420,7 @@ func (p *Parser) parseSwitchStatement() asti.ExpressionI {
 		}
 	}
 	if count > 1 {
-		msg := fmt.Sprintf("A switch-statement should only have one default block")
-		p.errors = append(p.errors, msg)
+		p.AddError("A switch-statement should only have one default block")
 		return nil
 
 	}
@@ -491,8 +471,7 @@ func (p *Parser) parseInfixExpression(left asti.ExpressionI) asti.ExpressionI {
 func (p *Parser) parseTernaryExpression(condition asti.ExpressionI) asti.ExpressionI {
 
 	if p.tern {
-		msg := fmt.Sprintf("nested ternary expressions are illegal at %v", p.l.CurrentLinePos())
-		p.errors = append(p.errors, msg)
+		p.AddError("nested ternary expressions are illegal")
 		return nil
 	}
 
@@ -597,7 +576,7 @@ func (p *Parser) parseForEach() asti.ExpressionI {
 		p.nextToken()
 
 		if !p.peekTokenIs(tokentype.IDENT) {
-			p.errors = append(p.errors, fmt.Sprintf("second argument to foreach must be ident, got %v", p.peekToken))
+			p.AddError(fmt.Sprintf("second argument to foreach must be ident, got %v", p.peekToken))
 			return nil
 		}
 		p.nextToken()
@@ -638,7 +617,7 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 
 		// Don't loop forever
 		if p.curTokenIs(tokentype.EOF) {
-			p.errors = append(p.errors,
+			p.AddError(
 				"unterminated block statement")
 			return nil
 		}
@@ -701,7 +680,7 @@ func (p *Parser) parseFunctionParameters() (map[string]asti.ExpressionI, []*ast.
 	for !p.curTokenIs(tokentype.RPAREN) {
 
 		if p.curTokenIs(tokentype.EOF) {
-			p.errors = append(p.errors, "unterminated function parameters")
+			p.AddError("unterminated function parameters")
 			return nil, nil
 		}
 
@@ -808,9 +787,8 @@ func (p *Parser) parseAssignExpression(name asti.ExpressionI) asti.ExpressionI {
 	if n, ok := name.(*ast.Identifier); ok {
 		stmt.Name = n
 	} else {
-		msg := fmt.Sprintf("expected assign token to be IDENT, got %s instead, at %v",
-			name.TokenLiteral(), p.l.CurrentLinePos())
-		p.errors = append(p.errors, msg)
+		p.AddError("expected assign token to be IDENT, got %s instead",
+			name.TokenLiteral())
 	}
 
 	oper := p.curToken
@@ -900,8 +878,8 @@ func (p *Parser) expectPeek(t tokentype.TokenType) bool {
 		p.nextToken()
 		return true
 	}
-
-	p.peekError(t)
+	p.AddError("expected next token to be %s, got %v",
+		t, p.curToken)
 	return false
 }
 
