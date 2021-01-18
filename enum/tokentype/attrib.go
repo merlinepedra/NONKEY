@@ -21,8 +21,8 @@ var Keywords = map[string]TokenType{
 	"true":     TRUE,
 }
 
-// LookupIdentifier used to determinate whether identifier is keyword nor not
-func LookupIdentifier(identifier string) TokenType {
+// LookupKeyword used to determinate whether identifier is keyword nor not
+func LookupKeyword(identifier string) TokenType {
 	if tok, ok := Keywords[identifier]; ok {
 		return tok
 	}

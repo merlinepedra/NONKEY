@@ -279,7 +279,7 @@ func (l *Lexer) NextToken() token.Token {
 
 		}
 		tok.Literal = l.readIdentifier()
-		tok.Type = tokentype.LookupIdentifier(tok.Literal)
+		tok.Type = tokentype.LookupKeyword(tok.Literal)
 		l.prevToken = tok
 
 		return tok
