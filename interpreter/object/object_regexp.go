@@ -4,7 +4,7 @@ package object
 
 import "github.com/kasworld/nonkey/enum/objecttype"
 
-// Regexp wraps regular-expressions and implements the Object interface.
+// Regexp wraps regular-expressions and implements the ObjectI interface.
 type Regexp struct {
 	// Value holds the string value this object wraps.
 	Value string
@@ -25,7 +25,7 @@ func (r *Regexp) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (r *Regexp) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (r *Regexp) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 	return nil
 }
 

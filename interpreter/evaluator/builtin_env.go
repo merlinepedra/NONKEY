@@ -8,7 +8,7 @@ import (
 )
 
 // os.getenv() -> ( Hash )
-func builtinOsEnvironment(env *object.Environment, args ...object.Object) object.Object {
+func builtinOsEnvironment(env *object.Environment, args ...object.ObjectI) object.ObjectI {
 
 	osenv := os.Environ()
 	newHash := make(map[object.HashKey]object.HashPair)
@@ -32,7 +32,7 @@ func builtinOsEnvironment(env *object.Environment, args ...object.Object) object
 }
 
 // os.getenv( "PATH" ) -> string
-func builtinOsGetEnv(env *object.Environment, args ...object.Object) object.Object {
+func builtinOsGetEnv(env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
 		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -47,7 +47,7 @@ func builtinOsGetEnv(env *object.Environment, args ...object.Object) object.Obje
 }
 
 // os.setenv( "PATH", "/home/skx/bin:/usr/bin" );
-func builtinOsSetEnv(env *object.Environment, args ...object.Object) object.Object {
+func builtinOsSetEnv(env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 2 {
 		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))

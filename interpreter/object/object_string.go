@@ -12,7 +12,7 @@ import (
 	"github.com/kasworld/nonkey/enum/objecttype"
 )
 
-// String wraps string and implements Object and Hashable interfaces.
+// String wraps string and implements ObjectI and Hashable interfaces.
 type String struct {
 	// Value holds the string value this object wraps.
 	Value string
@@ -40,7 +40,7 @@ func (s *String) HashKey() HashKey {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (s *String) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (s *String) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 	if method == "len" {
 		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
 	}
@@ -57,7 +57,7 @@ func (s *String) InvokeMethod(method string, env Environment, args ...Object) Ob
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names))
+		result := make([]ObjectI, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}
@@ -91,7 +91,7 @@ func (s *String) Reset() {
 
 // Next implements the Iterable interface, and allows the contents
 // of our string to be iterated over.
-func (s *String) Next() (Object, Object, bool) {
+func (s *String) Next() (ObjectI, ObjectI, bool) {
 
 	if s.offset < utf8.RuneCountInString(s.Value) {
 		s.offset++

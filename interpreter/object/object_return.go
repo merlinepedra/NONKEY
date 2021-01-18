@@ -2,10 +2,10 @@ package object
 
 import "github.com/kasworld/nonkey/enum/objecttype"
 
-// ReturnValue wraps Object and implements Object interface.
+// ReturnValue wraps ObjectI and implements ObjectI interface.
 type ReturnValue struct {
 	// Value is the object that is to be returned
-	Value Object
+	Value ObjectI
 }
 
 // Type returns the type of this object.
@@ -20,7 +20,7 @@ func (rv *ReturnValue) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (rv *ReturnValue) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (rv *ReturnValue) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 
 	//
 	// There are no methods available upon a return-object.

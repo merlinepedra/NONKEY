@@ -10,14 +10,14 @@ func NewError(format string, a ...interface{}) *Error {
 	return &Error{Message: fmt.Sprintf(format, a...)}
 }
 
-func IsError(obj Object) bool {
+func IsError(obj ObjectI) bool {
 	if obj != nil {
 		return obj.Type() == objecttype.ERROR
 	}
 	return false
 }
 
-// Error wraps string and implements Object interface.
+// Error wraps string and implements ObjectI interface.
 type Error struct {
 	// Message contains the error-message we're wrapping
 	Message string
@@ -35,7 +35,7 @@ func (e *Error) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (e *Error) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (e *Error) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 
 	//
 	// There are no methods available upon a return-object.

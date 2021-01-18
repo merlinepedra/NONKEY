@@ -8,7 +8,7 @@ import (
 	"github.com/kasworld/nonkey/enum/objecttype"
 )
 
-// Boolean wraps bool and implements Object and Hashable interface.
+// Boolean wraps bool and implements ObjectI and Hashable interface.
 type Boolean struct {
 	// Value holds the boolean value we wrap.
 	Value bool
@@ -37,7 +37,7 @@ func (b *Boolean) HashKey() HashKey {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (b *Boolean) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (b *Boolean) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 	if method == "methods" {
 		static := []string{"methods"}
 		dynamic := env.Names("bool.")
@@ -50,7 +50,7 @@ func (b *Boolean) InvokeMethod(method string, env Environment, args ...Object) O
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names))
+		result := make([]ObjectI, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}

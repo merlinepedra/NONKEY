@@ -37,7 +37,7 @@ func (env *Environment) String() string {
 // Environment stores our functions, variables, constants, etc.
 type Environment struct {
 	// store holds variables, including functions.
-	store map[string]Object
+	store map[string]ObjectI
 
 	// readonly marks names as read-only.
 	readonly map[string]bool
@@ -53,7 +53,7 @@ type Environment struct {
 
 // NewEnvironment creates new environment
 func NewEnvironment() *Environment {
-	s := make(map[string]Object)
+	s := make(map[string]ObjectI)
 	r := make(map[string]bool)
 	return &Environment{store: s, readonly: r, outer: nil}
 }
@@ -101,7 +101,7 @@ func (e *Environment) Names(prefix string) []string {
 }
 
 // Get returns the value of a given variable, by name.
-func (e *Environment) Get(name string) (Object, bool) {
+func (e *Environment) Get(name string) (ObjectI, bool) {
 	obj, ok := e.store[name]
 	if !ok && e.outer != nil {
 		obj, ok = e.outer.Get(name)
@@ -110,7 +110,7 @@ func (e *Environment) Get(name string) (Object, bool) {
 }
 
 // Set stores the value of a variable, by name.
-func (e *Environment) Set(name string, val Object) Object {
+func (e *Environment) Set(name string, val ObjectI) ObjectI {
 
 	//
 	// If a variable is constant then we don't allow it to be changed.
@@ -158,7 +158,7 @@ func (e *Environment) Set(name string, val Object) Object {
 }
 
 // SetConst sets the value of a constant by name.
-func (e *Environment) SetConst(name string, val Object) Object {
+func (e *Environment) SetConst(name string, val ObjectI) ObjectI {
 
 	// store the value
 	e.store[name] = val

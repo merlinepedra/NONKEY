@@ -25,16 +25,16 @@ var version = "master/unreleased"
 //
 // Implemention of "version()" function.
 //
-func builtinVersion(env *object.Environment, args ...object.Object) object.Object {
+func builtinVersion(env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	return &object.String{Value: version}
 }
 
 //
 // Implemention of "args()" function.
 //
-func builtinArgs(env *object.Environment, args ...object.Object) object.Object {
+func builtinArgs(env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	l := len(os.Args[1:])
-	result := make([]object.Object, l)
+	result := make([]object.ObjectI, l)
 	for i, txt := range os.Args[1:] {
 		result[i] = &object.String{Value: txt}
 	}

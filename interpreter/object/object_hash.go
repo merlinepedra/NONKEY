@@ -21,13 +21,13 @@ type HashKey struct {
 // HashPair is a structure which is used to store hash-entries
 type HashPair struct {
 	// Key holds our hash-key key.
-	Key Object
+	Key ObjectI
 
 	// Value holds our hash-key value.
-	Value Object
+	Value ObjectI
 }
 
-// Hash wrap map[HashKey]HashPair and implements Object interface.
+// Hash wrap map[HashKey]HashPair and implements ObjectI interface.
 type Hash struct {
 	// Pairs holds the key/value pairs of the hash we wrap
 	Pairs map[HashKey]HashPair
@@ -57,10 +57,10 @@ func (h *Hash) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (h *Hash) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 	if method == "keys" {
 		ents := len(h.Pairs)
-		array := make([]Object, ents)
+		array := make([]ObjectI, ents)
 
 		// Now copy the keys into it.
 		i := 0
@@ -83,7 +83,7 @@ func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Obje
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names))
+		result := make([]ObjectI, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}
@@ -100,7 +100,7 @@ func (h *Hash) Reset() {
 
 // Next implements the Iterable interface, and allows the contents
 // of our array to be iterated over.
-func (h *Hash) Next() (Object, Object, bool) {
+func (h *Hash) Next() (ObjectI, ObjectI, bool) {
 	if h.offset < len(h.Pairs) {
 		idx := 0
 

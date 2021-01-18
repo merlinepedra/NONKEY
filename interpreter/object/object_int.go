@@ -8,7 +8,7 @@ import (
 	"github.com/kasworld/nonkey/enum/objecttype"
 )
 
-// Integer wraps int64 and implements Object and Hashable interfaces.
+// Integer wraps int64 and implements ObjectI and Hashable interfaces.
 type Integer struct {
 	// Value holds the integer value this object wraps
 	Value int64
@@ -31,7 +31,7 @@ func (i *Integer) HashKey() HashKey {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (i *Integer) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (i *Integer) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 	if method == "chr" {
 		return &String{Value: string(rune(i.Value))}
 	}
@@ -48,7 +48,7 @@ func (i *Integer) InvokeMethod(method string, env Environment, args ...Object) O
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names))
+		result := make([]ObjectI, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}

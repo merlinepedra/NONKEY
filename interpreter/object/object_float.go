@@ -9,7 +9,7 @@ import (
 	"github.com/kasworld/nonkey/enum/objecttype"
 )
 
-// Float wraps float64 and implements Object and Hashable interfaces.
+// Float wraps float64 and implements ObjectI and Hashable interfaces.
 type Float struct {
 	// Value holds the float-value this object wraps.
 	Value float64
@@ -34,7 +34,7 @@ func (f *Float) HashKey() HashKey {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (f *Float) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (f *Float) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 	if method == "methods" {
 		static := []string{"methods"}
 		dynamic := env.Names("float.")
@@ -47,7 +47,7 @@ func (f *Float) InvokeMethod(method string, env Environment, args ...Object) Obj
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names))
+		result := make([]ObjectI, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}

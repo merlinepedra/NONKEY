@@ -108,7 +108,7 @@ func (f *File) Open(mode string) error {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (f *File) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (f *File) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 	if method == "close" {
 		f.Handle.Close()
 		return &Boolean{Value: true}
@@ -132,7 +132,7 @@ func (f *File) InvokeMethod(method string, env Environment, args ...Object) Obje
 
 		// make results
 		l := len(lines)
-		result := make([]Object, l)
+		result := make([]ObjectI, l)
 		for i, txt := range lines {
 			result[i] = &String{Value: txt}
 		}
@@ -150,7 +150,7 @@ func (f *File) InvokeMethod(method string, env Environment, args ...Object) Obje
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names))
+		result := make([]ObjectI, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}

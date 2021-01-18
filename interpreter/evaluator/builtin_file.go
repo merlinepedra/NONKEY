@@ -7,7 +7,7 @@ import (
 )
 
 // array = directory.glob( "/etc/*.conf" )
-func builtinDirectoryGlob(env *object.Environment, args ...object.Object) object.Object {
+func builtinDirectoryGlob(env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
 		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -21,7 +21,7 @@ func builtinDirectoryGlob(env *object.Environment, args ...object.Object) object
 
 	// Create an array to hold the results and populate it
 	l := len(entries)
-	result := make([]object.Object, l)
+	result := make([]object.ObjectI, l)
 	for i, txt := range entries {
 		result[i] = &object.String{Value: txt}
 	}

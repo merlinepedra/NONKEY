@@ -8,10 +8,10 @@ import (
 	"github.com/kasworld/nonkey/enum/objecttype"
 )
 
-// Array wraps Object array and implements Object interface.
+// Array wraps ObjectI array and implements ObjectI interface.
 type Array struct {
 	// Elements holds the individual members of the array we're wrapping.
-	Elements []Object
+	Elements []ObjectI
 
 	// offset holds our iteration-offset.
 	offset int
@@ -37,7 +37,7 @@ func (ao *Array) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (ao *Array) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 	if method == "len" {
 		return &Integer{Value: int64(len(ao.Elements))}
 	}
@@ -53,7 +53,7 @@ func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Ob
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names))
+		result := make([]ObjectI, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}
@@ -70,7 +70,7 @@ func (ao *Array) Reset() {
 
 // Next implements the Iterable interface, and allows the contents
 // of our array to be iterated over.
-func (ao *Array) Next() (Object, Object, bool) {
+func (ao *Array) Next() (ObjectI, ObjectI, bool) {
 	if ao.offset < len(ao.Elements) {
 		ao.offset++
 

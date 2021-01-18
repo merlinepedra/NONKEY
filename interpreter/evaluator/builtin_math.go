@@ -8,7 +8,7 @@ import (
 	"github.com/kasworld/nonkey/interpreter/object"
 )
 
-func builtinMathAbs(env *object.Environment, args ...object.Object) object.Object {
+func builtinMathAbs(env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
 		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))
@@ -34,12 +34,12 @@ func builtinMathAbs(env *object.Environment, args ...object.Object) object.Objec
 }
 
 // val = math.random()
-func builtinMathRandom(env *object.Environment, args ...object.Object) object.Object {
+func builtinMathRandom(env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	return &object.Float{Value: rand.Float64()}
 }
 
 // val = math.sqrt(int);
-func builtinMathSqrt(env *object.Environment, args ...object.Object) object.Object {
+func builtinMathSqrt(env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
 		return object.NewError("wrong number of arguments. got=%d, want=1",
 			len(args))

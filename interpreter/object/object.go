@@ -6,7 +6,7 @@ import "github.com/kasworld/nonkey/enum/objecttype"
 // Type describes the type of an object.
 
 // Object is the interface that all of our various object-types must implmenet.
-type Object interface {
+type ObjectI interface {
 
 	// Type returns the type of this object.
 	Type() objecttype.ObjectType
@@ -16,7 +16,7 @@ type Object interface {
 
 	// InvokeMethod invokes a method against the object.
 	// (Built-in methods only.)
-	InvokeMethod(method string, env Environment, args ...Object) Object
+	InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI
 
 	// ToInterface converts the given object to a "native" golang value,
 	// which is required to ensure that we can use the object in our
@@ -25,7 +25,7 @@ type Object interface {
 }
 
 // Hashable type can be hashed
-type Hashable interface {
+type HashableI interface {
 
 	// HashKey returns a hash key for the given object.
 	HashKey() HashKey
@@ -37,7 +37,7 @@ type Hashable interface {
 // use the `foreach` function to iterate over the object.  If
 // the interface is not implemented then a run-time error will
 // be generated instead.
-type Iterable interface {
+type IterableI interface {
 
 	// Reset the state of any previous iteration.
 	Reset()
@@ -52,5 +52,5 @@ type Iterable interface {
 	// If the boolean value returned is false then that
 	// means the iteration has completed and no further
 	// items are available.
-	Next() (Object, Object, bool)
+	Next() (ObjectI, ObjectI, bool)
 }

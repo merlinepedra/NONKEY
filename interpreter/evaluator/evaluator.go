@@ -19,7 +19,7 @@ import (
 )
 
 // Eval is our core function for evaluating nodes.
-func Eval(node ast.NodeI, env *object.Environment) object.Object {
+func Eval(node ast.NodeI, env *object.Environment) object.ObjectI {
 	switch node := node.(type) {
 
 	//Statements
@@ -165,8 +165,8 @@ func Eval(node ast.NodeI, env *object.Environment) object.Object {
 }
 
 // eval block statement
-func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
-	var result object.Object
+func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.ObjectI {
+	var result object.ObjectI
 	for _, statement := range block.Statements {
 		result = Eval(statement, env)
 		if result != nil {
@@ -188,7 +188,7 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 }
 
 // eval prefix expression
-func evalPrefixExpression(operator string, right object.Object) object.Object {
+func evalPrefixExpression(operator string, right object.ObjectI) object.ObjectI {
 	switch operator {
 	case "!":
 		return evalBangOperatorExpression(right)
@@ -199,7 +199,7 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	}
 }
 
-func evalPostfixExpression(env *object.Environment, operator string, node *ast.PostfixExpression) object.Object {
+func evalPostfixExpression(env *object.Environment, operator string, node *ast.PostfixExpression) object.ObjectI {
 	switch operator {
 	case "++":
 		val, ok := env.Get(node.Token.Literal)
@@ -235,7 +235,7 @@ func evalPostfixExpression(env *object.Environment, operator string, node *ast.P
 	}
 }
 
-func evalBangOperatorExpression(right object.Object) object.Object {
+func evalBangOperatorExpression(right object.ObjectI) object.ObjectI {
 	switch right {
 	case object.TRUE:
 		return object.FALSE
@@ -248,7 +248,7 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 	}
 }
 
-func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
+func evalMinusPrefixOperatorExpression(right object.ObjectI) object.ObjectI {
 	switch obj := right.(type) {
 	case *object.Integer:
 		return &object.Integer{Value: -obj.Value}
@@ -259,7 +259,7 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	}
 }
 
-func evalInfixExpression(operator string, left, right object.Object, env *object.Environment) object.Object {
+func evalInfixExpression(operator string, left, right object.ObjectI, env *object.Environment) object.ObjectI {
 	switch {
 	case left.Type() == objecttype.INTEGER && right.Type() == objecttype.INTEGER:
 		return evalIntegerInfixExpression(operator, left, right)
@@ -296,7 +296,7 @@ func evalInfixExpression(operator string, left, right object.Object, env *object
 	}
 }
 
-func matches(left, right object.Object, env *object.Environment) object.Object {
+func matches(left, right object.ObjectI, env *object.Environment) object.ObjectI {
 
 	str := left.Inspect()
 
@@ -334,7 +334,7 @@ func matches(left, right object.Object, env *object.Environment) object.Object {
 	return object.FALSE
 }
 
-func notMatches(left, right object.Object) object.Object {
+func notMatches(left, right object.ObjectI) object.ObjectI {
 	str := left.Inspect()
 
 	if right.Type() != objecttype.REGEXP {
@@ -363,7 +363,7 @@ func notMatches(left, right object.Object) object.Object {
 }
 
 // boolean operations
-func evalBooleanInfixExpression(operator string, left, right object.Object) object.Object {
+func evalBooleanInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
 	// convert the bools to strings.
 	l := &object.String{Value: string(left.Inspect())}
 	r := &object.String{Value: string(right.Inspect())}
@@ -383,7 +383,7 @@ func evalBooleanInfixExpression(operator string, left, right object.Object) obje
 	}
 }
 
-func evalIntegerInfixExpression(operator string, left, right object.Object) object.Object {
+func evalIntegerInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
 	switch operator {
@@ -421,7 +421,7 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	case "..":
 		len := int(rightVal-leftVal) + 1
-		array := make([]object.Object, len)
+		array := make([]object.ObjectI, len)
 		i := 0
 		for i < len {
 			array[i] = &object.Integer{Value: leftVal}
@@ -434,7 +434,7 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 			left.Type(), operator, right.Type())
 	}
 }
-func evalFloatInfixExpression(operator string, left, right object.Object) object.Object {
+func evalFloatInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
 	leftVal := left.(*object.Float).Value
 	rightVal := right.(*object.Float).Value
 	switch operator {
@@ -474,7 +474,7 @@ func evalFloatInfixExpression(operator string, left, right object.Object) object
 	}
 }
 
-func evalFloatIntegerInfixExpression(operator string, left, right object.Object) object.Object {
+func evalFloatIntegerInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
 	leftVal := left.(*object.Float).Value
 	rightVal := float64(right.(*object.Integer).Value)
 	switch operator {
@@ -514,7 +514,7 @@ func evalFloatIntegerInfixExpression(operator string, left, right object.Object)
 	}
 }
 
-func evalIntegerFloatInfixExpression(operator string, left, right object.Object) object.Object {
+func evalIntegerFloatInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
 	leftVal := float64(left.(*object.Integer).Value)
 	rightVal := right.(*object.Float).Value
 	switch operator {
@@ -554,7 +554,7 @@ func evalIntegerFloatInfixExpression(operator string, left, right object.Object)
 	}
 }
 
-func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
+func evalStringInfixExpression(operator string, left, right object.ObjectI) object.ObjectI {
 	l := left.(*object.String)
 	r := right.(*object.String)
 
@@ -584,7 +584,7 @@ func evalStringInfixExpression(operator string, left, right object.Object) objec
 // evalIfExpression handles an `if` expression, running the block
 // if the condition matches, and running any optional else block
 // otherwise.
-func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
+func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.ObjectI {
 	//
 	// Create an environment for handling regexps
 	//
@@ -612,7 +612,7 @@ func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Obje
 // is true we return the contents of evaluating the true-branch, otherwise
 // the false-branch.  (Unlike an `if` statement we know that we always have
 // an alternative/false branch.)
-func evalTernaryExpression(te *ast.TernaryExpression, env *object.Environment) object.Object {
+func evalTernaryExpression(te *ast.TernaryExpression, env *object.Environment) object.ObjectI {
 
 	condition := Eval(te.Condition, env)
 	if object.IsError(condition) {
@@ -625,7 +625,7 @@ func evalTernaryExpression(te *ast.TernaryExpression, env *object.Environment) o
 	return Eval(te.IfFalse, env)
 }
 
-func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val object.Object) {
+func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val object.ObjectI) {
 	evaluated := Eval(a.Value, env)
 	if object.IsError(evaluated) {
 		return evaluated
@@ -725,7 +725,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 	return evaluated
 }
 
-func evalSwitchStatement(se *ast.SwitchExpression, env *object.Environment) object.Object {
+func evalSwitchStatement(se *ast.SwitchExpression, env *object.Environment) object.ObjectI {
 
 	// Get the value.
 	obj := Eval(se.Value, env)
@@ -783,7 +783,7 @@ func evalSwitchStatement(se *ast.SwitchExpression, env *object.Environment) obje
 	return nil
 }
 
-func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) object.Object {
+func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) object.ObjectI {
 	rt := &object.Boolean{Value: true}
 	for {
 		condition := Eval(fle.Condition, env)
@@ -803,12 +803,12 @@ func evalForLoopExpression(fle *ast.ForLoopExpression, env *object.Environment) 
 }
 
 // handle "for x [,y] in .."
-func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) object.Object {
+func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) object.ObjectI {
 
 	// expression
 	val := Eval(fle.Value, env)
 
-	helper, ok := val.(object.Iterable)
+	helper, ok := val.(object.IterableI)
 	if !ok {
 		return object.NewError("%s object doesn't implement the Iterable interface", val.Type())
 	}
@@ -859,7 +859,7 @@ func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) o
 	return &object.Null{}
 }
 
-func isTruthy(obj object.Object) bool {
+func isTruthy(obj object.ObjectI) bool {
 	switch obj {
 	case object.NULL:
 		return false
@@ -872,8 +872,8 @@ func isTruthy(obj object.Object) bool {
 	}
 }
 
-func evalProgram(program *ast.Program, env *object.Environment) object.Object {
-	var result object.Object
+func evalProgram(program *ast.Program, env *object.Environment) object.ObjectI {
+	var result object.ObjectI
 	for _, statement := range program.Statements {
 		result = Eval(statement, env)
 		switch result := result.(type) {
@@ -886,7 +886,7 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 	return result
 }
 
-func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
+func evalIdentifier(node *ast.Identifier, env *object.Environment) object.ObjectI {
 	if val, ok := env.Get(node.Value); ok {
 		return val
 	}
@@ -900,12 +900,12 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	return object.NewError("identifier not found: " + node.Value)
 }
 
-func evalExpression(exps []ast.ExpressionI, env *object.Environment) []object.Object {
-	var result []object.Object
+func evalExpression(exps []ast.ExpressionI, env *object.Environment) []object.ObjectI {
+	var result []object.ObjectI
 	for _, e := range exps {
 		evaluated := Eval(e, env)
 		if object.IsError(evaluated) {
-			return []object.Object{evaluated}
+			return []object.ObjectI{evaluated}
 		}
 		result = append(result, evaluated)
 	}
@@ -955,7 +955,7 @@ func trimQuotes(in string, c byte) string {
 
 // Run a command and return a hash containing the result.
 // `stderr`, `stdout`, and `error` will be the fields
-func backTickOperation(command string) object.Object {
+func backTickOperation(command string) object.ObjectI {
 
 	// split the command
 	toExec := splitCommand(command)
@@ -996,7 +996,7 @@ func backTickOperation(command string) object.Object {
 	return &object.Hash{Pairs: newHash}
 }
 
-func evalIndexExpression(left, index object.Object) object.Object {
+func evalIndexExpression(left, index object.ObjectI) object.ObjectI {
 	switch {
 	case left.Type() == objecttype.ARRAY && index.Type() == objecttype.INTEGER:
 		return evalArrayIndexExpression(left, index)
@@ -1010,7 +1010,7 @@ func evalIndexExpression(left, index object.Object) object.Object {
 	}
 }
 
-func evalArrayIndexExpression(array, index object.Object) object.Object {
+func evalArrayIndexExpression(array, index object.ObjectI) object.ObjectI {
 	arrayObject := array.(*object.Array)
 	idx := index.(*object.Integer).Value
 	max := int64(len(arrayObject.Elements) - 1)
@@ -1019,9 +1019,9 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 	}
 	return arrayObject.Elements[idx]
 }
-func evalHashIndexExpression(hash, index object.Object) object.Object {
+func evalHashIndexExpression(hash, index object.ObjectI) object.ObjectI {
 	hashObject := hash.(*object.Hash)
-	key, ok := index.(object.Hashable)
+	key, ok := index.(object.HashableI)
 	if !ok {
 		return object.NewError("unusable as hash key: %s", index.Type())
 	}
@@ -1032,7 +1032,7 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 	return pair.Value
 }
 
-func evalStringIndexExpression(input, index object.Object) object.Object {
+func evalStringIndexExpression(input, index object.ObjectI) object.ObjectI {
 	str := input.(*object.String).Value
 	idx := index.(*object.Integer).Value
 	max := int64(len(str))
@@ -1050,14 +1050,14 @@ func evalStringIndexExpression(input, index object.Object) object.Object {
 	return &object.String{Value: string(ret)}
 }
 
-func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Object {
+func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.ObjectI {
 	pairs := make(map[object.HashKey]object.HashPair)
 	for keyNode, valueNode := range node.Pairs {
 		key := Eval(keyNode, env)
 		if object.IsError(key) {
 			return key
 		}
-		hashKey, ok := key.(object.Hashable)
+		hashKey, ok := key.(object.HashableI)
 		if !ok {
 			return object.NewError("unusable as hash key: %s", key.Type())
 		}
@@ -1073,7 +1073,7 @@ func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Obje
 
 }
 
-func applyFunction(env *object.Environment, fn object.Object, args []object.Object) object.Object {
+func applyFunction(env *object.Environment, fn object.ObjectI, args []object.ObjectI) object.ObjectI {
 	switch fn := fn.(type) {
 	case *object.Function:
 		extendEnv := extendFunctionEnv(fn, args)
@@ -1087,7 +1087,7 @@ func applyFunction(env *object.Environment, fn object.Object, args []object.Obje
 
 }
 
-func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Environment {
+func extendFunctionEnv(fn *object.Function, args []object.ObjectI) *object.Environment {
 	env := object.NewEnclosedEnvironment(fn.Env)
 
 	// Set the defaults
@@ -1102,7 +1102,7 @@ func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Enviro
 	return env
 }
 
-func upwrapReturnValue(obj object.Object) object.Object {
+func upwrapReturnValue(obj object.ObjectI) object.ObjectI {
 	if returnValue, ok := obj.(*object.ReturnValue); ok {
 		return returnValue.Value
 	}
@@ -1110,7 +1110,7 @@ func upwrapReturnValue(obj object.Object) object.Object {
 }
 
 // evalObjectCallExpression invokes methods against objects.
-func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Environment) object.Object {
+func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Environment) object.ObjectI {
 
 	obj := Eval(call.Object, env)
 	if method, ok := call.Call.(*ast.CallExpression); ok {
@@ -1215,7 +1215,7 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 	return object.NewError("Failed to invoke method: %s", call.Call.(*ast.CallExpression).Function.String())
 }
 
-func objectToNativeBoolean(o object.Object) bool {
+func objectToNativeBoolean(o object.ObjectI) bool {
 	if r, ok := o.(*object.ReturnValue); ok {
 		o = r.Value
 	}

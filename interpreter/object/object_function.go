@@ -9,7 +9,7 @@ import (
 	"github.com/kasworld/nonkey/interpreter/ast"
 )
 
-// Function wraps ast.Identifier array, ast.BlockStatement and Environment and implements Object interface.
+// Function wraps ast.Identifier array, ast.BlockStatement and Environment and implements ObjectI interface.
 type Function struct {
 	Parameters []*ast.Identifier
 	Body       *ast.BlockStatement
@@ -40,7 +40,7 @@ func (f *Function) Inspect() string {
 
 // InvokeMethod invokes a method against the object.
 // (Built-in methods only.)
-func (f *Function) InvokeMethod(method string, env Environment, args ...Object) Object {
+func (f *Function) InvokeMethod(method string, env Environment, args ...ObjectI) ObjectI {
 	if method == "methods" {
 		static := []string{"methods"}
 		dynamic := env.Names("function.")
@@ -53,7 +53,7 @@ func (f *Function) InvokeMethod(method string, env Environment, args ...Object) 
 		}
 		sort.Strings(names)
 
-		result := make([]Object, len(names))
+		result := make([]ObjectI, len(names))
 		for i, txt := range names {
 			result[i] = &String{Value: txt}
 		}
