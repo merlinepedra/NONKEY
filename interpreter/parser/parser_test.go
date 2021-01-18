@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kasworld/nonkey/enum/tokentype"
 	"github.com/kasworld/nonkey/interpreter/ast"
 	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/lexer"
@@ -248,13 +249,13 @@ func TestBooleanExpression(t *testing.T) {
 func TestParsingPrefixExpression(t *testing.T) {
 	prefixTests := []struct {
 		input        string
-		operator     string
+		operator     tokentype.TokenType
 		integerValue interface{}
 	}{
-		{"!5;", "!", 5},
-		{"-15;", "-", 15},
-		{"!true;", "!", true},
-		{"!false", "!", false},
+		{"!5;", tokentype.BANG, 5},
+		{"-15;", tokentype.MINUS, 15},
+		{"!true;", tokentype.BANG, true},
+		{"!false", tokentype.BANG, false},
 	}
 	for _, tt := range prefixTests {
 		l := lexer.New(tt.input)
@@ -320,22 +321,22 @@ func TestParsingInfixExpression(t *testing.T) {
 	infixTests := []struct {
 		input      string
 		leftValue  interface{}
-		operator   string
+		operator   tokentype.TokenType
 		rightValue interface{}
 	}{
-		{"0.4+1.3", 0.4, "+", 1.3},
-		{"5+5;", 5, "+", 5},
-		{"5-5;", 5, "-", 5},
-		{"5*5;", 5, "*", 5},
-		{"5/5;", 5, "/", 5},
-		{"5>5;", 5, ">", 5},
-		{"5<5;", 5, "<", 5},
-		{"2**3;", 2, "**", 3},
-		{"5==5;", 5, "==", 5},
-		{"5!=5;", 5, "!=", 5},
-		{"true == true", true, "==", true},
-		{"true!=false", true, "!=", false},
-		{"false==false", false, "==", false},
+		{"0.4+1.3", 0.4, tokentype.PLUS, 1.3},
+		{"5+5;", 5, tokentype.PLUS, 5},
+		{"5-5;", 5, tokentype.MINUS, 5},
+		{"5*5;", 5, tokentype.ASTERISK, 5},
+		{"5/5;", 5, tokentype.SLASH, 5},
+		{"5>5;", 5, tokentype.GT, 5},
+		{"5<5;", 5, tokentype.LT, 5},
+		{"2**3;", 2, tokentype.POW, 3},
+		{"5==5;", 5, tokentype.EQ, 5},
+		{"5!=5;", 5, tokentype.NOT_EQ, 5},
+		{"true == true", true, tokentype.EQ, true},
+		{"true!=false", true, tokentype.NOT_EQ, false},
+		{"false==false", false, tokentype.EQ, false},
 	}
 	for _, tt := range infixTests {
 		l := lexer.New(tt.input)
@@ -455,7 +456,7 @@ func testLiteralExpression(t *testing.T, exp asti.ExpressionI, expected interfac
 }
 
 func testInfixExpression(t *testing.T, exp asti.ExpressionI, left interface{},
-	operator string, right interface{}) bool {
+	operator tokentype.TokenType, right interface{}) bool {
 	opExp, ok := exp.(*ast.InfixExpression)
 	if !ok {
 		t.Errorf("exp is not ast.InfixExpression. got=%T(%s)", exp, exp)
@@ -494,7 +495,7 @@ func TestIfExpression(t *testing.T) {
 		t.Fatalf("stmt.Expression is not ast.IfExpression. got=%T",
 			stmt.Expression)
 	}
-	if !testInfixExpression(t, exp.Condition, "x", "<", "y") {
+	if !testInfixExpression(t, exp.Condition, "x", tokentype.LT, "y") {
 		return
 	}
 	if len(exp.Consequence.Statements) != 1 {
@@ -534,7 +535,7 @@ func TestForLoopExpression(t *testing.T) {
 		t.Fatalf("stmt.Expression is not ast.ForLoopExpression. got=%T",
 			stmt.Expression)
 	}
-	if !testInfixExpression(t, exp.Condition, "x", "<", "y") {
+	if !testInfixExpression(t, exp.Condition, "x", tokentype.LT, "y") {
 		return
 	}
 	if len(exp.Consequence.Statements) != 1 {
@@ -587,7 +588,7 @@ func TestFunctionLiteralParsing(t *testing.T) {
 		t.Fatalf("function body stmt is not ast.ExpressionStatement. got=%T",
 			function.Body.Statements[0])
 	}
-	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
+	testInfixExpression(t, bodyStmt.Expression, "x", tokentype.PLUS, "y")
 }
 
 func TestFunctionParsing(t *testing.T) {
@@ -625,7 +626,7 @@ func TestFunctionParsing(t *testing.T) {
 		t.Fatalf("function body stmt is not ast.ExpressionStatement. got=%T",
 			function.Body.Statements[0])
 	}
-	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
+	testInfixExpression(t, bodyStmt.Expression, "x", tokentype.PLUS, "y")
 }
 
 func TestFunctionParameterParsing(t *testing.T) {
@@ -681,8 +682,8 @@ func TestCallExpressionParsing(t *testing.T) {
 		t.Fatalf("wrong length of arguments. got=%d", len(exp.Arguments))
 	}
 	testLiteralExpression(t, exp.Arguments[0], 1)
-	testInfixExpression(t, exp.Arguments[1], 2, "*", 3)
-	testInfixExpression(t, exp.Arguments[2], 4, "+", 5)
+	testInfixExpression(t, exp.Arguments[1], 2, tokentype.ASTERISK, 3)
+	testInfixExpression(t, exp.Arguments[2], 4, tokentype.PLUS, 5)
 }
 
 func checkParserErrors(t *testing.T, p *Parser) {
@@ -729,8 +730,8 @@ func TestParsingArrayLiteral(t *testing.T) {
 		t.Fatalf("len(array.Elements) not 3. got=%d", len(array.Elements))
 	}
 	testIntegerLiteral(t, array.Elements[0], 1)
-	testInfixExpression(t, array.Elements[1], 2, "*", 2)
-	testInfixExpression(t, array.Elements[2], 3, "+", 3)
+	testInfixExpression(t, array.Elements[1], 2, tokentype.ASTERISK, 2)
+	testInfixExpression(t, array.Elements[2], 3, tokentype.PLUS, 3)
 }
 
 func TestParsingIndexExpression(t *testing.T) {
@@ -747,7 +748,7 @@ func TestParsingIndexExpression(t *testing.T) {
 	if !testIdentifier(t, indexExp.Left, "myArray") {
 		return
 	}
-	if !testInfixExpression(t, indexExp.Index, 1, "+", 1) {
+	if !testInfixExpression(t, indexExp.Index, 1, tokentype.PLUS, 1) {
 		return
 	}
 }
@@ -816,13 +817,13 @@ func TestParsingHashLiteralWithExpression(t *testing.T) {
 	}
 	tests := map[string]func(asti.ExpressionI){
 		"one": func(e asti.ExpressionI) {
-			testInfixExpression(t, e, 0, "+", 1)
+			testInfixExpression(t, e, 0, tokentype.PLUS, 1)
 		},
 		"two": func(e asti.ExpressionI) {
-			testInfixExpression(t, e, 10, "-", 8)
+			testInfixExpression(t, e, 10, tokentype.MINUS, 8)
 		},
 		"three": func(e asti.ExpressionI) {
-			testInfixExpression(t, e, 15, "/", 5)
+			testInfixExpression(t, e, 15, tokentype.SLASH, 5)
 		},
 	}
 	for key, value := range hash.Pairs {
