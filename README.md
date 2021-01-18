@@ -47,9 +47,7 @@ change some map to slice for performance
 
     Token2Precedences
 
-change "for" keyword to "while"
-
-del const statement
+add "I" to interface name
 
 ## TODO
 
@@ -68,6 +66,9 @@ del redundant ternary operator( tokentype QUESTION  "? :"  )
 del indentifier composite char ( ? . %  ) 
 
 identifier start char must letter and _ , not digit, following letter,_ and digit
+
+change "for" keyword to "while"
+
 
 ## bug to fix 
 
