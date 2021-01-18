@@ -57,6 +57,10 @@ update build script
 
 update build version, args handle
 
+add tokentype.attrib
+
+change switch by operator string to tokentype
+
 ## TODO
 
 replace ';' with '\n' or '\r'
