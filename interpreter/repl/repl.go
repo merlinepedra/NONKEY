@@ -9,13 +9,18 @@ import (
 	"github.com/kasworld/nonkey/interpreter/lexer"
 	"github.com/kasworld/nonkey/interpreter/object"
 	"github.com/kasworld/nonkey/interpreter/parser"
+	"github.com/kasworld/version"
 )
 
 const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer, env *object.Environment) {
-	scanner := bufio.NewScanner(in)
 
+	io.WriteString(out, "welcome to nonkey version:")
+	io.WriteString(out, version.GetVersion())
+	io.WriteString(out, "\n")
+
+	scanner := bufio.NewScanner(in)
 	for {
 		fmt.Fprintf(out, PROMPT)
 		scanned := scanner.Scan()

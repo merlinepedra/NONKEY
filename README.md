@@ -49,6 +49,12 @@ change some map to slice for performance
 
 add "I" to interface name
 
+split asti interface package 
+
+change version handle (use https://github.com/kasworld/version)
+
+update build script
+
 ## TODO
 
 replace ';' with '\n' or '\r'

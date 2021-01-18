@@ -1,9 +1,40 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+*.ini
+*.pprof
+*.mprof
+*.out
+.*~
+*~
+*.logfiles
+*.pid
+
+*.sublime-project
+*.sublime-workspace
+.vscode
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+
+_testmain.go
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+
+*.wasm
 
 # Test binary, built with `go test -c`
 *.test
@@ -13,3 +44,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+
+bin/*
+core

@@ -17,16 +17,20 @@ import (
 	"github.com/kasworld/nonkey/interpreter/object"
 	"github.com/kasworld/nonkey/interpreter/repl"
 	"github.com/kasworld/nonkey/interpreter/runmon"
+	"github.com/kasworld/version"
 )
 
-// This version-string will be updated via travis for generated binaries.
-var version = "master/unreleased"
+var Ver = "dev_notbuild"
+
+func init() {
+	version.Set(Ver)
+}
 
 //
 // Implemention of "version()" function.
 //
 func builtinVersion(env *object.Environment, args ...object.ObjectI) object.ObjectI {
-	return &object.String{Value: version}
+	return &object.String{Value: Ver}
 }
 
 //
@@ -49,7 +53,7 @@ func main() {
 
 	// show version
 	if *vers {
-		fmt.Printf("monkey %s\n", version)
+		fmt.Printf("monkey %s\n", Ver)
 		os.Exit(1)
 	}
 
