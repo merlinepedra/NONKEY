@@ -16,9 +16,7 @@ const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer, env *object.Environment) {
 
-	io.WriteString(out, "welcome to nonkey version:")
-	io.WriteString(out, version.GetVersion())
-	io.WriteString(out, "\n")
+	fmt.Fprintf(out, "welcome to nonkey version:%v\n", version.GetVersion())
 
 	scanner := bufio.NewScanner(in)
 	for {
@@ -40,16 +38,14 @@ func Start(in io.Reader, out io.Writer, env *object.Environment) {
 
 		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
+			fmt.Fprintf(out, "%v\n", evaluated.Inspect())
 		}
 	}
 }
 
 func printParserErrors(out io.Writer, errors []parser.Error) {
-	io.WriteString(out, "Woops! We ran into some monkey business here!\n")
-	io.WriteString(out, " parser errors:\n")
+	io.WriteString(out, "parser errors\n")
 	for _, msg := range errors {
-		io.WriteString(out, "\t"+msg.String()+"\n")
+		fmt.Fprintf(out, "\t%v\n", msg)
 	}
 }
