@@ -38,7 +38,12 @@ func Start(in io.Reader, out io.Writer, env *object.Environment) {
 
 		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
-			fmt.Fprintf(out, "%v\n", evaluated.Inspect())
+			if erro, ok := evaluated.(*object.Error); ok {
+				fmt.Fprintf(out, "%v\n", evaluated.Inspect())
+				fmt.Fprintf(out, "%v\n", l.GetLineStr(erro.Node.GetToken().Line))
+			} else {
+				fmt.Fprintf(out, "%v\n", evaluated.Inspect())
+			}
 		}
 	}
 }
