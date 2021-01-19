@@ -56,7 +56,7 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 		}
 		res := evalInfixExpression(node, node.Operator, left, right, env)
 		if object.IsError(res) {
-			fmt.Fprintf(os.Stderr, "Error %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "%s\n", res.Inspect())
 			if pragmas.PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
@@ -109,8 +109,8 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 	case *ast.ObjectCallExpression:
 		res := evalObjectCallExpression(node, env)
 		if object.IsError(res) {
-			fmt.Fprintf(os.Stderr, "Error calling object-method %s, %v\n",
-				res.Inspect(), node.Token)
+			fmt.Fprintf(os.Stderr, "%s\n",
+				res.Inspect())
 			if pragmas.PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
@@ -127,7 +127,7 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 		}
 		res := applyFunction(node, env, function, args)
 		if object.IsError(res) {
-			fmt.Fprintf(os.Stderr, "Error calling `%s` : %s %v\n", node.Function, res.Inspect(), node.Token)
+			fmt.Fprintf(os.Stderr, "%v %v\n", res.Inspect(), node.Function)
 			if pragmas.PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
@@ -657,7 +657,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 
 		res := evalInfixExpression(a, tokentype.PLUS_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
-			fmt.Fprintf(os.Stderr, "Error handling += %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "%v\n", res.Inspect())
 			return res
 		}
 
@@ -674,7 +674,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 
 		res := evalInfixExpression(a, tokentype.MINUS_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
-			fmt.Fprintf(os.Stderr, "Error handling -= %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "%v\n", res.Inspect())
 			return res
 		}
 
@@ -690,7 +690,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 
 		res := evalInfixExpression(a, tokentype.ASTERISK_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
-			fmt.Fprintf(os.Stderr, "Error handling *= %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "%v\n", res.Inspect())
 			return res
 		}
 
@@ -707,7 +707,7 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 
 		res := evalInfixExpression(a, tokentype.SLASH_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
-			fmt.Fprintf(os.Stderr, "Error handling /= %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "%v\n", res.Inspect())
 			return res
 		}
 
@@ -720,7 +720,8 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		if pragmas.PRAGMAS["strict"] == 1 {
 			_, ok := env.Get(a.Name.String())
 			if !ok {
-				fmt.Fprintf(os.Stderr, "Setting unknown variable '%s' is a bug under strict-pragma! %v\n",
+				fmt.Fprintf(os.Stderr,
+					"Setting unknown variable '%s' is a bug under strict-pragma! %v\n",
 					a.Name.String(), a)
 				os.Exit(1)
 			}
@@ -816,7 +817,8 @@ func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) o
 
 	helper, ok := val.(object.IterableI)
 	if !ok {
-		return object.NewError(fle, "%s object doesn't implement the Iterable interface", val.Type())
+		return object.NewError(fle,
+			"%s object doesn't implement the Iterable interface", val.Type())
 	}
 
 	// The one/two values we're going to permit

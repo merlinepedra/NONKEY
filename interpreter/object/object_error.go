@@ -35,7 +35,7 @@ func (e *Error) Type() objecttype.ObjectType {
 
 // Inspect returns a string-representation of the given object.
 func (e *Error) Inspect() string {
-	return fmt.Sprintf("ERROR: %v, %v", e.Message, e.Node.GetToken())
+	return fmt.Sprintf("object.Error %v, %v", e.Message, e.Node.GetToken())
 }
 
 // InvokeMethod invokes a method against the object.
