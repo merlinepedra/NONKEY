@@ -21,17 +21,26 @@ func RunFile(filename string, env *object.Environment) *object.Environment {
 }
 
 func RunString(input string, env *object.Environment) *object.Environment {
-	initL := lexer.New(input)
-	initP := parser.New(initL)
-	initProg := initP.ParseProgram()
+	l := lexer.New(input)
+	p := parser.New(l)
+	prg := p.ParseProgram()
 
-	if len(initP.Errors()) != 0 {
-		for _, v := range initP.Errors() {
+	if len(p.Errors()) != 0 {
+		for _, v := range p.Errors() {
 			fmt.Fprintf(os.Stderr, "%v\n", v)
 		}
 		return env
 	}
 
-	evaluator.Eval(initProg, env)
+	evaluated := evaluator.Eval(prg, env)
+	if evaluated != nil {
+		if erro, ok := evaluated.(*object.Error); ok {
+			fmt.Fprintf(os.Stderr, "%v\n", evaluated.Inspect())
+			fmt.Fprintf(os.Stderr, "%v\n", l.GetLineStr(erro.Node.GetToken().Line))
+		} else {
+			fmt.Fprintf(os.Stderr, "%v\n", evaluated.Inspect())
+		}
+	}
+
 	return env
 }
