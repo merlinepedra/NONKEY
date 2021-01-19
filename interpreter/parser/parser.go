@@ -235,7 +235,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 // no prefix parse function error
 func (p *Parser) noPrefixParseFnError(t tokentype.TokenType) {
-	p.AddError("no prefix parse function for %s", t)
+	p.AddError("no prefix parse function for %s", t.Literal())
 }
 
 // parse Expression Statement
@@ -857,7 +857,7 @@ func (p *Parser) expectPeek(t tokentype.TokenType) bool {
 		return true
 	}
 	p.AddError("expected next token to be %s, got %v",
-		t, p.curToken)
+		t.Literal(), p.curToken.Literal)
 	return false
 }
 
