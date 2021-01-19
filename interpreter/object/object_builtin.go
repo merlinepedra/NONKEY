@@ -1,9 +1,12 @@
 package object
 
-import "github.com/kasworld/nonkey/enum/objecttype"
+import (
+	"github.com/kasworld/nonkey/enum/objecttype"
+	"github.com/kasworld/nonkey/interpreter/asti"
+)
 
 // BuiltinFunction holds the type of a built-in function.
-type BuiltinFunction func(env *Environment, args ...ObjectI) ObjectI
+type BuiltinFunction func(node asti.NodeI, env *Environment, args ...ObjectI) ObjectI
 
 // Builtin wraps func and implements ObjectI interface.
 type Builtin struct {

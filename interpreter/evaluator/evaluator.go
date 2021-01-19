@@ -42,7 +42,7 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 		if object.IsError(right) {
 			return right
 		}
-		return evalPrefixExpression(node.Operator, right)
+		return evalPrefixExpression(node, node.Operator, right)
 	case *ast.PostfixExpression:
 		return evalPostfixExpression(env, node.Operator, node)
 	case *ast.InfixExpression:
@@ -54,9 +54,9 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 		if object.IsError(right) {
 			return right
 		}
-		res := evalInfixExpression(node.Operator, left, right, env)
+		res := evalInfixExpression(node, node.Operator, left, right, env)
 		if object.IsError(res) {
-			fmt.Printf("Error: %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "Error %s\n", res.Inspect())
 			if pragmas.PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
@@ -125,7 +125,7 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 		if len(args) == 1 && object.IsError(args[0]) {
 			return args[0]
 		}
-		res := applyFunction(env, function, args)
+		res := applyFunction(node, env, function, args)
 		if object.IsError(res) {
 			fmt.Fprintf(os.Stderr, "Error calling `%s` : %s %v\n", node.Function, res.Inspect(), node.Token)
 			if pragmas.PRAGMAS["strict"] == 1 {
@@ -156,7 +156,7 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 		if object.IsError(index) {
 			return index
 		}
-		return evalIndexExpression(left, index)
+		return evalIndexExpression(node, left, index)
 	case *ast.AssignStatement:
 		return evalAssignStatement(node, env)
 	case *ast.HashLiteral:
@@ -191,14 +191,14 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 }
 
 // eval prefix expression
-func evalPrefixExpression(operator tokentype.TokenType, right object.ObjectI) object.ObjectI {
+func evalPrefixExpression(node asti.NodeI, operator tokentype.TokenType, right object.ObjectI) object.ObjectI {
 	switch operator {
 	case tokentype.BANG:
 		return evalBangOperatorExpression(right)
 	case tokentype.MINUS:
-		return evalMinusPrefixOperatorExpression(right)
+		return evalMinusPrefixOperatorExpression(node, right)
 	default:
-		return object.NewError("unknown operator: %s%s",
+		return object.NewError(node, "unknown operator: %s%s",
 			operator.Literal(), right.Type())
 	}
 }
@@ -208,7 +208,7 @@ func evalPostfixExpression(env *object.Environment, operator tokentype.TokenType
 	case tokentype.PLUS_PLUS:
 		val, ok := env.Get(node.Token.Literal)
 		if !ok {
-			return object.NewError("%s is unknown", node.Token.Literal)
+			return object.NewError(node, "%s is unknown", node.Token.Literal)
 		}
 
 		switch arg := val.(type) {
@@ -217,13 +217,13 @@ func evalPostfixExpression(env *object.Environment, operator tokentype.TokenType
 			env.Set(node.Token.Literal, &object.Integer{Value: v + 1})
 			return arg
 		default:
-			return object.NewError("%s is not an int", node.Token.Literal)
+			return object.NewError(node, "%s is not an int", node.Token.Literal)
 
 		}
 	case tokentype.MINUS_MINUS:
 		val, ok := env.Get(node.Token.Literal)
 		if !ok {
-			return object.NewError("%s is unknown", node.Token.Literal)
+			return object.NewError(node, "%s is unknown", node.Token.Literal)
 		}
 
 		switch arg := val.(type) {
@@ -232,10 +232,10 @@ func evalPostfixExpression(env *object.Environment, operator tokentype.TokenType
 			env.Set(node.Token.Literal, &object.Integer{Value: v - 1})
 			return arg
 		default:
-			return object.NewError("%s is not an int", node.Token.Literal)
+			return object.NewError(node, "%s is not an int", node.Token.Literal)
 		}
 	default:
-		return object.NewError("unknown operator: %s",
+		return object.NewError(node, "unknown operator: %s",
 			operator.Literal())
 	}
 }
@@ -253,37 +253,37 @@ func evalBangOperatorExpression(right object.ObjectI) object.ObjectI {
 	}
 }
 
-func evalMinusPrefixOperatorExpression(right object.ObjectI) object.ObjectI {
+func evalMinusPrefixOperatorExpression(node asti.NodeI, right object.ObjectI) object.ObjectI {
 	switch obj := right.(type) {
 	case *object.Integer:
 		return &object.Integer{Value: -obj.Value}
 	case *object.Float:
 		return &object.Float{Value: -obj.Value}
 	default:
-		return object.NewError("unknown operator: -%s", right.Type())
+		return object.NewError(node, "unknown operator: -%s", right.Type())
 	}
 }
 
-func evalInfixExpression(operator tokentype.TokenType, left, right object.ObjectI, env *object.Environment) object.ObjectI {
+func evalInfixExpression(node asti.NodeI, operator tokentype.TokenType, left, right object.ObjectI, env *object.Environment) object.ObjectI {
 	switch {
 	case left.Type() == objecttype.INTEGER && right.Type() == objecttype.INTEGER:
-		return evalIntegerInfixExpression(operator, left, right)
+		return evalIntegerInfixExpression(node, operator, left, right)
 	case left.Type() == objecttype.FLOAT && right.Type() == objecttype.FLOAT:
-		return evalFloatInfixExpression(operator, left, right)
+		return evalFloatInfixExpression(node, operator, left, right)
 	case left.Type() == objecttype.FLOAT && right.Type() == objecttype.INTEGER:
-		return evalFloatIntegerInfixExpression(operator, left, right)
+		return evalFloatIntegerInfixExpression(node, operator, left, right)
 	case left.Type() == objecttype.INTEGER && right.Type() == objecttype.FLOAT:
-		return evalIntegerFloatInfixExpression(operator, left, right)
+		return evalIntegerFloatInfixExpression(node, operator, left, right)
 	case left.Type() == objecttype.STRING && right.Type() == objecttype.STRING:
-		return evalStringInfixExpression(operator, left, right)
+		return evalStringInfixExpression(node, operator, left, right)
 	case operator == tokentype.AND:
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) && objectToNativeBoolean(right))
 	case operator == tokentype.OR:
 		return nativeBoolToBooleanObject(objectToNativeBoolean(left) || objectToNativeBoolean(right))
 	case operator == tokentype.NOT_CONTAINS:
-		return notMatches(left, right)
+		return notMatches(node, left, right)
 	case operator == tokentype.CONTAINS:
-		return matches(left, right, env)
+		return matches(node, left, right, env)
 
 	case operator == tokentype.EQ:
 		return nativeBoolToBooleanObject(left == right)
@@ -291,22 +291,22 @@ func evalInfixExpression(operator tokentype.TokenType, left, right object.Object
 	case operator == tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(left != right)
 	case left.Type() == objecttype.BOOLEAN && right.Type() == objecttype.BOOLEAN:
-		return evalBooleanInfixExpression(operator, left, right)
+		return evalBooleanInfixExpression(node, operator, left, right)
 	case left.Type() != right.Type():
-		return object.NewError("type mismatch: %s %s %s",
+		return object.NewError(node, "type mismatch: %s %s %s",
 			left.Type(), operator.Literal(), right.Type())
 	default:
-		return object.NewError("unknown operator: %s %s %s",
+		return object.NewError(node, "unknown operator: %s %s %s",
 			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
-func matches(left, right object.ObjectI, env *object.Environment) object.ObjectI {
+func matches(node asti.NodeI, left, right object.ObjectI, env *object.Environment) object.ObjectI {
 
 	str := left.Inspect()
 
 	if right.Type() != objecttype.REGEXP {
-		return object.NewError("regexp required for regexp-match, given %s", right.Type())
+		return object.NewError(node, "regexp required for regexp-match, given %s", right.Type())
 	}
 
 	val := right.(*object.Regexp).Value
@@ -319,7 +319,7 @@ func matches(left, right object.ObjectI, env *object.Environment) object.ObjectI
 
 	// Ensure it compiled
 	if err != nil {
-		return object.NewError("error compiling regexp '%s': %s", right.Inspect(), err)
+		return object.NewError(node, "error compiling regexp '%s': %s", right.Inspect(), err)
 	}
 
 	res := r.FindStringSubmatch(str)
@@ -339,11 +339,11 @@ func matches(left, right object.ObjectI, env *object.Environment) object.ObjectI
 	return object.FALSE
 }
 
-func notMatches(left, right object.ObjectI) object.ObjectI {
+func notMatches(node asti.NodeI, left, right object.ObjectI) object.ObjectI {
 	str := left.Inspect()
 
 	if right.Type() != objecttype.REGEXP {
-		return object.NewError("regexp required for regexp-match, given %s", right.Type())
+		return object.NewError(node, "regexp required for regexp-match, given %s", right.Type())
 	}
 
 	val := right.(*object.Regexp).Value
@@ -356,7 +356,7 @@ func notMatches(left, right object.ObjectI) object.ObjectI {
 
 	// Ensure it compiled
 	if err != nil {
-		return object.NewError("error compiling regexp '%s': %s", right.Inspect(), err)
+		return object.NewError(node, "error compiling regexp '%s': %s", right.Inspect(), err)
 	}
 
 	// Test if it matched
@@ -368,27 +368,27 @@ func notMatches(left, right object.ObjectI) object.ObjectI {
 }
 
 // boolean operations
-func evalBooleanInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
+func evalBooleanInfixExpression(node asti.NodeI, operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	// convert the bools to strings.
 	l := &object.String{Value: string(left.Inspect())}
 	r := &object.String{Value: string(right.Inspect())}
 
 	switch operator {
 	case tokentype.LT:
-		return evalStringInfixExpression(operator, l, r)
+		return evalStringInfixExpression(node, operator, l, r)
 	case tokentype.LT_EQUALS:
-		return evalStringInfixExpression(operator, l, r)
+		return evalStringInfixExpression(node, operator, l, r)
 	case tokentype.GT:
-		return evalStringInfixExpression(operator, l, r)
+		return evalStringInfixExpression(node, operator, l, r)
 	case tokentype.GT_EQUALS:
-		return evalStringInfixExpression(operator, l, r)
+		return evalStringInfixExpression(node, operator, l, r)
 	default:
-		return object.NewError("unknown operator: %s %s %s",
+		return object.NewError(node, "unknown operator: %s %s %s",
 			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
-func evalIntegerInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
+func evalIntegerInfixExpression(node asti.NodeI, operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
 	switch operator {
@@ -435,11 +435,11 @@ func evalIntegerInfixExpression(operator tokentype.TokenType, left, right object
 		}
 		return &object.Array{Elements: array}
 	default:
-		return object.NewError("unknown operator: %s %s %s",
+		return object.NewError(node, "unknown operator: %s %s %s",
 			left.Type(), operator.Literal(), right.Type())
 	}
 }
-func evalFloatInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
+func evalFloatInfixExpression(node asti.NodeI, operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	leftVal := left.(*object.Float).Value
 	rightVal := right.(*object.Float).Value
 	switch operator {
@@ -474,12 +474,12 @@ func evalFloatInfixExpression(operator tokentype.TokenType, left, right object.O
 	case tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
-		return object.NewError("unknown operator: %s %s %s",
+		return object.NewError(node, "unknown operator: %s %s %s",
 			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
-func evalFloatIntegerInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
+func evalFloatIntegerInfixExpression(node asti.NodeI, operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	leftVal := left.(*object.Float).Value
 	rightVal := float64(right.(*object.Integer).Value)
 	switch operator {
@@ -514,12 +514,12 @@ func evalFloatIntegerInfixExpression(operator tokentype.TokenType, left, right o
 	case tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
-		return object.NewError("unknown operator: %s %s %s",
+		return object.NewError(node, "unknown operator: %s %s %s",
 			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
-func evalIntegerFloatInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
+func evalIntegerFloatInfixExpression(node asti.NodeI, operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	leftVal := float64(left.(*object.Integer).Value)
 	rightVal := right.(*object.Float).Value
 	switch operator {
@@ -554,12 +554,12 @@ func evalIntegerFloatInfixExpression(operator tokentype.TokenType, left, right o
 	case tokentype.NOT_EQ:
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
-		return object.NewError("unknown operator: %s %s %s",
+		return object.NewError(node, "unknown operator: %s %s %s",
 			left.Type(), operator.Literal(), right.Type())
 	}
 }
 
-func evalStringInfixExpression(operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
+func evalStringInfixExpression(node asti.NodeI, operator tokentype.TokenType, left, right object.ObjectI) object.ObjectI {
 	l := left.(*object.String)
 	r := right.(*object.String)
 
@@ -582,7 +582,7 @@ func evalStringInfixExpression(operator tokentype.TokenType, left, right object.
 		return &object.String{Value: l.Value + r.Value}
 	}
 
-	return object.NewError("unknown operator: %s %s %s",
+	return object.NewError(node, "unknown operator: %s %s %s",
 		left.Type(), operator.Literal(), right.Type())
 }
 
@@ -652,12 +652,12 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
-			return object.NewError("%s is unknown", a.Name.String())
+			return object.NewError(a, "%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression(tokentype.PLUS_EQUALS, current, evaluated, env)
+		res := evalInfixExpression(a, tokentype.PLUS_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
-			fmt.Printf("Error handling += %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "Error handling += %s\n", res.Inspect())
 			return res
 		}
 
@@ -669,12 +669,12 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
-			return object.NewError("%s is unknown", a.Name.String())
+			return object.NewError(a, "%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression(tokentype.MINUS_EQUALS, current, evaluated, env)
+		res := evalInfixExpression(a, tokentype.MINUS_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
-			fmt.Printf("Error handling -= %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "Error handling -= %s\n", res.Inspect())
 			return res
 		}
 
@@ -685,12 +685,12 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
-			return object.NewError("%s is unknown", a.Name.String())
+			return object.NewError(a, "%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression(tokentype.ASTERISK_EQUALS, current, evaluated, env)
+		res := evalInfixExpression(a, tokentype.ASTERISK_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
-			fmt.Printf("Error handling *= %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "Error handling *= %s\n", res.Inspect())
 			return res
 		}
 
@@ -702,12 +702,12 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		// Get the current value
 		current, ok := env.Get(a.Name.String())
 		if !ok {
-			return object.NewError("%s is unknown", a.Name.String())
+			return object.NewError(a, "%s is unknown", a.Name.String())
 		}
 
-		res := evalInfixExpression(tokentype.SLASH_EQUALS, current, evaluated, env)
+		res := evalInfixExpression(a, tokentype.SLASH_EQUALS, current, evaluated, env)
 		if object.IsError(res) {
-			fmt.Printf("Error handling /= %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "Error handling /= %s\n", res.Inspect())
 			return res
 		}
 
@@ -720,7 +720,8 @@ func evalAssignStatement(a *ast.AssignStatement, env *object.Environment) (val o
 		if pragmas.PRAGMAS["strict"] == 1 {
 			_, ok := env.Get(a.Name.String())
 			if !ok {
-				fmt.Printf("Setting unknown variable '%s' is a bug under strict-pragma!\n", a.Name.String())
+				fmt.Fprintf(os.Stderr, "Setting unknown variable '%s' is a bug under strict-pragma! %v\n",
+					a.Name.String(), a)
 				os.Exit(1)
 			}
 		}
@@ -762,7 +763,7 @@ func evalSwitchStatement(se *ast.SwitchExpression, env *object.Environment) obje
 			// Is it a regexp-match?
 			if out.Type() == objecttype.REGEXP {
 
-				m := matches(obj, out, env)
+				m := matches(se, obj, out, env)
 				if m == object.TRUE {
 
 					// Evaluate the block and return the value
@@ -815,7 +816,7 @@ func evalForeachExpression(fle *ast.ForeachStatement, env *object.Environment) o
 
 	helper, ok := val.(object.IterableI)
 	if !ok {
-		return object.NewError("%s object doesn't implement the Iterable interface", val.Type())
+		return object.NewError(fle, "%s object doesn't implement the Iterable interface", val.Type())
 	}
 
 	// The one/two values we're going to permit
@@ -902,7 +903,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	if pragmas.PRAGMAS["strict"] == 1 {
 		os.Exit(1)
 	}
-	return object.NewError("identifier not found: " + node.Value)
+	return object.NewError(node, "identifier not found: "+node.Value)
 }
 
 func evalExpression(exps []asti.ExpressionI, env *object.Environment) []object.ObjectI {
@@ -976,7 +977,7 @@ func backTickOperation(command string) object.ObjectI {
 	// is regarded as a failure.  Here we test for ExitError
 	// to regard that as a non-failure.
 	if err != nil && err != err.(*exec.ExitError) {
-		fmt.Printf("Failed to run '%s' -> %s\n", command, err.Error())
+		fmt.Fprintf(os.Stderr, "Failed to run '%s' -> %s\n", command, err.Error())
 		return object.NULL
 	}
 
@@ -1001,16 +1002,16 @@ func backTickOperation(command string) object.ObjectI {
 	return &object.Hash{Pairs: newHash}
 }
 
-func evalIndexExpression(left, index object.ObjectI) object.ObjectI {
+func evalIndexExpression(node asti.NodeI, left, index object.ObjectI) object.ObjectI {
 	switch {
 	case left.Type() == objecttype.ARRAY && index.Type() == objecttype.INTEGER:
 		return evalArrayIndexExpression(left, index)
 	case left.Type() == objecttype.HASH:
-		return evalHashIndexExpression(left, index)
+		return evalHashIndexExpression(node, left, index)
 	case left.Type() == objecttype.STRING:
 		return evalStringIndexExpression(left, index)
 	default:
-		return object.NewError("index operator not support:%s", left.Type())
+		return object.NewError(node, "index operator not support:%s", left.Type())
 
 	}
 }
@@ -1024,11 +1025,11 @@ func evalArrayIndexExpression(array, index object.ObjectI) object.ObjectI {
 	}
 	return arrayObject.Elements[idx]
 }
-func evalHashIndexExpression(hash, index object.ObjectI) object.ObjectI {
+func evalHashIndexExpression(node asti.NodeI, hash, index object.ObjectI) object.ObjectI {
 	hashObject := hash.(*object.Hash)
 	key, ok := index.(object.HashableI)
 	if !ok {
-		return object.NewError("unusable as hash key: %s", index.Type())
+		return object.NewError(node, "unusable as hash key: %s", index.Type())
 	}
 	pair, ok := hashObject.Pairs[key.HashKey()]
 	if !ok {
@@ -1064,7 +1065,7 @@ func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Obje
 		}
 		hashKey, ok := key.(object.HashableI)
 		if !ok {
-			return object.NewError("unusable as hash key: %s", key.Type())
+			return object.NewError(node, "unusable as hash key: %s", key.Type())
 		}
 		value := Eval(valueNode, env)
 		if object.IsError(value) {
@@ -1078,16 +1079,16 @@ func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Obje
 
 }
 
-func applyFunction(env *object.Environment, fn object.ObjectI, args []object.ObjectI) object.ObjectI {
+func applyFunction(node asti.NodeI, env *object.Environment, fn object.ObjectI, args []object.ObjectI) object.ObjectI {
 	switch fn := fn.(type) {
 	case *object.Function:
 		extendEnv := extendFunctionEnv(fn, args)
 		evaluated := Eval(fn.Body, extendEnv)
 		return upwrapReturnValue(evaluated)
 	case *object.Builtin:
-		return fn.Fn(env, args...)
+		return fn.Fn(node, env, args...)
 	default:
-		return object.NewError("not a function: %s", fn.Type())
+		return object.NewError(node, "not a function: %s", fn.Type())
 	}
 
 }
@@ -1203,7 +1204,7 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 				obj = upwrapReturnValue(evaluated)
 				return obj
 			} else {
-				//fmt.Printf("fail to exec %v %v\n", name, env)
+				//fmt.Fprintf(os.Stderr,"fail to exec %v %v\n", name, env)
 			}
 		}
 
@@ -1217,7 +1218,7 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 	//
 	// So we've got no choice but to return an error.
 	//
-	return object.NewError("Failed to invoke method: %s", call.Call.(*ast.CallExpression).Function.String())
+	return object.NewError(call, "Failed to invoke method: %s", call.Call.(*ast.CallExpression).Function.String())
 }
 
 func objectToNativeBoolean(o object.ObjectI) bool {

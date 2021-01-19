@@ -3,13 +3,14 @@ package evaluator
 import (
 	"path/filepath"
 
+	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/object"
 )
 
 // array = directory.glob( "/etc/*.conf" )
-func builtinDirectoryGlob(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinDirectoryGlob(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	pattern := args[0].(*object.String).Value

@@ -4,11 +4,12 @@ import (
 	"os"
 
 	"github.com/kasworld/nonkey/enum/objecttype"
+	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/object"
 )
 
 // os.getenv() -> ( Hash )
-func builtinOsEnvironment(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinOsEnvironment(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 
 	osenv := os.Environ()
 	newHash := make(map[object.HashKey]object.HashPair)
@@ -32,13 +33,13 @@ func builtinOsEnvironment(env *object.Environment, args ...object.ObjectI) objec
 }
 
 // os.getenv( "PATH" ) -> string
-func builtinOsGetEnv(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinOsGetEnv(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	if args[0].Type() != objecttype.STRING {
-		return object.NewError("argument must be a string, got=%s",
+		return object.NewError(node, "argument must be a string, got=%s",
 			args[0].Type())
 	}
 	input := args[0].(*object.String).Value
@@ -47,17 +48,17 @@ func builtinOsGetEnv(env *object.Environment, args ...object.ObjectI) object.Obj
 }
 
 // os.setenv( "PATH", "/home/skx/bin:/usr/bin" );
-func builtinOsSetEnv(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinOsSetEnv(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 2 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	if args[0].Type() != objecttype.STRING {
-		return object.NewError("argument must be a string, got=%s",
+		return object.NewError(node, "argument must be a string, got=%s",
 			args[0].Type())
 	}
 	if args[1].Type() != objecttype.STRING {
-		return object.NewError("argument must be a string, got=%s",
+		return object.NewError(node, "argument must be a string, got=%s",
 			args[1].Type())
 	}
 	name := args[0].(*object.String).Value

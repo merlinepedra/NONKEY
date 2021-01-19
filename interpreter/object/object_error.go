@@ -4,10 +4,14 @@ import (
 	"fmt"
 
 	"github.com/kasworld/nonkey/enum/objecttype"
+	"github.com/kasworld/nonkey/interpreter/asti"
 )
 
-func NewError(format string, a ...interface{}) *Error {
-	return &Error{Message: fmt.Sprintf(format, a...)}
+func NewError(node asti.NodeI, format string, a ...interface{}) *Error {
+	return &Error{
+		Message: fmt.Sprintf(format, a...),
+		Node:    node,
+	}
 }
 
 func IsError(obj ObjectI) bool {
@@ -21,6 +25,7 @@ func IsError(obj ObjectI) bool {
 type Error struct {
 	// Message contains the error-message we're wrapping
 	Message string
+	Node    asti.NodeI
 }
 
 // Type returns the type of this object.
@@ -30,7 +35,7 @@ func (e *Error) Type() objecttype.ObjectType {
 
 // Inspect returns a string-representation of the given object.
 func (e *Error) Inspect() string {
-	return "ERROR: " + e.Message
+	return fmt.Sprintf("ERROR: %v, %v", e.Message, e.Node.GetToken())
 }
 
 // InvokeMethod invokes a method against the object.

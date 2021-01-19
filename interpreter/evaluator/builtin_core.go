@@ -10,6 +10,7 @@ import (
 
 	"github.com/kasworld/nonkey/config/pragmas"
 	"github.com/kasworld/nonkey/enum/objecttype"
+	"github.com/kasworld/nonkey/interpreter/asti"
 	"github.com/kasworld/nonkey/interpreter/lexer"
 	"github.com/kasworld/nonkey/interpreter/object"
 	"github.com/kasworld/nonkey/interpreter/parser"
@@ -17,9 +18,9 @@ import (
 
 // Change a mode of a file - note the second argument is a string
 // to emphasise octal.
-func builtinChmod(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinChmod(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 2 {
-		return object.NewError("wrong number of arguments. got=%d, want=2",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
 
@@ -30,7 +31,7 @@ func builtinChmod(env *object.Environment, args ...object.ObjectI) object.Object
 	case *object.String:
 		mode = args[1].(*object.String).Value
 	default:
-		return object.NewError("Second argument must be string, got %v", args[1])
+		return object.NewError(node, "Second argument must be string, got %v", args[1])
 	}
 
 	// convert from octal -> decimal
@@ -48,13 +49,13 @@ func builtinChmod(env *object.Environment, args ...object.ObjectI) object.Object
 }
 
 // Delete a given hash-key
-func builtinDelete(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinDelete(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 2 {
-		return object.NewError("wrong number of arguments. got=%d, want=2",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
 	if args[0].Type() != objecttype.HASH {
-		return object.NewError("argument to `delete` must be HASH, got=%s",
+		return object.NewError(node, "argument to `delete` must be HASH, got=%s",
 			args[0].Type())
 	}
 
@@ -64,7 +65,7 @@ func builtinDelete(env *object.Environment, args ...object.ObjectI) object.Objec
 	// The key we're going to delete
 	key, ok := args[1].(object.HashableI)
 	if !ok {
-		return object.NewError("key `delete` into HASH must be Hashable, got=%s",
+		return object.NewError(node, "key `delete` into HASH must be Hashable, got=%s",
 			args[1].Type())
 	}
 
@@ -81,9 +82,9 @@ func builtinDelete(env *object.Environment, args ...object.ObjectI) object.Objec
 }
 
 // evaluate a string containing monkey-code
-func builtinEval(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinEval(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	switch args[0].(type) {
@@ -111,12 +112,12 @@ func builtinEval(env *object.Environment, args ...object.ObjectI) object.ObjectI
 		}
 		os.Exit(1)
 	}
-	return object.NewError("argument to `eval` not supported, got=%s",
+	return object.NewError(node, "argument to `eval` not supported, got=%s",
 		args[0].Type())
 }
 
 // exit a program.
-func builtinExit(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinExit(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 
 	code := 0
 
@@ -135,9 +136,9 @@ func builtinExit(env *object.Environment, args ...object.ObjectI) object.ObjectI
 }
 
 // convert a double/string to an int
-func builtinInt(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinInt(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	switch args[0].(type) {
@@ -147,7 +148,7 @@ func builtinInt(env *object.Environment, args ...object.ObjectI) object.ObjectI 
 		if err == nil {
 			return &object.Integer{Value: int64(i)}
 		}
-		return object.NewError("Converting string '%s' to int failed %s", input, err.Error())
+		return object.NewError(node, "Converting string '%s' to int failed %s", input, err.Error())
 
 	case *object.Boolean:
 		input := args[0].(*object.Boolean).Value
@@ -163,19 +164,19 @@ func builtinInt(env *object.Environment, args ...object.ObjectI) object.ObjectI 
 		input := args[0].(*object.Float).Value
 		return &object.Integer{Value: int64(input)}
 	default:
-		return object.NewError("argument to `int` not supported, got=%s",
+		return object.NewError(node, "argument to `int` not supported, got=%s",
 			args[0].Type())
 	}
 }
 
 // Get hash keys
-func builtinKeys(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinKeys(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	if args[0].Type() != objecttype.HASH {
-		return object.NewError("argument to `keys` must be HASH, got=%s",
+		return object.NewError(node, "argument to `keys` must be HASH, got=%s",
 			args[0].Type())
 	}
 
@@ -198,9 +199,9 @@ func builtinKeys(env *object.Environment, args ...object.ObjectI) object.ObjectI
 }
 
 // length of item
-func builtinLen(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinLen(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	switch arg := args[0].(type) {
@@ -211,24 +212,24 @@ func builtinLen(env *object.Environment, args ...object.ObjectI) object.ObjectI 
 	case *object.Array:
 		return &object.Integer{Value: int64(len(arg.Elements))}
 	default:
-		return object.NewError("argument to `len` not supported, got=%s",
+		return object.NewError(node, "argument to `len` not supported, got=%s",
 			args[0].Type())
 	}
 }
 
 // regular expression match
-func builtinMatch(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinMatch(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 2 {
-		return object.NewError("wrong number of arguments. got=%d, want=2",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
 
 	if args[0].Type() != objecttype.STRING {
-		return object.NewError("argument to `match` must be STRING, got %s",
+		return object.NewError(node, "argument to `match` must be STRING, got %s",
 			args[0].Type())
 	}
 	if args[1].Type() != objecttype.STRING {
-		return object.NewError("argument to `match` must be STRING, got %s",
+		return object.NewError(node, "argument to `match` must be STRING, got %s",
 			args[1].Type())
 	}
 
@@ -268,14 +269,14 @@ func builtinMatch(env *object.Environment, args ...object.ObjectI) object.Object
 }
 
 // mkdir
-func builtinMkdir(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinMkdir(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 
 	if args[0].Type() != objecttype.STRING {
-		return object.NewError("argument to `mkdir` must be STRING, got %s",
+		return object.NewError(node, "argument to `mkdir` must be STRING, got %s",
 			args[0].Type())
 	}
 
@@ -296,11 +297,11 @@ func builtinMkdir(env *object.Environment, args ...object.ObjectI) object.Object
 }
 
 // set a global pragma
-func builtinPragma(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinPragma(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 
 	// If more than one argument that's an error
 	if len(args) > 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=0|1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=0|1",
 			len(args))
 	}
 
@@ -318,7 +319,7 @@ func builtinPragma(env *object.Environment, args ...object.ObjectI) object.Objec
 				pragmas.PRAGMAS[input] = 1
 			}
 		default:
-			return object.NewError("argument to `pragma` not supported, got=%s",
+			return object.NewError(node, "argument to `pragma` not supported, got=%s",
 				args[0].Type())
 		}
 	}
@@ -339,14 +340,14 @@ func builtinPragma(env *object.Environment, args ...object.ObjectI) object.Objec
 }
 
 // Open a file
-func builtinOpen(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinOpen(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 
 	path := ""
 	mode := "r"
 
 	// We need at least one arg
 	if len(args) < 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1+",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1+",
 			len(args))
 	}
 
@@ -355,7 +356,7 @@ func builtinOpen(env *object.Environment, args ...object.ObjectI) object.ObjectI
 	case *object.String:
 		path = args[0].(*object.String).Value
 	default:
-		return object.NewError("argument to `file` not supported, got=%s",
+		return object.NewError(node, "argument to `file` not supported, got=%s",
 			args[0].Type())
 
 	}
@@ -366,7 +367,7 @@ func builtinOpen(env *object.Environment, args ...object.ObjectI) object.ObjectI
 		case *object.String:
 			mode = args[1].(*object.String).Value
 		default:
-			return object.NewError("argument to `file` not supported, got=%s",
+			return object.NewError(node, "argument to `file` not supported, got=%s",
 				args[0].Type())
 
 		}
@@ -379,13 +380,13 @@ func builtinOpen(env *object.Environment, args ...object.ObjectI) object.ObjectI
 }
 
 // push something onto an array
-func builtinPush(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinPush(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 2 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	if args[0].Type() != objecttype.ARRAY {
-		return object.NewError("argument to `push` must be ARRAY, got=%s",
+		return object.NewError(node, "argument to `push` must be ARRAY, got=%s",
 			args[0].Type())
 	}
 	arr := args[0].(*object.Array)
@@ -397,7 +398,7 @@ func builtinPush(env *object.Environment, args ...object.ObjectI) object.ObjectI
 }
 
 // output a string to stdout
-func builtinPuts(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinPuts(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	for _, arg := range args {
 		fmt.Print(arg.Inspect())
 	}
@@ -405,11 +406,11 @@ func builtinPuts(env *object.Environment, args ...object.ObjectI) object.ObjectI
 }
 
 // printfFun is the implementation of our `printf` function.
-func builtinPrintf(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinPrintf(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 
 	// Convert to the formatted version, via our `sprintf`
 	// function.
-	out := builtinSprintf(env, args...)
+	out := builtinSprintf(node, env, args...)
 
 	// If that returned a string then we can print it
 	if out.Type() == objecttype.STRING {
@@ -421,18 +422,18 @@ func builtinPrintf(env *object.Environment, args ...object.ObjectI) object.Objec
 }
 
 // set a hash-field
-func builtinSet(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinSet(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 3 {
-		return object.NewError("wrong number of arguments. got=%d, want=2",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=2",
 			len(args))
 	}
 	if args[0].Type() != objecttype.HASH {
-		return object.NewError("argument to `set` must be HASH, got=%s",
+		return object.NewError(node, "argument to `set` must be HASH, got=%s",
 			args[0].Type())
 	}
 	key, ok := args[1].(object.HashableI)
 	if !ok {
-		return object.NewError("key `set` into HASH must be Hashable, got=%s",
+		return object.NewError(node, "key `set` into HASH must be Hashable, got=%s",
 			args[1].Type())
 	}
 	newHash := make(map[object.HashKey]object.HashPair)
@@ -447,7 +448,7 @@ func builtinSet(env *object.Environment, args ...object.ObjectI) object.ObjectI 
 }
 
 // sprintfFun is the implementation of our `sprintf` function.
-func builtinSprintf(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinSprintf(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 
 	// We expect 1+ arguments
 	if len(args) < 1 {
@@ -480,10 +481,10 @@ func builtinSprintf(env *object.Environment, args ...object.ObjectI) object.Obje
 }
 
 // Get file info.
-func builtinStat(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinStat(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	path := args[0].Inspect()
@@ -542,9 +543,9 @@ func builtinStat(env *object.Environment, args ...object.ObjectI) object.ObjectI
 
 }
 
-func builtinString(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinString(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 
@@ -553,18 +554,18 @@ func builtinString(env *object.Environment, args ...object.ObjectI) object.Objec
 }
 
 // type of an item
-func builtinType(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinType(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 	return &object.String{Value: args[0].Type().String()}
 }
 
 // Remove a file/directory.
-func builtinUnlink(env *object.Environment, args ...object.ObjectI) object.ObjectI {
+func builtinUnlink(node asti.NodeI, env *object.Environment, args ...object.ObjectI) object.ObjectI {
 	if len(args) != 1 {
-		return object.NewError("wrong number of arguments. got=%d, want=1",
+		return object.NewError(node, "wrong number of arguments. got=%d, want=1",
 			len(args))
 	}
 
