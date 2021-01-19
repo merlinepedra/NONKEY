@@ -61,6 +61,8 @@ add tokentype.attrib
 
 change switch by operator string to tokentype
 
+add NodeI(token.Token) to object.Error for source code line, posinline
+
 ## TODO
 
 replace ';' with '\n' or '\r'
