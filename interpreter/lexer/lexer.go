@@ -42,6 +42,7 @@ func New(input string) *Lexer {
 	return l
 }
 
+// GetLineStr return source code line
 func (l *Lexer) GetLineStr(line int) string {
 	lineBegin := l.codeLineBegins[line]
 	if len(l.codeLineBegins) > line+1 {
