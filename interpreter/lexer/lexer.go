@@ -91,7 +91,7 @@ func (l *Lexer) NextToken() token.Token {
 	if l.ch == rune('#') ||
 		(l.ch == rune('/') && l.peekChar() == rune('/')) {
 		l.skipComment()
-		return (l.NextToken())
+		return l.NextToken()
 	}
 
 	// multi-line comments
@@ -114,7 +114,6 @@ func (l *Lexer) NextToken() token.Token {
 		}
 
 	case rune('='):
-		tok = l.newToken(tokentype.ASSIGN, string(l.ch))
 		if l.peekChar() == rune('=') {
 			ch := l.ch
 			l.readChar()
