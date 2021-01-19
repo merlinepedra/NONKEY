@@ -121,6 +121,7 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = l.newToken(tokentype.ASSIGN, string(l.ch))
 		}
+	// case rune(';'), rune('\r'), rune('\n'):
 	case rune(';'):
 		tok = l.newToken(tokentype.SEMICOLON, string(l.ch))
 	case rune('?'):
@@ -195,12 +196,10 @@ func (l *Lexer) NextToken() token.Token {
 			} else {
 				str, err := l.readRegexp()
 				if err == nil {
-					tok.Type = tokentype.REGEXP
-					tok.Literal = str
+					tok = l.newToken(tokentype.REGEXP, str)
 				} else {
 					fmt.Printf("%s\n", err.Error())
-					tok.Type = tokentype.REGEXP
-					tok.Literal = str
+					tok = l.newToken(tokentype.REGEXP, str)
 				}
 			}
 		}
@@ -255,11 +254,12 @@ func (l *Lexer) NextToken() token.Token {
 			}
 		}
 	case rune('"'):
-		tok.Type = tokentype.STRING
-		tok.Literal = l.readString()
+		str := l.readString()
+		tok = l.newToken(tokentype.STRING, str)
+
 	case rune('`'):
-		tok.Type = tokentype.BACKTICK
-		tok.Literal = l.readBacktick()
+		str := l.readBacktick()
+		tok = l.newToken(tokentype.BACKTICK, str)
 	case rune('['):
 		tok = l.newToken(tokentype.LBRACKET, string(l.ch))
 	case rune(']'):
@@ -267,8 +267,7 @@ func (l *Lexer) NextToken() token.Token {
 	case rune(':'):
 		tok = l.newToken(tokentype.COLON, string(l.ch))
 	case rune(0):
-		tok.Literal = ""
-		tok.Type = tokentype.EOF
+		tok = l.newToken(tokentype.EOF, "")
 	default:
 
 		if isDigit(l.ch) {
@@ -277,8 +276,10 @@ func (l *Lexer) NextToken() token.Token {
 			return tok
 
 		}
-		tok.Literal = l.readIdentifier()
-		tok.Type = tokentype.LookupKeyword(tok.Literal)
+		str := l.readIdentifier()
+		tType := tokentype.LookupKeyword(str)
+		tok = l.newToken(tType, str)
+
 		l.prevToken = tok
 
 		return tok
@@ -633,6 +634,7 @@ func isIdentifier(ch rune) bool {
 
 // is white space
 func isWhitespace(ch rune) bool {
+	// return ch == rune(' ') || ch == rune('\t') //|| ch == rune('\n') || ch == rune('\r')
 	return ch == rune(' ') || ch == rune('\t') || ch == rune('\n') || ch == rune('\r')
 }
 

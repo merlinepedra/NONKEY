@@ -898,7 +898,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	if builtin, ok := builtinfunctions.BuiltinFunctions[node.Value]; ok {
 		return builtin
 	}
-	fmt.Fprintf(os.Stderr, "identifier not found: %s\n", node.Value)
+	fmt.Fprintf(os.Stderr, "identifier not found: %v\n", node.Token)
 	if pragmas.PRAGMAS["strict"] == 1 {
 		os.Exit(1)
 	}
