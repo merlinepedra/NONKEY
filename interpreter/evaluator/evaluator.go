@@ -109,7 +109,8 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 	case *ast.ObjectCallExpression:
 		res := evalObjectCallExpression(node, env)
 		if object.IsError(res) {
-			fmt.Fprintf(os.Stderr, "Error calling object-method %s\n", res.Inspect())
+			fmt.Fprintf(os.Stderr, "Error calling object-method %s, %v\n",
+				res.Inspect(), node.Token)
 			if pragmas.PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
@@ -126,7 +127,7 @@ func Eval(node asti.NodeI, env *object.Environment) object.ObjectI {
 		}
 		res := applyFunction(env, function, args)
 		if object.IsError(res) {
-			fmt.Fprintf(os.Stderr, "Error calling `%s` : %s\n", node.Function, res.Inspect())
+			fmt.Fprintf(os.Stderr, "Error calling `%s` : %s %v\n", node.Function, res.Inspect(), node.Token)
 			if pragmas.PRAGMAS["strict"] == 1 {
 				os.Exit(1)
 			}
