@@ -1,0 +1,49 @@
+// test all feature of nonkey interpreter
+
+
+let a = 1 ;
+let b = 1.1 ;
+let c = "hello";
+let h = true ;
+let d =[4,6.4,"hello",a,b,c,h];
+let e = { "a": 1 , "b" : 1.1 , "c": "hello" , "d" : d, "e":h};
+let f = fn(g,h) {return g+h;};
+let g = fn(i,j) { i-j;};
+
+if (h) {"TRUE";} else {"FALSE";}
+
+puts("hello\n");
+
+i = 0 ;
+for (i < 100) {
+    i +=1;
+    switch (i % 5) {
+        case 0 {
+            puts("0 ");
+        }
+        case 1 {
+            puts("1 ");
+        }
+        case 2 {
+            puts("2 ");
+        }
+        case 3 {
+            puts("3 ");
+        }
+        default {
+            puts("default ");
+        }
+    }
+}
+printf("\n")
+
+printf("%v\n", d);
+foreach i in d {
+    printf("%v ",i);
+}
+
+printf("\n");
+
+foreach i,v in e {
+    printf("%v : %v, ",i,v);
+}
