@@ -7,65 +7,68 @@ import "fmt"
 type TokenType uint8
 
 const (
-	ILLEGAL         TokenType = iota // ILLEGAL
-	AND                              // &&
-	ASSIGN                           // =
-	ASTERISK                         // *
-	ASTERISK_EQUALS                  // *=
-	BACKTICK                         // `
-	BANG                             // !
-	CASE                             // case
-	COLON                            // :
-	COMMA                            // ,
-	CONST                            // const
-	CONTAINS                         // ~=
-	DEFAULT                          // default
-	DEFINE_FUNCTION                  // function
-	DOTDOT                           // ..
-	ELSE                             // else
-	EOF                              // EOF
-	EQ                               // ==
-	FALSE                            // false
-	FLOAT                            // float
-	FOR                              // for
-	FOREACH                          // foreach
-	FUNCTION                         // fn
-	GT                               // >
-	GT_EQUALS                        // >=
-	IDENT                            // IDENT
-	IF                               // if
-	IN                               // in
-	INT                              // int
-	LBRACE                           // {
-	LBRACKET                         // [
-	LET                              // let
-	LPAREN                           // (
-	LT                               // <
-	LT_EQUALS                        // <=
-	MINUS                            // -
-	MINUS_EQUALS                     // -=
-	MINUS_MINUS                      // --
-	MOD                              // %
-	NOT_CONTAINS                     // !~
-	NOT_EQ                           // !=
-	OR                               // ||
-	PERIOD                           // .
-	PLUS                             // +
-	PLUS_EQUALS                      // +=
-	PLUS_PLUS                        // ++
-	POW                              // **
-	QUESTION                         // ?
-	RBRACE                           // }
-	RBRACKET                         // ]
-	REGEXP                           // REGEXP
-	RETURN                           // return
-	RPAREN                           // )
-	SEMICOLON                        // ;
-	SLASH                            // /
-	SLASH_EQUALS                     // /=
-	STRING                           // string
-	SWITCH                           // switch
-	TRUE                             // true
+	ILLEGAL TokenType = iota // ILLEGAL
+	EOF                      // EOF
+	EOL                      // EOL
+	IDENT                    // IDENT
+	REGEXP                   // REGEXP
+	//
+	CASE            // case
+	CONST           // const
+	DEFAULT         // default
+	DEFINE_FUNCTION // function
+	ELSE            // else
+	FALSE           // false
+	FLOAT           // float
+	FOR             // for
+	FOREACH         // foreach
+	FUNCTION        // fn
+	IF              // if
+	IN              // in
+	INT             // int
+	LET             // let
+	RETURN          // return
+	STRING          // string
+	SWITCH          // switch
+	TRUE            // true
+	//
+	AND             // &&
+	ASSIGN          // =
+	ASTERISK        // *
+	ASTERISK_EQUALS // *=
+	BACKTICK        // `
+	BANG            // !
+	COLON           // :
+	COMMA           // ,
+	CONTAINS        // ~=
+	DOTDOT          // ..
+	EQ              // ==
+	GT              // >
+	GT_EQUALS       // >=
+	LBRACE          // {
+	LBRACKET        // [
+	LPAREN          // (
+	LT              // <
+	LT_EQUALS       // <=
+	MINUS           // -
+	MINUS_EQUALS    // -=
+	MINUS_MINUS     // --
+	MOD             // %
+	NOT_CONTAINS    // !~
+	NOT_EQ          // !=
+	OR              // ||
+	PERIOD          // .
+	PLUS            // +
+	PLUS_EQUALS     // +=
+	PLUS_PLUS       // ++
+	POW             // **
+	QUESTION        // ?
+	RBRACE          // }
+	RBRACKET        // ]
+	RPAREN          // )
+	SEMICOLON       // ;
+	SLASH           // /
+	SLASH_EQUALS    // /=
 	//
 
 	TokenType_Count int = iota
@@ -73,37 +76,43 @@ const (
 
 var _TokenType2string = [TokenType_Count][2]string{
 	ILLEGAL:         {"ILLEGAL", "ILLEGAL"},
+	EOF:             {"EOF", "EOF"},
+	EOL:             {"EOL", "EOL"},
+	IDENT:           {"IDENT", "IDENT"},
+	REGEXP:          {"REGEXP", "REGEXP"},
+	CASE:            {"CASE", "case"},
+	CONST:           {"CONST", "const"},
+	DEFAULT:         {"DEFAULT", "default"},
+	DEFINE_FUNCTION: {"DEFINE_FUNCTION", "function"},
+	ELSE:            {"ELSE", "else"},
+	FALSE:           {"FALSE", "false"},
+	FLOAT:           {"FLOAT", "float"},
+	FOR:             {"FOR", "for"},
+	FOREACH:         {"FOREACH", "foreach"},
+	FUNCTION:        {"FUNCTION", "fn"},
+	IF:              {"IF", "if"},
+	IN:              {"IN", "in"},
+	INT:             {"INT", "int"},
+	LET:             {"LET", "let"},
+	RETURN:          {"RETURN", "return"},
+	STRING:          {"STRING", "string"},
+	SWITCH:          {"SWITCH", "switch"},
+	TRUE:            {"TRUE", "true"},
 	AND:             {"AND", "&&"},
 	ASSIGN:          {"ASSIGN", "="},
 	ASTERISK:        {"ASTERISK", "*"},
 	ASTERISK_EQUALS: {"ASTERISK_EQUALS", "*="},
 	BACKTICK:        {"BACKTICK", "`"},
 	BANG:            {"BANG", "!"},
-	CASE:            {"CASE", "case"},
 	COLON:           {"COLON", ":"},
 	COMMA:           {"COMMA", ","},
-	CONST:           {"CONST", "const"},
 	CONTAINS:        {"CONTAINS", "~="},
-	DEFAULT:         {"DEFAULT", "default"},
-	DEFINE_FUNCTION: {"DEFINE_FUNCTION", "function"},
 	DOTDOT:          {"DOTDOT", ".."},
-	ELSE:            {"ELSE", "else"},
-	EOF:             {"EOF", "EOF"},
 	EQ:              {"EQ", "=="},
-	FALSE:           {"FALSE", "false"},
-	FLOAT:           {"FLOAT", "float"},
-	FOR:             {"FOR", "for"},
-	FOREACH:         {"FOREACH", "foreach"},
-	FUNCTION:        {"FUNCTION", "fn"},
 	GT:              {"GT", ">"},
 	GT_EQUALS:       {"GT_EQUALS", ">="},
-	IDENT:           {"IDENT", "IDENT"},
-	IF:              {"IF", "if"},
-	IN:              {"IN", "in"},
-	INT:             {"INT", "int"},
 	LBRACE:          {"LBRACE", "{"},
 	LBRACKET:        {"LBRACKET", "["},
-	LET:             {"LET", "let"},
 	LPAREN:          {"LPAREN", "("},
 	LT:              {"LT", "<"},
 	LT_EQUALS:       {"LT_EQUALS", "<="},
@@ -122,15 +131,10 @@ var _TokenType2string = [TokenType_Count][2]string{
 	QUESTION:        {"QUESTION", "?"},
 	RBRACE:          {"RBRACE", "}"},
 	RBRACKET:        {"RBRACKET", "]"},
-	REGEXP:          {"REGEXP", "REGEXP"},
-	RETURN:          {"RETURN", "return"},
 	RPAREN:          {"RPAREN", ")"},
 	SEMICOLON:       {"SEMICOLON", ";"},
 	SLASH:           {"SLASH", "/"},
 	SLASH_EQUALS:    {"SLASH_EQUALS", "/="},
-	STRING:          {"STRING", "string"},
-	SWITCH:          {"SWITCH", "switch"},
-	TRUE:            {"TRUE", "true"},
 }
 
 func (e TokenType) String() string {
@@ -149,37 +153,43 @@ func (e TokenType) CommentString() string {
 
 var _string2TokenType = map[string]TokenType{
 	"ILLEGAL":         ILLEGAL,
+	"EOF":             EOF,
+	"EOL":             EOL,
+	"IDENT":           IDENT,
+	"REGEXP":          REGEXP,
+	"CASE":            CASE,
+	"CONST":           CONST,
+	"DEFAULT":         DEFAULT,
+	"DEFINE_FUNCTION": DEFINE_FUNCTION,
+	"ELSE":            ELSE,
+	"FALSE":           FALSE,
+	"FLOAT":           FLOAT,
+	"FOR":             FOR,
+	"FOREACH":         FOREACH,
+	"FUNCTION":        FUNCTION,
+	"IF":              IF,
+	"IN":              IN,
+	"INT":             INT,
+	"LET":             LET,
+	"RETURN":          RETURN,
+	"STRING":          STRING,
+	"SWITCH":          SWITCH,
+	"TRUE":            TRUE,
 	"AND":             AND,
 	"ASSIGN":          ASSIGN,
 	"ASTERISK":        ASTERISK,
 	"ASTERISK_EQUALS": ASTERISK_EQUALS,
 	"BACKTICK":        BACKTICK,
 	"BANG":            BANG,
-	"CASE":            CASE,
 	"COLON":           COLON,
 	"COMMA":           COMMA,
-	"CONST":           CONST,
 	"CONTAINS":        CONTAINS,
-	"DEFAULT":         DEFAULT,
-	"DEFINE_FUNCTION": DEFINE_FUNCTION,
 	"DOTDOT":          DOTDOT,
-	"ELSE":            ELSE,
-	"EOF":             EOF,
 	"EQ":              EQ,
-	"FALSE":           FALSE,
-	"FLOAT":           FLOAT,
-	"FOR":             FOR,
-	"FOREACH":         FOREACH,
-	"FUNCTION":        FUNCTION,
 	"GT":              GT,
 	"GT_EQUALS":       GT_EQUALS,
-	"IDENT":           IDENT,
-	"IF":              IF,
-	"IN":              IN,
-	"INT":             INT,
 	"LBRACE":          LBRACE,
 	"LBRACKET":        LBRACKET,
-	"LET":             LET,
 	"LPAREN":          LPAREN,
 	"LT":              LT,
 	"LT_EQUALS":       LT_EQUALS,
@@ -198,15 +208,10 @@ var _string2TokenType = map[string]TokenType{
 	"QUESTION":        QUESTION,
 	"RBRACE":          RBRACE,
 	"RBRACKET":        RBRACKET,
-	"REGEXP":          REGEXP,
-	"RETURN":          RETURN,
 	"RPAREN":          RPAREN,
 	"SEMICOLON":       SEMICOLON,
 	"SLASH":           SLASH,
 	"SLASH_EQUALS":    SLASH_EQUALS,
-	"STRING":          STRING,
-	"SWITCH":          SWITCH,
-	"TRUE":            TRUE,
 }
 
 func String2TokenType(s string) (TokenType, bool) {
